@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}My Internships - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .internship-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .internship-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-approved {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .internship-header {
+        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .add-internship-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .add-internship-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+        color: white;
+    }
+
+    .internship-details {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .internship-details i {
+        width: 20px;
+        color: var(--primary-color);
+    }
+
+    .document-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .document-link:hover {
+        color: var(--secondary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Internships</h2>
+        <a href="{{ url_for('student.new_internship') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Internship
+        </a>
+    </div>
+
+    {% if internships %}
+    <div class="row">
+        {% for internship in internships %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ internship.company_name }}</h5>
+                    <span
+                        class="badge {% if internship.status == 'approved' %}bg-success{% elif internship.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                        {{ internship.status|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Project:</strong> {{ internship.project_name }}
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Start Date:</strong>
+                            <p class="mb-0">{{ internship.start_date.strftime('%d %b %Y') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>End Date:</strong>
+                            <p class="mb-0">{{ internship.end_date.strftime('%d %b %Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Semester:</strong>
+                            <p class="mb-0">{{ internship.semester }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Hours per Week:</strong>
+                            <p class="mb-0">{{ internship.hours_per_week }}</p>
+                        </div>
+                    </div>
+                    {% if internship.skills %}
+                    <div class="mb-3">
+                        <strong>Skills:</strong>
+                        <div class="mt-1">
+                            {% for skill in internship.skills %}
+                            <span class="badge bg-secondary me-1">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <strong>Documents:</strong>
+                        <div class="mt-2">
+                            {% if internship.offer_letter_url %}
+                            <a href="{{ internship.offer_letter_url }}" class="btn btn-sm btn-outline-primary me-2"
+                                target="_blank">
+                                <i class="fas fa-file-pdf"></i> Offer Letter
+                            </a>
+                            {% endif %}
+                            {% if internship.completion_letter_url %}
+                            <a href="{{ internship.completion_letter_url }}" class="btn btn-sm btn-outline-primary"
+                                target="_blank">
+                                <i class="fas fa-file-pdf"></i> Completion Letter
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if internship.status == 'pending' %}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('student.edit_internship', internship_id=internship.id) }}"
+                            class="btn btn-sm btn-primary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger"
+                            onclick="confirmDelete('{{ internship.id }}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No internships found. Start by adding a new internship!
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this internship? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete(internshipId) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const form = document.getElementById('deleteForm');
+        form.action = "{{ url_for('student.delete_internship', internship_id='__ID__') }}".replace('__ID__', internshipId);
+        modal.show();
+    }
+</script>
+{% endblock %}

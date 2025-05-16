@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block title %}Mentor Dashboard - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
+        url("{{ url_for('static', filename='images/dashboard-bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 2rem 1rem;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-radius: 0;
+    }
+
+    @media (min-width: 768px) {
+        .dashboard-header {
+            padding: 3rem 2rem;
+            margin: -1.5rem -1.5rem 2rem -1.5rem;
+            border-radius: 0 0 1rem 1rem;
+        }
+    }
+
+    .filters-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .student-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .student-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .stats-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #0d6efd;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .status-approved {
+        background-color: #198754;
+        color: #fff;
+    }
+
+    .status-rejected {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .student-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #0d6efd;
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .student-info {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .student-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        font-size: 1.1rem;
+    }
+
+    .student-meta {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .student-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .stat-item i {
+        color: #0d6efd;
+    }
+
+    .form-select,
+    .form-control {
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .btn-filter {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-filter:hover {
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 767px) {
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .row {
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+        }
+
+        .col-md-6,
+        .col-lg-4 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .filters-card {
+            padding: 1rem;
+        }
+
+        .student-card {
+            padding: 1rem;
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+        }
+
+        .student-name {
+            font-size: 1rem;
+        }
+
+        .student-stats {
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Animation classes */
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header text-center">
+        <h1 class="mb-2 animate-fade-in">Welcome, {{ current_user.full_name }}</h1>
+        <p class="lead mb-0 animate-fade-in">Mentor Dashboard</p>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stats-card text-center animate-slide-up">
+                <i class="fas fa-users stats-icon"></i>
+                <div class="stats-number">{{ students|length }}</div>
+                <p class="text-muted mb-0">Total Students</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.1s">
+                <i class="fas fa-clock stats-icon"></i>
+                <div class="stats-number">{{ total_internship_hours }}</div>
+                <p class="text-muted mb-0">Total Internship Hours</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.2s">
+                <i class="fas fa-tasks stats-icon"></i>
+                <div class="stats-number">{{ total_activity_hours }}</div>
+                <p class="text-muted mb-0">Total Activity Hours</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.3s">
+                <i class="fas fa-star stats-icon"></i>
+                <div class="stats-number">{{ total_credit_points }}</div>
+                <p class="text-muted mb-0">Total Credit Points</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card animate-slide-up">
+        <form method="GET" class="row g-3">
+            <div class="col-12 col-md-6">
+                <label for="year" class="form-label">Year</label>
+                <select name="year" id="year" class="form-select">
+                    <option value="">All Years</option>
+                    {% for y in years %}
+                    <option value="{{ y }}" {% if y==selected_year %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary btn-filter w-100">
+                    <i class="fas fa-filter me-2"></i>Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Students Section -->
+    <h2 class="mt-4 mb-4">Your Students</h2>
+    <div class="row">
+        {% for student in students %}
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+            <div class="student-card animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                <div class="d-flex align-items-center mb-3">
+                    {% if student.profile_image %}
+                    <img src="{{ student.profile_image }}" alt="{{ student.full_name }}" class="student-avatar me-3">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/default_avatar.png') }}"
+                        alt="{{ student.full_name }}" class="student-avatar me-3">
+                    {% endif %}
+                    <div class="student-info">
+                        <h3 class="student-name">{{ student.full_name }}</h3>
+                        <div class="student-meta">
+                            <div><i class="fas fa-id-card me-2"></i>{{ student.registration_number }}</div>
+                            <div><i class="fas fa-graduation-cap me-2"></i>{{ student.branch }}</div>
+                            <div><i class="fas fa-calendar me-2"></i>Year {{ student.year }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="student-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Internships: {{ student.internships|length }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-tasks"></i>
+                        <span>Activities: {{ student.activities|length }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Hours: {{ student.total_internship_hours + student.total_activity_hours }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-star"></i>
+                        <span>Credits: {{ student.total_credit_points }}</span>
+                    </div>
+                </div>
+                {% if student.internships|selectattr('status', 'equalto', 'pending')|list|length > 0 %}
+                <div class="mt-2">
+                    <span class="status-badge status-pending">
+                        <i class="fas fa-clock me-1"></i>
+                        Pending Internships: {{ student.internships|selectattr('status', 'equalto',
+                        'pending')|list|length }}
+                    </span>
+                </div>
+                {% endif %}
+                {% if student.activities|selectattr('status', 'equalto', 'pending')|list|length > 0 %}
+                <div class="mt-2">
+                    <span class="status-badge status-pending">
+                        <i class="fas fa-clock me-1"></i>
+                        Pending Activities: {{ student.activities|selectattr('status', 'equalto', 'pending')|list|length
+                        }}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="mt-3">
+                    <a href="{{ url_for('mentor.view_student', student_id=student.id) }}" class="btn btn-primary w-100">
+                        <i class="fas fa-user me-2"></i>View Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center animate-fade-in">
+                <i class="fas fa-info-circle me-2"></i>
+                No students found matching the selected criteria.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation to cards
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            }
+        });
+    });
+
+    document.querySelectorAll('.student-card').forEach((el) => observer.observe(el));
+</script>
+{% endblock %}

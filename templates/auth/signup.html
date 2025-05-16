@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .signup-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+    }
+
+    .signup-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .signup-header {
+        background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
+        url("{{ url_for('static', filename='images/signup-bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 1.5rem 1rem;
+        margin: -1rem -1rem 1.5rem -1rem;
+        border-radius: 0;
+    }
+
+    @media (min-width: 768px) {
+        .signup-header {
+            padding: 2rem 1.5rem;
+            margin: -1rem -1rem 1.5rem -1rem;
+            border-radius: 0 0 1rem 1rem;
+        }
+    }
+
+    .signup-header h1 {
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+        position: relative;
+    }
+
+    .signup-header p {
+        opacity: 0.9;
+        position: relative;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    .signup-form {
+        padding: 1.5rem;
+    }
+
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .form-floating>.form-control {
+        padding: 0.75rem 0.75rem;
+        height: calc(3rem + 2px);
+        line-height: 1.25;
+        font-size: 0.9rem;
+    }
+
+    .form-floating>label {
+        padding: 0.75rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .role-selector {
+        margin-bottom: 1rem;
+    }
+
+    .role-option {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .role-option:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .role-option.selected {
+        border-color: var(--primary-color);
+        background-color: rgba(var(--primary-rgb), 0.05);
+    }
+
+    .role-option i {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+        color: var(--primary-color);
+    }
+
+    .role-option h5 {
+        margin-bottom: 0.25rem;
+        font-size: 1rem;
+    }
+
+    .role-option p {
+        margin-bottom: 0;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .student-fields {
+        display: none;
+    }
+
+    .student-fields.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .signup-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #dee2e6;
+        font-size: 0.9rem;
+    }
+
+    .signup-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .signup-footer a:hover {
+        color: var(--secondary-color);
+    }
+
+    .animate__animated {
+        animation-duration: 0.5s;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Grid Layout Styles */
+    .form-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .form-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 767px) {
+
+        .form-grid-2,
+        .form-grid-3 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-check {
+        margin: 1rem 0;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .invalid-feedback {
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="signup-card animate__animated animate__fadeIn">
+                    <div class="signup-header">
+                        <h1>Create Account</h1>
+                        <p>Join Shah and Anchor College's Internship Portal</p>
+                    </div>
+                    <div class="signup-form">
+                        <form method="POST" action="{{ url_for('auth.signup') }}">
+                            {{ form.hidden_tag() }}
+
+                            <div class="role-selector">
+                                <label class="form-label">Select your role</label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="role-option" data-role="student">
+                                            <i class="fas fa-user-graduate"></i>
+                                            <h5>Student</h5>
+                                            <p>Track your internships and activities</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="role-option" data-role="mentor">
+                                            <i class="fas fa-chalkboard-teacher"></i>
+                                            <h5>Mentor</h5>
+                                            <p>Guide and approve student activities</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="role" id="role" value="student">
+                            </div>
+
+                            <!-- Basic Information -->
+                            <div class="form-grid form-grid-2">
+                                <div class="form-floating">
+                                    {{ form.full_name(class="form-control", placeholder="Full Name") }}
+                                    <label for="full_name">Full Name</label>
+                                    {% if form.full_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.full_name.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-floating">
+                                    {{ form.email(class="form-control", placeholder="Email") }}
+                                    <label for="email">Email</label>
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.email.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Password Fields -->
+                            <div class="form-grid form-grid-2">
+                                <div class="form-floating">
+                                    {{ form.password(class="form-control", placeholder="Password") }}
+                                    <label for="password">Password</label>
+                                    {% if form.password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.password.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-floating">
+                                    {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+                                    <label for="confirm_password">Confirm Password</label>
+                                    {% if form.confirm_password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Student Fields -->
+                            <div class="student-fields">
+                                <div class="form-grid form-grid-2">
+                                    <div class="form-floating">
+                                        {{ form.prn(class="form-control", placeholder="PRN") }}
+                                        <label for="prn">PRN (Permanent Registration Number)</label>
+                                        {% if form.prn.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.prn.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-floating">
+                                        {{ form.registration_number(class="form-control", placeholder="Registration
+                                        Number") }}
+                                        <label for="registration_number">Registration Number</label>
+                                        {% if form.registration_number.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.registration_number.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-grid form-grid-3">
+                                    <div class="form-floating">
+                                        {{ form.branch(class="form-select") }}
+                                        <label for="branch">Branch</label>
+                                        {% if form.branch.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.branch.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-floating">
+                                        {{ form.year(class="form-select") }}
+                                        <label for="year">Year</label>
+                                        {% if form.year.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.year.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-floating">
+                                        {{ form.mentor_email(class="form-control", placeholder="Mentor Email") }}
+                                        <label for="mentor_email">Mentor Email</label>
+                                        {% if form.mentor_email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.mentor_email.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#">Terms and Conditions</a>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </form>
+
+                        <div class="signup-footer">
+                            <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation to form elements on focus
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', function () {
+            this.parentElement.classList.add('animate__animated', 'animate__pulse');
+        });
+
+        input.addEventListener('blur', function () {
+            this.parentElement.classList.remove('animate__animated', 'animate__pulse');
+        });
+    });
+
+    // Handle role selection
+    document.querySelectorAll('.role-option').forEach(option => {
+        option.addEventListener('click', function () {
+            // Remove selected class from all options
+            document.querySelectorAll('.role-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Add selected class to clicked option
+            this.classList.add('selected');
+
+            // Update hidden input value
+            document.getElementById('role').value = this.dataset.role;
+
+            // Show/hide student fields
+            const studentFields = document.querySelector('.student-fields');
+            if (this.dataset.role === 'student') {
+                studentFields.classList.add('show');
+            } else {
+                studentFields.classList.remove('show');
+            }
+        });
+    });
+
+    // Select student role by default
+    document.querySelector('[data-role="student"]').click();
+</script>
+{% endblock %}

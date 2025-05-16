@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Student Profile - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
+        url("{{ url_for('static', filename='images/dashboard-bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 3rem 0;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .student-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+    }
+
+    .status-pending {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .status-approved {
+        background-color: #198754;
+        color: white;
+    }
+
+    .status-rejected {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .skill-badge {
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8 text-center text-md-start">
+                {% if student.profile_image %}
+                <img src="{{ student.profile_image }}" alt="{{ student.full_name }}" class="student-avatar">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/avatar.png') }}" alt="{{ student.full_name }}"
+                    class="student-avatar">
+                {% endif %}
+                <h1>{{ student.full_name }}</h1>
+                <p class="lead mb-0">{{ student.branch }} - Year {{ student.year }}</p>
+                <p class="mb-0">Registration No: {{ student.registration_number }}</p>
+            </div>
+            <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+                <a href="{{ url_for('mentor.dashboard') }}" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="container py-4">
+    <!-- Student Details Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-user me-2"></i>Student Details
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
+                        <p class="mb-0">{{ student.email }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-phone me-2"></i>Phone:</strong>
+                        <p class="mb-0">{{ student.phone }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-graduation-cap me-2"></i>Branch:</strong>
+                        <p class="mb-0">{{ student.branch }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <strong><i class="fas fa-calendar me-2"></i>Year:</strong>
+                        <p class="mb-0">{{ student.year }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-id-card me-2"></i>Registration Number:</strong>
+                        <p class="mb-0">{{ student.registration_number }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-clock me-2"></i>Signup Date:</strong>
+                        <p class="mb-0">{{ student.created_at.strftime('%d %B %Y') if student.created_at else 'Not
+                            available' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Internship Hours</h5>
+                    <h2 class="card-text">{{ total_internship_hours }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Activity Hours</h5>
+                    <h2 class="card-text">{{ total_activity_hours }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Credit Points</h5>
+                    <h2 class="card-text">{{ total_credit_points }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-5">
+                    <label for="internship_status" class="form-label">Internship Status</label>
+                    <select name="internship_status" id="internship_status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="pending" {% if internship_status=='pending' %}selected{% endif %}>Pending
+                        </option>
+                        <option value="approved" {% if internship_status=='approved' %}selected{% endif %}>Approved
+                        </option>
+                        <option value="rejected" {% if internship_status=='rejected' %}selected{% endif %}>Rejected
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="activity_status" class="form-label">Activity Status</label>
+                    <select name="activity_status" id="activity_status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="pending" {% if activity_status=='pending' %}selected{% endif %}>Pending</option>
+                        <option value="approved" {% if activity_status=='approved' %}selected{% endif %}>Approved
+                        </option>
+                        <option value="rejected" {% if activity_status=='rejected' %}selected{% endif %}>Rejected
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Internships Section -->
+    <h2 class="mb-4">Internships</h2>
+    {% if internships %}
+    <div class="row">
+        {% for internship in internships %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title">{{ internship.title }}</h5>
+                        <span class="status-badge status-{{ internship.status }}">
+                            {{ internship.status|title }}
+                        </span>
+                    </div>
+                    <p class="card-text">{{ internship.description }}</p>
+                    <div class="mb-3">
+                        <strong>Duration:</strong> {{ internship.start_date }} to {{ internship.end_date }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Hours per Week:</strong> {{ internship.hours_per_week }}
+                    </div>
+                    {% if internship.status == 'pending' %}
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('mentor.approve_internship', internship_id=internship._id) }}"
+                            class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Approve
+                        </a>
+                        <a href="{{ url_for('mentor.reject_internship', internship_id=internship._id) }}"
+                            class="btn btn-danger">
+                            <i class="fas fa-times me-2"></i>Reject
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>No internships found.
+    </div>
+    {% endif %}
+
+    <!-- Activities Section -->
+    <h2 class="mb-4 mt-5">Activities</h2>
+    {% if activities %}
+    <div class="row">
+        {% for activity in activities %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title">{{ activity.title }}</h5>
+                        <span class="status-badge status-{{ activity.status }}">
+                            {{ activity.status|title }}
+                        </span>
+                    </div>
+                    <p class="card-text">{{ activity.description }}</p>
+                    <div class="mb-3">
+                        <strong>Duration:</strong> {{ activity.start_date }} to {{ activity.end_date }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Hours per Week:</strong> {{ activity.hours_per_week }}
+                    </div>
+                    {% if activity.status == 'pending' %}
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('mentor.approve_activity', activity_id=activity._id) }}"
+                            class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Approve
+                        </a>
+                        <a href="{{ url_for('mentor.reject_activity', activity_id=activity._id) }}"
+                            class="btn btn-danger">
+                            <i class="fas fa-times me-2"></i>Reject
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>No activities found.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation to cards
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            }
+        });
+    });
+
+    document.querySelectorAll('.card').forEach((el) => observer.observe(el));
+</script>
+{% endblock %}

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Activities - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .activity-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .activity-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-approved {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .activity-header {
+        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .add-activity-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .add-activity-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+        color: white;
+    }
+
+    .activity-details {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .activity-details i {
+        width: 20px;
+        color: var(--primary-color);
+    }
+
+    .document-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .document-link:hover {
+        color: var(--secondary-color);
+    }
+
+    .activity-type-badge {
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Activities</h2>
+        <a href="{{ url_for('student.new_activity') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Activity
+        </a>
+    </div>
+
+    {% if activities %}
+    <div class="row">
+        {% for activity in activities %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ activity.title }}</h5>
+                    <span
+                        class="badge {% if activity.status == 'approved' %}bg-success{% elif activity.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                        {{ activity.status|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Type:</strong> {{ activity.activity_type|title }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <p class="mb-0">{{ activity.description }}</p>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Start Date:</strong>
+                            <p class="mb-0">{{ activity.start_date.strftime('%d %b %Y') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>End Date:</strong>
+                            <p class="mb-0">{{ activity.end_date.strftime('%d %b %Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Semester:</strong>
+                            <p class="mb-0">{{ activity.semester }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Hours per Week:</strong>
+                            <p class="mb-0">{{ activity.hours_per_week }}</p>
+                        </div>
+                    </div>
+                    {% if activity.skills %}
+                    <div class="mb-3">
+                        <strong>Skills:</strong>
+                        <div class="mt-1">
+                            {% for skill in activity.skills %}
+                            <span class="badge bg-secondary me-1">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if activity.certificate_url %}
+                    <div class="mb-3">
+                        <strong>Certificate:</strong>
+                        <a href="{{ activity.certificate_url }}" class="btn btn-sm btn-outline-primary ms-2"
+                            target="_blank">
+                            <i class="fas fa-file-pdf"></i> View Certificate
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if activity.status == 'pending' %}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('student.edit_activity', activity_id=activity.id) }}"
+                            class="btn btn-sm btn-primary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger"
+                            onclick="confirmDelete('{{ activity.id }}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No activities found. Start by adding a new activity!
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this activity? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete(activityId) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const form = document.getElementById('deleteForm');
+        form.action = "{{ url_for('student.delete_activity', activity_id='__ID__') }}".replace('__ID__', activityId);
+        modal.show();
+    }
+</script>
+{% endblock %}

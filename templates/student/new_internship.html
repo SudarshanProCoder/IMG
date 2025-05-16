@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Internship - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .form-section-title {
+        color: #0d6efd;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .skill-tag {
+        display: inline-block;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin: 0.25rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .skill-tag:hover {
+        background-color: #dee2e6;
+    }
+
+    .skill-tag.selected {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-upload-label {
+        display: block;
+        padding: 1rem;
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-label:hover {
+        border-color: #0d6efd;
+        background: #e9ecef;
+    }
+
+    .file-upload-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-name {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .preview-image {
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 1rem;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <h1 class="text-center mb-4">Add New Internship</h1>
+                <form method="POST" enctype="multipart/form-data" id="internshipForm">
+                    <!-- Company Information -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Company Information</h3>
+                        <div class="mb-3">
+                            <label for="company_name" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="company_name" name="company_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="company_website" class="form-label">Company Website</label>
+                            <input type="url" class="form-control" id="company_website" name="company_website">
+                        </div>
+                        <div class="mb-3">
+                            <label for="company_address" class="form-label">Company Address</label>
+                            <textarea class="form-control" id="company_address" name="company_address"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Project Details -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Project Details</h3>
+                        <div class="mb-3">
+                            <label for="project_name" class="form-label">Project Name</label>
+                            <input type="text" class="form-control" id="project_name" name="project_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="project_description" class="form-label">Project Description</label>
+                            <textarea class="form-control" id="project_description" name="project_description" rows="4"
+                                required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Your Role</label>
+                            <input type="text" class="form-control" id="role" name="role" required>
+                        </div>
+                    </div>
+
+                    <!-- Duration and Hours -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Duration and Hours</h3>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hours_per_week" class="form-label">Hours per Week</label>
+                            <input type="number" class="form-control" id="hours_per_week" name="hours_per_week" min="1"
+                                max="168" required>
+                        </div>
+                    </div>
+
+                    <!-- Skills and Learning -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Skills and Learning</h3>
+                        <div class="mb-3">
+                            <label class="form-label">Skills Acquired</label>
+                            <div class="skill-tags">
+                                {% for skill in skills %}
+                                <span class="skill-tag" data-skill="{{ skill }}">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="skills" id="selected_skills">
+                        </div>
+                        <div class="mb-3">
+                            <label for="learning_outcomes" class="form-label">Learning Outcomes</label>
+                            <textarea class="form-control" id="learning_outcomes" name="learning_outcomes" rows="3"
+                                required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Documents -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Documents</h3>
+                        <div class="mb-3">
+                            <label class="form-label">Offer Letter</label>
+                            <div class="file-upload">
+                                <label class="file-upload-label">
+                                    <i class="fas fa-file-upload me-2"></i>
+                                    Choose File or Drag & Drop
+                                    <input type="file" class="file-upload-input" name="offer_letter"
+                                        accept=".pdf,.doc,.docx">
+                                </label>
+                                <div class="file-name"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Completion Certificate</label>
+                            <div class="file-upload">
+                                <label class="file-upload-label">
+                                    <i class="fas fa-file-upload me-2"></i>
+                                    Choose File or Drag & Drop
+                                    <input type="file" class="file-upload-input" name="completion_certificate"
+                                        accept=".pdf,.doc,.docx">
+                                </label>
+                                <div class="file-name"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i>Submit Internship
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle skill selection
+    const skillTags = document.querySelectorAll('.skill-tag');
+    const selectedSkillsInput = document.getElementById('selected_skills');
+    let selectedSkills = new Set();
+
+    skillTags.forEach(tag => {
+        tag.addEventListener('click', () => {
+            const skill = tag.dataset.skill;
+            if (selectedSkills.has(skill)) {
+                selectedSkills.delete(skill);
+                tag.classList.remove('selected');
+            } else {
+                selectedSkills.add(skill);
+                tag.classList.add('selected');
+            }
+            selectedSkillsInput.value = Array.from(selectedSkills).join(',');
+        });
+    });
+
+    // Handle file uploads
+    const fileInputs = document.querySelectorAll('.file-upload-input');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name;
+            const fileNameDiv = e.target.parentElement.nextElementSibling;
+            if (fileName) {
+                fileNameDiv.textContent = fileName;
+            } else {
+                fileNameDiv.textContent = '';
+            }
+        });
+    });
+
+    // Form validation
+    const form = document.getElementById('internshipForm');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Validate dates
+        const startDate = new Date(document.getElementById('start_date').value);
+        const endDate = new Date(document.getElementById('end_date').value);
+
+        if (endDate < startDate) {
+            alert('End date cannot be before start date');
+            return;
+        }
+
+        // Validate skills
+        if (selectedSkills.size === 0) {
+            alert('Please select at least one skill');
+            return;
+        }
+
+        // Submit form if validation passes
+        form.submit();
+    });
+</script>
+{% endblock %}

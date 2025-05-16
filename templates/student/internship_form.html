@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}{% if internship %}Edit Internship{% else %}Add New Internship{% endif %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--secondary-color);
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+    }
+
+    .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .btn-submit {
+        background: var(--gradient-primary);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    }
+
+    .file-upload {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .file-upload input[type="file"] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        cursor: pointer;
+        display: block;
+    }
+
+    .file-upload-label {
+        display: block;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-label:hover {
+        border-color: var(--primary-color);
+        background: #fff;
+    }
+
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .skill-checkbox {
+        display: none;
+    }
+
+    .skill-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .skill-checkbox:checked+.skill-label {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4>{% if internship %}Edit Internship{% else %}Add New Internship{% endif %}</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                <!-- Company Details -->
+                <div class="mb-3">
+                    <label for="company_name" class="form-label">Company Name</label>
+                    <input type="text" class="form-control" id="company_name" name="company_name" required
+                        value="{{ internship.company_name if internship else '' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="project_name" class="form-label">Project Name</label>
+                    <input type="text" class="form-control" id="project_name" name="project_name" required
+                        value="{{ internship.project_name if internship else '' }}">
+                </div>
+
+                <!-- Dates -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required
+                                value="{{ internship.start_date.strftime('%Y-%m-%d') if internship and internship.start_date else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required
+                                value="{{ internship.end_date.strftime('%Y-%m-%d') if internship and internship.end_date else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="joining_date" class="form-label">Joining Date</label>
+                            <input type="date" class="form-control" id="joining_date" name="joining_date" required
+                                value="{{ internship.joining_date.strftime('%Y-%m-%d') if internship and internship.joining_date else '' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Semester -->
+                <div class="mb-3">
+                    <label for="semester" class="form-label">Semester</label>
+                    <select class="form-select" id="semester" name="semester" required>
+                        <option value="">Select Semester</option>
+                        {% for i in range(1, 9) %}
+                        <option value="Semester {{ i }}" {% if internship and internship.semester=='Semester ' +
+                            i|string %}selected{% endif %}>
+                            Semester {{ i }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Hours per Week -->
+                <div class="mb-3">
+                    <label for="hours_per_week" class="form-label">Hours per Week</label>
+                    <input type="number" class="form-control" id="hours_per_week" name="hours_per_week" min="1" max="40"
+                        required value="{{ internship.hours_per_week if internship else '' }}">
+                </div>
+
+                <!-- Skills -->
+                <div class="mb-3">
+                    <label for="skills" class="form-label">Skills (comma-separated)</label>
+                    <input type="text" class="form-control" id="skills" name="skills" required
+                        value="{{ internship.skills|join(', ') if internship and internship.skills else '' }}"
+                        placeholder="e.g., Python, Flask, Java, C++">
+                </div>
+
+                <!-- Documents -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="offer_letter" class="form-label">Offer Letter (Image)</label>
+                            <input type="file" class="form-control" id="offer_letter" name="offer_letter"
+                                accept="image/*">
+                            <div class="form-text">Upload an image of your offer letter (JPG, PNG, or GIF format)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="completion_letter" class="form-label">Completion Letter (Image)</label>
+                            <input type="file" class="form-control" id="completion_letter" name="completion_letter"
+                                accept="image/*">
+                            <div class="form-text">Upload an image of your completion letter (JPG, PNG, or GIF format)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        {% if internship %}Update Internship{% else %}Submit Internship Details{% endif %}
+                    </button>
+                    <a href="{{ url_for('student.internships') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    // Set default dates to today
+    document.addEventListener('DOMContentLoaded', function () {
+        const today = new Date().toISOString().split('T')[0];
+        if (!document.getElementById('start_date').value) {
+            document.getElementById('start_date').value = today;
+        }
+        if (!document.getElementById('end_date').value) {
+            document.getElementById('end_date').value = today;
+        }
+        if (!document.getElementById('joining_date').value) {
+            document.getElementById('joining_date').value = today;
+        }
+    });
+
+    // Validate dates
+    document.getElementById('end_date').addEventListener('change', function () {
+        const startDate = new Date(document.getElementById('start_date').value);
+        const endDate = new Date(this.value);
+        if (endDate <= startDate) {
+            alert('End date must be after start date');
+            this.value = '';
+        }
+    });
+
+    document.getElementById('joining_date').addEventListener('change', function () {
+        const startDate = new Date(document.getElementById('start_date').value);
+        const joiningDate = new Date(this.value);
+        if (joiningDate > startDate) {
+            alert('Joining date must be on or before start date');
+            this.value = '';
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

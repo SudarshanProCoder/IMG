@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Shah and Anchor College - Internship Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        url("{{ url_for('static', filename='images/college.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0;
+        margin-top: -1.5rem;
+    }
+
+    .feature-card {
+        transition: transform 0.3s ease;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #0d6efd;
+    }
+
+    .stats-section {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #0d6efd;
+    }
+
+    .testimonial-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .testimonial-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+    }
+
+    .cta-section {
+        background-color: #0d6efd;
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 mb-4">Welcome to Shah and Anchor College</h1>
+        <p class="lead mb-5">Empowering students through quality education and practical experience</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg">Get Started</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Login</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Our Internship Portal?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-laptop-code feature-icon"></i>
+                        <h3 class="card-title">Track Internships</h3>
+                        <p class="card-text">Easily manage and track your internship experiences with our intuitive
+                            platform.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-certificate feature-icon"></i>
+                        <h3 class="card-title">Activity Management</h3>
+                        <p class="card-text">Record and showcase your extracurricular activities and achievements.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-alt feature-icon"></i>
+                        <h3 class="card-title">Digital Marksheet</h3>
+                        <p class="card-text">Generate and download your comprehensive digital marksheet anytime.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">1000+</div>
+                    <p>Active Students</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">500+</div>
+                    <p>Internships</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">200+</div>
+                    <p>Companies</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">50+</div>
+                    <p>Mentors</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">What Our Students Say</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <img src="{{ url_for('static', filename='images/student1.jpg') }}" alt="Student"
+                        class="testimonial-image">
+                    <h4>John Doe</h4>
+                    <p class="text-muted">Computer Science</p>
+                    <p>"The internship portal made it easy to track my progress and showcase my achievements to
+                        potential employers."</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <img src="{{ url_for('static', filename='images/student2.jpg') }}" alt="Student"
+                        class="testimonial-image">
+                    <h4>Jane Smith</h4>
+                    <p class="text-muted">Information Technology</p>
+                    <p>"I love how organized everything is. The digital marksheet feature is a game-changer!"</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <img src="{{ url_for('static', filename='images/student3.jpg') }}" alt="Student"
+                        class="testimonial-image">
+                    <h4>Mike Johnson</h4>
+                    <p class="text-muted">Electronics</p>
+                    <p>"The mentor support system is excellent. They provide valuable guidance throughout the internship
+                        process."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="mb-4">Ready to Start Your Journey?</h2>
+        <p class="lead mb-4">Join our community of students and take the first step towards your successful career.</p>
+        <a href="{{ url_for('auth.signup') }}" class="btn btn-light btn-lg">Sign Up Now</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Add animation on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeIn');
+            }
+        });
+    });
+
+    document.querySelectorAll('.feature-card, .stat-card, .testimonial-card').forEach((el) => observer.observe(el));
+</script>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .login-header {
+        background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
+        url("{{ url_for('static', filename='images/login-bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 1.5rem 1rem;
+        margin: -1rem -1rem 1.5rem -1rem;
+        border-radius: 0;
+    }
+
+    @media (min-width: 768px) {
+        .login-header {
+            padding: 2rem 1.5rem;
+            margin: -1rem -1rem 1.5rem -1rem;
+            border-radius: 0 0 1rem 1rem;
+        }
+    }
+
+    .login-header h1 {
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+        position: relative;
+    }
+
+    .login-header p {
+        opacity: 0.9;
+        position: relative;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    .login-form {
+        padding: 1.5rem;
+    }
+
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .form-floating>.form-control {
+        padding: 0.75rem 0.75rem;
+        height: calc(3rem + 2px);
+        line-height: 1.25;
+        font-size: 0.9rem;
+    }
+
+    .form-floating>label {
+        padding: 0.75rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #dee2e6;
+        font-size: 0.9rem;
+    }
+
+    .login-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .login-footer a:hover {
+        color: var(--secondary-color);
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-check {
+        margin: 1rem 0;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-card animate__animated animate__fadeIn">
+                    <div class="login-header">
+                        <h1>Welcome Back</h1>
+                        <p>Sign in to your account</p>
+                    </div>
+                    <div class="login-form">
+                        <form method="POST" action="{{ url_for('auth.login') }}">
+                            {{ form.hidden_tag() }}
+                            <div class="form-floating">
+                                {{ form.email(class="form-control", placeholder="Email") }}
+                                <label for="email">Email</label>
+                                {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-floating">
+                                {{ form.password(class="form-control", placeholder="Password") }}
+                                <label for="password">Password</label>
+                                {% if form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-check">
+                                {{ form.remember(class="form-check-input") }}
+                                <label class="form-check-label" for="remember">
+                                    Remember me
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                        </form>
+
+                        <div class="login-footer">
+                            <p class="mb-0">Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation to form elements on focus
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', function () {
+            this.parentElement.classList.add('animate__animated', 'animate__pulse');
+        });
+
+        input.addEventListener('blur', function () {
+            this.parentElement.classList.remove('animate__animated', 'animate__pulse');
+        });
+    });
+</script>
+{% endblock %}

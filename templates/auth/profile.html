@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Shah and Anchor College{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Profile Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Profile Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="profile-image-container mb-3">
+                            {% if current_user.profile_image %}
+                            <img src="{{ current_user.profile_image }}" alt="Profile Image" class="profile-image">
+                            {% else %}
+                            <div class="avatar-placeholder">
+                                <i class="fas fa-user fa-3x"></i>
+                            </div>
+                            {% endif %}
+                            <div class="profile-image-overlay">
+                                <label for="profile_image" class="btn btn-sm btn-light">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <h5 class="mb-1">{{ current_user.full_name }}</h5>
+                        <p class="text-muted mb-0">{{ current_user.role|title }}</p>
+                    </div>
+                    <hr>
+                    <div class="profile-info">
+                        <p><strong><i class="fas fa-id-card me-2"></i>Student ID:</strong><br>
+                            {{ current_user.student_id }}</p>
+                        <p><strong><i class="fas fa-envelope me-2"></i>Email:</strong><br>
+                            {{ current_user.email }}</p>
+                        <p><strong><i class="fas fa-phone me-2"></i>Phone:</strong><br>
+                            {{ current_user.phone }}</p>
+                        <p><strong><i class="fas fa-graduation-cap me-2"></i>Department:</strong><br>
+                            {{ current_user.department }}</p>
+                        <p><strong><i class="fas fa-calendar me-2"></i>Batch:</strong><br>
+                            {{ current_user.batch }}</p>
+                        <p><strong><i class="fas fa-book me-2"></i>Semester:</strong><br>
+                            {{ current_user.semester }}</p>
+                        <p><strong><i class="fas fa-venus-mars me-2"></i>Gender:</strong><br>
+                            {{ current_user.gender|title }}</p>
+                        <p><strong><i class="fas fa-birthday-cake me-2"></i>Date of Birth:</strong><br>
+                            {{ current_user.date_of_birth.strftime('%d %b %Y') if current_user.date_of_birth }}</p>
+                        <p><strong><i class="fas fa-map-marker-alt me-2"></i>Address:</strong><br>
+                            {{ current_user.address }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <!-- Edit Profile Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('auth.profile') }}" enctype="multipart/form-data">
+                        <input type="file" id="profile_image" name="profile_image" accept="image/*" class="d-none"
+                            onchange="previewImage(this)">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="full_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name"
+                                    value="{{ current_user.full_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    value="{{ current_user.email }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone"
+                                    value="{{ current_user.phone }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="department" class="form-label">Department</label>
+                                <input type="text" class="form-control" id="department" name="department"
+                                    value="{{ current_user.department }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="batch" class="form-label">Batch</label>
+                                <input type="text" class="form-control" id="batch" name="batch"
+                                    value="{{ current_user.batch }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="semester" class="form-label">Semester</label>
+                                <input type="number" class="form-control" id="semester" name="semester"
+                                    value="{{ current_user.semester }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="male" {% if current_user.gender=='male' %}selected{% endif %}>Male
+                                    </option>
+                                    <option value="female" {% if current_user.gender=='female' %}selected{% endif %}>
+                                        Female</option>
+                                    <option value="other" {% if current_user.gender=='other' %}selected{% endif %}>Other
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
+                                    value="{{ current_user.date_of_birth.strftime('%Y-%m-%d') if current_user.date_of_birth }}"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3"
+                                required>{{ current_user.address }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Change Password Form -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Change Password</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('auth.change_password') }}">
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-image-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+    }
+
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        background-color: #e9ecef;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .profile-image-overlay {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .profile-image-overlay:hover {
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .profile-info p {
+        margin-bottom: 1rem;
+    }
+
+    .profile-info strong {
+        color: #495057;
+    }
+
+    .profile-info i {
+        width: 20px;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const container = document.querySelector('.profile-image-container');
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'profile-image';
+                img.alt = 'Profile Image';
+
+                // Remove existing image or placeholder
+                const existingImg = container.querySelector('img');
+                const placeholder = container.querySelector('.avatar-placeholder');
+                if (existingImg) existingImg.remove();
+                if (placeholder) placeholder.remove();
+
+                // Insert new image before the overlay
+                const overlay = container.querySelector('.profile-image-overlay');
+                container.insertBefore(img, overlay);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if activity else 'New' }} Activity - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--secondary-color);
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+    }
+
+    .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .btn-submit {
+        background: var(--gradient-primary);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    }
+
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .skill-checkbox {
+        display: none;
+    }
+
+    .skill-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .skill-checkbox:checked+.skill-label {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ 'Edit' if activity else 'New' }} Activity</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="activity_type" class="form-label">Activity Type</label>
+                            <select class="form-select" id="activity_type" name="activity_type" required>
+                                <option value="">Select Activity Type</option>
+                                <option value="workshop" {% if activity and activity.activity_type=='workshop'
+                                    %}selected{% endif %}>Workshop</option>
+                                <option value="seminar" {% if activity and activity.activity_type=='seminar'
+                                    %}selected{% endif %}>Seminar</option>
+                                <option value="competition" {% if activity and activity.activity_type=='competition'
+                                    %}selected{% endif %}>Competition</option>
+                                <option value="project" {% if activity and activity.activity_type=='project'
+                                    %}selected{% endif %}>Project</option>
+                                <option value="other" {% if activity and activity.activity_type=='other' %}selected{%
+                                    endif %}>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title"
+                                value="{{ activity.title if activity else '' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                required>{{ activity.description if activity else '' }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="start_date" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date"
+                                        value="{{ activity.start_date.strftime('%Y-%m-%d') if activity else '' }}"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="end_date" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date"
+                                        value="{{ activity.end_date.strftime('%Y-%m-%d') if activity else '' }}"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="semester" class="form-label">Semester</label>
+                                    <select class="form-select" id="semester" name="semester" required>
+                                        <option value="">Select Semester</option>
+                                        {% for i in range(1, 9) %}
+                                        <option value="{{ i }}" {% if activity and activity.semester==i|string
+                                            %}selected{% endif %}>
+                                            Semester {{ i }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="hours_per_week" class="form-label">Hours per Week</label>
+                                    <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
+                                        value="{{ activity.hours_per_week if activity else '' }}" min="1" max="40"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="skills" class="form-label">Skills</label>
+                            <input type="text" class="form-control" id="skills" name="skills"
+                                value="{{ activity.skills|join(', ') if activity and activity.skills else '' }}"
+                                placeholder="Enter skills separated by commas">
+                            <div class="form-text">Enter skills separated by commas (e.g., Leadership, Teamwork,
+                                Communication)</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="certificate" class="form-label">Certificate (Image)</label>
+                            <input type="file" class="form-control" id="certificate" name="certificate" accept="image/*"
+                                {% if not activity %}required{% endif %}>
+                            <div class="form-text">Upload certificate as image file (JPG, PNG, GIF)</div>
+                            {% if activity and activity.certificate_url %}
+                            <div class="mt-2">
+                                <img src="{{ activity.certificate_url }}" alt="Current Certificate"
+                                    class="img-thumbnail" style="max-height: 200px;">
+                                <div class="form-text">Current certificate</div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('student.activities') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                {{ 'Update' if activity else 'Submit' }} Activity
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Validate dates
+    document.getElementById('start_date').addEventListener('change', validateDates);
+    document.getElementById('end_date').addEventListener('change', validateDates);
+
+    function validateDates() {
+        const startDate = new Date(document.getElementById('start_date').value);
+        const endDate = new Date(document.getElementById('end_date').value);
+
+        if (startDate && endDate && startDate > endDate) {
+            alert('End date must be after start date');
+            document.getElementById('end_date').value = '';
+        }
+    }
+
+    // Preview image before upload
+    document.getElementById('certificate').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file (JPG, PNG, GIF)');
+                this.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const preview = document.createElement('img');
+                preview.src = e.target.result;
+                preview.className = 'img-thumbnail mt-2';
+                preview.style.maxHeight = '200px';
+
+                const container = document.getElementById('certificate').parentElement;
+                const existingPreview = container.querySelector('img');
+                if (existingPreview) {
+                    container.removeChild(existingPreview);
+                }
+                container.appendChild(preview);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

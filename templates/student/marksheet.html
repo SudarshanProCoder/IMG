@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Marksheet - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .marksheet-header {
+        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .credit-points-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .credit-points-value {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .credit-points-label {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .activity-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .activity-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .activity-header {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 15px 15px 0 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .activity-body {
+        padding: 1.5rem;
+    }
+
+    .activity-footer {
+        padding: 1rem 1.5rem;
+        background: #f8f9fa;
+        border-radius: 0 0 15px 15px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-approved {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .activity-details {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .activity-details i {
+        width: 20px;
+        color: var(--primary-color);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--secondary-color);
+    }
+
+    .credit-points {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .credit-points i {
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Student Information</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Name:</strong> {{ current_user.full_name }}</p>
+                    <p><strong>Student ID:</strong> {{ current_user.student_id }}</p>
+                    <p><strong>Department:</strong> {{ current_user.department }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Batch:</strong> {{ current_user.batch }}</p>
+                    <p><strong>Email:</strong> {{ current_user.email }}</p>
+                    <p><strong>Total Credit Points:</strong> {{ total_credit_points }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Internships Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Internships</h4>
+        </div>
+        <div class="card-body">
+            {% if internships %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Project</th>
+                            <th>Semester</th>
+                            <th>Duration (Months)</th>
+                            <th>Total Hours</th>
+                            <th>Credit Points</th>
+                            <th>Skills Gained</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for internship in internships %}
+                        {% if internship.status == 'approved' %}
+                        <tr>
+                            <td>{{ internship.company_name }}</td>
+                            <td>{{ internship.project_name }}</td>
+                            <td>{{ internship.semester }}</td>
+                            <td>{{ internship.duration_months }}</td>
+                            <td>{{ internship.total_hours }}</td>
+                            <td>{{ (internship.total_hours / 40)|round(1) }}</td>
+                            <td>
+                                {% if internship.skills %}
+                                <ul class="list-unstyled mb-0">
+                                    {% for skill in internship.skills %}
+                                    <li>{{ skill }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Approved</span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No approved internships found.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Activities Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Activities</h4>
+        </div>
+        <div class="card-body">
+            {% if activities %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Activity Type</th>
+                            <th>Title</th>
+                            <th>Semester</th>
+                            <th>Hours per Week</th>
+                            <th>Credit Points</th>
+                            <th>Skills Gained</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in activities %}
+                        {% if activity.status == 'approved' %}
+                        <tr>
+                            <td>{{ activity.activity_type|title }}</td>
+                            <td>{{ activity.title }}</td>
+                            <td>{{ activity.semester }}</td>
+                            <td>{{ activity.hours_per_week }}</td>
+                            <td>{{ (activity.hours_per_week / 10)|round(1) }}</td>
+                            <td>
+                                {% if activity.skills %}
+                                <ul class="list-unstyled mb-0">
+                                    {% for skill in activity.skills %}
+                                    <li>{{ skill }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Approved</span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No approved activities found.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Summary</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Total Internship Hours:</strong>
+                        {{ internships|selectattr('status', 'equalto', 'approved')|map(attribute='total_hours')|sum }}
+                    </p>
+                    <p><strong>Total Activity Hours per Week:</strong>
+                        {{ activities|selectattr('status', 'equalto', 'approved')|map(attribute='hours_per_week')|sum }}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Total Credit Points:</strong> {{ total_credit_points }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.role == 'mentor' %}
+    <div class="mt-4 text-center">
+        <button class="btn btn-success me-2">
+            <i class="fas fa-check"></i> Approve Marksheet
+        </button>
+    </div>
+    {% endif %}
+
+    <div class="mt-4 text-center">
+        <a href="{{ url_for('student.download_marksheet') }}" class="btn btn-primary">
+            <i class="fas fa-download"></i> Download Marksheet
+        </a>
+    </div>
+</div>
+{% endblock %}
