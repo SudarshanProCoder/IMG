@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: flask-app
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.9.16 

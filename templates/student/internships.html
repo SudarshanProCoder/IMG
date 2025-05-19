@@ -5,86 +5,230 @@
 {% block extra_css %}
 <style>
     .internship-card {
-        transition: all 0.3s ease;
-        border: none;
+        background: linear-gradient(145deg, #ffffff, #f5f5f5);
         border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .internship-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #00ADB5, #0d6efd);
     }
 
     .internship-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.25rem;
+    }
+
+    .card-header h5 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+        color: #2c3e50;
     }
 
     .status-badge {
         padding: 0.5rem 1rem;
-        border-radius: 50px;
+        border-radius: 20px;
         font-size: 0.875rem;
         font-weight: 500;
-    }
-
-    .status-pending {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-
-    .status-approved {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .status-rejected {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .internship-header {
-        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
-        color: white;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
-    }
-
-    .add-internship-btn {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: var(--primary-color);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
     }
 
-    .add-internship-btn:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
-        color: white;
+    .status-badge.bg-success {
+        background: linear-gradient(45deg, #198754, #28a745);
     }
 
-    .internship-details {
-        font-size: 0.9rem;
+    .status-badge.bg-warning {
+        background: linear-gradient(45deg, #ffc107, #ff9800);
+        color: #000;
+    }
+
+    .status-badge.bg-danger {
+        background: linear-gradient(45deg, #dc3545, #c82333);
+    }
+
+    .status-badge:hover {
+        transform: scale(1.05);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-body strong {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .card-body p {
         color: #6c757d;
+        margin-bottom: 0.5rem;
     }
 
-    .internship-details i {
-        width: 20px;
-        color: var(--primary-color);
+    .skill-badge {
+        background: linear-gradient(145deg, #e9ecef, #f8f9fa);
+        color: #495057;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .skill-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .document-link {
-        color: var(--primary-color);
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        color: #0d6efd;
         text-decoration: none;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
     }
 
     .document-link:hover {
-        color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: #0a58ca;
+        background: linear-gradient(145deg, #f8f9fa, #ffffff);
+    }
+
+    .card-footer {
+        background: transparent;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.5rem;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-edit:hover,
+    .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-edit {
+        background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        border: none;
+        color: white;
+    }
+
+    .btn-delete {
+        background: linear-gradient(45deg, #dc3545, #c82333);
+        border: none;
+        color: white;
+    }
+
+    .btn-add-internship {
+        color: white;
+
+        background: linear-gradient(45deg, #222831, #393E46);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add-internship:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 767px) {
+
+        .card-header,
+        .card-body,
+        .card-footer {
+            padding: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .skill-badge {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        .document-link {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Animation classes */
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
 </style>
 {% endblock %}
@@ -92,8 +236,8 @@
 {% block content %}
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>My Internships</h2>
-        <a href="{{ url_for('student.new_internship') }}" class="btn btn-primary">
+        <h2 class="animate-fade-in">My Internships</h2>
+        <a href="{{ url_for('student.new_internship') }}" class="btn btn-add-internship animate-fade-in">
             <i class="fas fa-plus"></i> Add New Internship
         </a>
     </div>
@@ -102,11 +246,11 @@
     <div class="row">
         {% for internship in internships %}
         <div class="col-md-6 mb-4">
-            <div class="card h-100">
+            <div class="internship-card animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ internship.company_name }}</h5>
+                    <h5>{{ internship.company_name }}</h5>
                     <span
-                        class="badge {% if internship.status == 'approved' %}bg-success{% elif internship.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                        class="status-badge {% if internship.status == 'approved' %}bg-success{% elif internship.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
                         {{ internship.status|title }}
                     </span>
                 </div>
@@ -137,9 +281,9 @@
                     {% if internship.skills %}
                     <div class="mb-3">
                         <strong>Skills:</strong>
-                        <div class="mt-1">
+                        <div class="mt-2">
                             {% for skill in internship.skills %}
-                            <span class="badge bg-secondary me-1">{{ skill }}</span>
+                            <span class="skill-badge">{{ skill }}</span>
                             {% endfor %}
                         </div>
                     </div>
@@ -148,14 +292,12 @@
                         <strong>Documents:</strong>
                         <div class="mt-2">
                             {% if internship.offer_letter_url %}
-                            <a href="{{ internship.offer_letter_url }}" class="btn btn-sm btn-outline-primary me-2"
-                                target="_blank">
+                            <a href="{{ internship.offer_letter_url }}" class="document-link" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Offer Letter
                             </a>
                             {% endif %}
                             {% if internship.completion_letter_url %}
-                            <a href="{{ internship.completion_letter_url }}" class="btn btn-sm btn-outline-primary"
-                                target="_blank">
+                            <a href="{{ internship.completion_letter_url }}" class="document-link" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Completion Letter
                             </a>
                             {% endif %}
@@ -166,11 +308,10 @@
                 <div class="card-footer">
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{{ url_for('student.edit_internship', internship_id=internship.id) }}"
-                            class="btn btn-sm btn-primary">
+                            class="btn btn-edit">
                             <i class="fas fa-edit"></i> Edit
                         </a>
-                        <button type="button" class="btn btn-sm btn-danger"
-                            onclick="confirmDelete('{{ internship.id }}')">
+                        <button type="button" class="btn btn-delete" onclick="confirmDelete('{{ internship.id }}')">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
@@ -181,7 +322,7 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="alert alert-info">
+    <div class="alert alert-info animate-fade-in">
         <i class="fas fa-info-circle"></i> No internships found. Start by adding a new internship!
     </div>
     {% endif %}
@@ -217,5 +358,16 @@
         form.action = "{{ url_for('student.delete_internship', internship_id='__ID__') }}".replace('__ID__', internshipId);
         modal.show();
     }
+
+    // Add animation to cards
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            }
+        });
+    });
+
+    document.querySelectorAll('.internship-card').forEach((el) => observer.observe(el));
 </script>
 {% endblock %}
