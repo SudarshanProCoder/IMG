@@ -44,7 +44,7 @@ class SignupForm(FlaskForm):
     ])
     branch = SelectField('Branch', choices=[
         ('', 'Select Branch'),
-        ('computer_science', 'Computer Science'),
+        ('computer_science', 'Computer Engineering'),
         ('information_technology', 'Information Technology'),
         ('electronics', 'Electronics'),
         ('electrical', 'Electrical'),
@@ -58,9 +58,7 @@ class SignupForm(FlaskForm):
         ('3', 'Third Year'),
         ('4', 'Fourth Year')
     ])
-    mentor_email = StringField('Mentor Email', validators=[
-        Email()
-    ])
+    mentor_email = StringField('Mentor Email')
     submit = SubmitField('Sign Up')
 
     def validate_email(self, email):
@@ -85,7 +83,17 @@ class SignupForm(FlaskForm):
                 raise ValidationError('Registration number already registered.')
 
     def validate_mentor_email(self, mentor_email):
-        if self.role.data == 'student' and mentor_email.data:
+        if self.role.data == 'student':
+            from wtforms.validators import Email
+            # Apply Email validator only for students
+            email_validator = Email()
+            email_validator(self, mentor_email)
+            if not mentor_email.data:
+                raise ValidationError('Mentor email is required for students.')
             mentor = User.get_by_email(mentor_email.data)
             if not mentor or mentor.role != 'mentor':
-                raise ValidationError('Invalid mentor email. Please enter a valid mentor email address.') 
+                raise ValidationError('Invalid mentor email. Please enter a valid mentor email address.')
+
+    def validate_role(self, role):
+        if role.data not in ['student', 'mentor']:
+            raise ValidationError('Please select a valid role.') 

@@ -21,7 +21,7 @@
 
     .signup-header {
         background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
-        url("{{ url_for('static', filename='images/signup-bg.jpg') }}");
+        url("{{ url_for('static', filename='images/demo.png') }}");
         background-size: cover;
         background-position: center;
         color: white;
@@ -198,6 +198,25 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="signup-card animate__animated animate__fadeIn">
+                    <!-- Toast notifications for flash messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+                        {% for category, message in messages %}
+                        <div class="toast align-items-center text-bg-{{ 'danger' if category in ['error', 'danger'] else 'success' }} border-0 show mb-2"
+                            role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    {{ message }}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                    data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
                     <div class="signup-header">
                         <h1>Create Account</h1>
                         <p>Join Shah and Anchor College's Internship Portal</p>
@@ -205,6 +224,9 @@
                     <div class="signup-form">
                         <form method="POST" action="{{ url_for('auth.signup') }}">
                             {{ form.hidden_tag() }}
+                            {% if form.errors and form.role.errors %}
+                            <div class="alert alert-danger">{{ form.role.errors[0] }}</div>
+                            {% endif %}
 
                             <div class="role-selector">
                                 <label class="form-label">Select your role</label>
@@ -224,7 +246,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <input type="hidden" name="role" id="role" value="student">
+                                <input type="hidden" name="role" id="role" value="">
                             </div>
 
                             <!-- Basic Information -->
@@ -412,5 +434,22 @@
 
     // Select student role by default
     document.querySelector('[data-role="student"]').click();
+
+    // Prevent form submission if no role is selected
+    document.querySelector('form').addEventListener('submit', function (e) {
+        if (!document.getElementById('role').value) {
+            alert('Please select a role.');
+            e.preventDefault();
+        }
+    });
+
+    // Bootstrap toast auto-show
+    window.addEventListener('DOMContentLoaded', function () {
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        toastElList.forEach(function (toastEl) {
+            var toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+            toast.show();
+        });
+    });
 </script>
 {% endblock %}
