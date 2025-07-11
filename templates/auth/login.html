@@ -98,6 +98,21 @@
         margin: 1rem 0;
         font-size: 0.9rem;
     }
+
+    input,
+    textarea,
+    select {
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 </style>
 {% endblock %}
 
@@ -106,7 +121,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
-                <div class="login-card animate__animated animate__fadeIn">
+                <div class="login-card themed-bg themed-text animate__animated animate__fadeIn">
                     <div class="login-header">
                         <h1>Welcome Back</h1>
                         <p>Sign in to your account</p>
@@ -115,7 +130,7 @@
                         <form method="POST" action="{{ url_for('auth.login') }}">
                             {{ form.hidden_tag() }}
                             <div class="form-floating">
-                                {{ form.email(class="form-control", placeholder="Email") }}
+                                {{ form.email(class="form-control themed-bg themed-text", placeholder="Email") }}
                                 <label for="email">Email</label>
                                 {% if form.email.errors %}
                                 <div class="invalid-feedback d-block">
@@ -127,7 +142,7 @@
                             </div>
 
                             <div class="form-floating">
-                                {{ form.password(class="form-control", placeholder="Password") }}
+                                {{ form.password(class="form-control themed-bg themed-text", placeholder="Password") }}
                                 <label for="password">Password</label>
                                 {% if form.password.errors %}
                                 <div class="invalid-feedback d-block">

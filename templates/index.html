@@ -68,6 +68,13 @@
         padding: 80px 0;
         text-align: center;
     }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 </style>
 {% endblock %}
 
@@ -90,7 +97,7 @@
         <h2 class="text-center mb-5">Why Choose Our Internship Portal?</h2>
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card feature-card h-100">
+                <div class="card feature-card themed-bg themed-text h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-laptop-code feature-icon"></i>
                         <h3 class="card-title">Track Internships</h3>
@@ -100,7 +107,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card feature-card h-100">
+                <div class="card feature-card themed-bg themed-text h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-certificate feature-icon"></i>
                         <h3 class="card-title">Activity Management</h3>
@@ -109,7 +116,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card feature-card h-100">
+                <div class="card feature-card themed-bg themed-text h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-file-alt feature-icon"></i>
                         <h3 class="card-title">Digital Marksheet</h3>
@@ -126,25 +133,25 @@
     <div class="container">
         <div class="row">
             <div class="col-md-3">
-                <div class="stat-card">
+                <div class="card stat-card themed-bg themed-text">
                     <div class="stat-number">1000+</div>
                     <p>Active Students</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card">
+                <div class="card stat-card themed-bg themed-text">
                     <div class="stat-number">500+</div>
                     <p>Internships</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card">
+                <div class="card stat-card themed-bg themed-text">
                     <div class="stat-number">200+</div>
                     <p>Companies</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card">
+                <div class="card stat-card themed-bg themed-text">
                     <div class="stat-number">50+</div>
                     <p>Mentors</p>
                 </div>
@@ -159,7 +166,7 @@
         <h2 class="text-center mb-5">What Our Students Say</h2>
         <div class="row">
             <div class="col-md-4">
-                <div class="testimonial-card">
+                <div class="card testimonial-card themed-bg themed-text">
                     <img src="{{ url_for('static', filename='images/student1.png') }}" alt="Student"
                         class="testimonial-image">
                     <h4>Sudarshan Date</h4>
@@ -169,7 +176,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="testimonial-card">
+                <div class="card testimonial-card themed-bg themed-text">
                     <img src="{{ url_for('static', filename='images/student1.png') }}" alt="Student"
                         class="testimonial-image">
                     <h4>Krish Shah</h4>
@@ -178,7 +185,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="testimonial-card">
+                <div class="card testimonial-card themed-bg themed-text">
                     <img src="{{ url_for('static', filename='images/student1.png') }}" alt="Student"
                         class="testimonial-image">
                     <h4>Aryaan Gala</h4>

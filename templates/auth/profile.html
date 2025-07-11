@@ -8,7 +8,7 @@
         <div class="col-md-4">
             <!-- Profile Card -->
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header themed-bg themed-text">
                     <h4 class="mb-0">Profile Information</h4>
                 </div>
                 <div class="card-body">
@@ -17,9 +17,8 @@
                             {% if current_user.profile_image %}
                             <img src="{{ current_user.profile_image }}" alt="Profile Image" class="profile-image">
                             {% else %}
-                            <div class="avatar-placeholder">
-                                <i class="fas fa-user fa-3x"></i>
-                            </div>
+                            <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Profile Image"
+                                class="profile-image">
                             {% endif %}
                             <div class="profile-image-overlay">
                                 <label for="profile_image" class="btn btn-sm btn-light">
@@ -58,7 +57,7 @@
         <div class="col-md-8">
             <!-- Edit Profile Form -->
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header themed-bg themed-text">
                     <h4 class="mb-0">Edit Profile</h4>
                 </div>
                 <div class="card-body">
@@ -139,7 +138,7 @@
 
             <!-- Change Password Form -->
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header themed-bg themed-text">
                     <h4 class="mb-0">Change Password</h4>
                 </div>
                 <div class="card-body">
@@ -222,6 +221,16 @@
     .profile-info i {
         width: 20px;
         color: var(--primary-color);
+    }
+
+    .themed-bg {
+        background: var(--card-bg) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .themed-text {
+        color: var(--text-color) !important;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 </style>
 {% endblock %}

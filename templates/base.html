@@ -23,11 +23,30 @@
             --accent-color: #00ADB5;
             --gradient-primary: linear-gradient(135deg, #222831 0%, #393E46 100%);
             --gradient-secondary: linear-gradient(135deg, #222831 0%, #393E46 100%);
+            --background-color: #f8f9fa;
+            --text-color: #222831;
+            --card-bg: #fff;
+            --footer-bg: var(--gradient-secondary);
+            --footer-text: var(--accent-color);
+        }
+
+        body[data-theme='dark'] {
+            --primary-color: #00ADB5;
+            --secondary-color: #393E46;
+            --accent-color: #00FFF5;
+            --gradient-primary: linear-gradient(135deg, #232526 0%, #414345 100%);
+            --gradient-secondary: linear-gradient(135deg, #232526 0%, #414345 100%);
+            --background-color: #18191A;
+            --text-color: #F5F6FA;
+            --card-bg: #23272b;
+            --footer-bg: var(--gradient-secondary);
+            --footer-text: var(--accent-color);
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
 
         .navbar {
@@ -79,6 +98,8 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            background: var(--card-bg);
+            color: var(--text-color);
         }
 
         .card:hover {
@@ -87,8 +108,8 @@
         }
 
         .footer {
-            background: var(--gradient-secondary);
-            color: var(--accent-color);
+            background: var(--footer-bg);
+            color: var(--footer-text);
             padding: 3rem 0;
             margin-top: 4rem;
         }
@@ -160,11 +181,12 @@
 
         .page-header {
             background: var(--gradient-primary);
-            color: white;
+            color: var(--text-color);
             padding: 4rem 0;
             margin-bottom: 3rem;
             position: relative;
             overflow: hidden;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .page-header::before {
@@ -188,6 +210,35 @@
                 background-position: 100% 100%;
             }
         }
+
+        .footer-link {
+            color: var(--footer-text);
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer-link:hover {
+            color: var(--accent-color);
+        }
+
+        body,
+        .card,
+        .navbar,
+        .footer,
+        .form-control,
+        .page-header {
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Themed helpers for full theme switching */
+        .themed-bg {
+            background: var(--card-bg) !important;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .themed-text {
+            color: var(--text-color) !important;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -208,6 +259,13 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Dark/Light Mode Toggle Button -->
+                    <li class="nav-item d-flex align-items-center me-2">
+                        <button id="theme-toggle" class="btn btn-outline-light" title="Toggle dark/light mode"
+                            style="border-radius: 50%; padding: 0.4rem 0.7rem;">
+                            <i id="theme-icon" class="fas fa-moon"></i>
+                        </button>
+                    </li>
                     {% if current_user.is_authenticated %}
                     {% if current_user.role == 'admin' %}
                     <li class="nav-item">
@@ -334,19 +392,19 @@
                 <div class="col-md-4">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">About Us</a></li>
-                        <li><a href="#" class="text-white">Academic Programs</a></li>
-                        <li><a href="#" class="text-white">Student Life</a></li>
-                        <li><a href="#" class="text-white">Contact</a></li>
+                        <li><a href="#" class="footer-link">About Us</a></li>
+                        <li><a href="#" class="footer-link">Academic Programs</a></li>
+                        <li><a href="#" class="footer-link">Student Life</a></li>
+                        <li><a href="#" class="footer-link">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
                     <h5>Follow Us</h5>
                     <div class="social-links">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="footer-link me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="footer-link me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer-link me-3"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="footer-link"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
@@ -372,6 +430,24 @@
 
         // Show all toasts
         toastList.forEach(toast => toast.show());
+
+        // Theme toggle logic
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            document.getElementById('theme-icon').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        // On load, set theme from localStorage or system preference
+        (function () {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            setTheme(theme);
+        })();
+        document.getElementById('theme-toggle').addEventListener('click', function () {
+            const current = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            setTheme(current);
+        });
     </script>
     {% block extra_js %}{% endblock %}
 </body>

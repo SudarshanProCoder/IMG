@@ -92,6 +92,23 @@
         color: white;
         border-color: var(--primary-color);
     }
+
+    .themed-bg {
+        background: var(--card-bg) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .themed-text {
+        color: var(--text-color) !important;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: rgba(var(--text-color-rgb, 34, 40, 49), 0.7);
+        opacity: 1;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 </style>
 {% endblock %}
 
@@ -99,8 +116,8 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+            <div class="card shadow-sm themed-bg themed-text">
+                <div class="card-header themed-bg themed-text">
                     <h4 class="mb-0">{{ 'Edit' if activity else 'New' }} Activity</h4>
                 </div>
                 <div class="card-body">

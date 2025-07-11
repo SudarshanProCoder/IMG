@@ -278,6 +278,37 @@
         margin-bottom: 1rem;
         color: #2c3e50;
     }
+
+    .themed-text {
+        color: var(--text-color) !important;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .themed-bg {
+        background: var(--card-bg) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input,
+    textarea,
+    select {
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stats-card,
+    .chart-card,
+    .pending-card {
+        margin-bottom: 1.5rem;
+    }
 </style>
 {% endblock %}
 
@@ -288,7 +319,7 @@
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card bg-primary text-white">
+            <div class="card themed-bg themed-text">
                 <div class="card-body">
                     <h5 class="card-title">Total Students</h5>
                     <h2 class="card-text">{{ total_students }}</h2>
@@ -296,7 +327,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-success text-white">
+            <div class="card themed-bg themed-text">
                 <div class="card-body">
                     <h5 class="card-title">Total Mentors</h5>
                     <h2 class="card-text">{{ total_mentors }}</h2>
@@ -304,7 +335,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-info text-white">
+            <div class="card themed-bg themed-text">
                 <div class="card-body">
                     <h5 class="card-title">Total Internships</h5>
                     <h2 class="card-text">{{ total_internships }}</h2>
@@ -312,7 +343,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-warning text-white">
+            <div class="card themed-bg themed-text">
                 <div class="card-body">
                     <h5 class="card-title">Total Activities</h5>
                     <h2 class="card-text">{{ total_activities }}</h2>
@@ -324,7 +355,7 @@
     <!-- Charts Section -->
     <div class="row mb-4">
         <div class="col-md-8">
-            <div class="chart-card">
+            <div class="chart-card themed-bg themed-text">
                 <h5 class="chart-title">Internship & Activity Trends</h5>
                 <div class="chart-container">
                     <canvas id="trendsChart"></canvas>
@@ -332,7 +363,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="chart-card">
+            <div class="chart-card themed-bg themed-text">
                 <h5 class="chart-title">Activity Types Distribution</h5>
                 <div class="chart-container">
                     <canvas id="activityTypesChart"></canvas>
@@ -343,7 +374,7 @@
 
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="chart-card">
+            <div class="chart-card themed-bg themed-text">
                 <h5 class="chart-title">Internship Status Distribution</h5>
                 <div class="chart-container">
                     <canvas id="internshipStatusChart"></canvas>
@@ -351,7 +382,7 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="chart-card">
+            <div class="chart-card themed-bg themed-text">
                 <h5 class="chart-title">Activity Status Distribution</h5>
                 <div class="chart-container">
                     <canvas id="activityStatusChart"></canvas>
@@ -363,8 +394,8 @@
     <!-- Pending Approvals -->
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-warning text-white">
+            <div class="card themed-bg themed-text">
+                <div class="card-header themed-bg themed-text">
                     <h5 class="mb-0">Pending Internships</h5>
                 </div>
                 <div class="card-body">
@@ -374,8 +405,8 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-warning text-white">
+            <div class="card themed-bg themed-text">
+                <div class="card-header themed-bg themed-text">
                     <h5 class="mb-0">Pending Activities</h5>
                 </div>
                 <div class="card-body">
@@ -389,8 +420,8 @@
     <!-- Recent Activities -->
     <div class="row">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
+            <div class="card themed-bg themed-text">
+                <div class="card-header themed-bg themed-text">
                     <h5 class="mb-0">Recent Internships</h5>
                 </div>
                 <div class="card-body">
@@ -417,8 +448,8 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
+            <div class="card themed-bg themed-text">
+                <div class="card-header themed-bg themed-text">
                     <h5 class="mb-0">Recent Activities</h5>
                 </div>
                 <div class="card-body">
@@ -474,159 +505,118 @@
         dark: '#212529'
     };
 
-    // Trends Chart
-    const trendsCtx = document.getElementById('trendsChart').getContext('2d');
-    new Chart(trendsCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: 'Internships',
-                data: [12, 19, 15, 17, 22, 24, 28, 25, 20, 18, 15, 12],
-                borderColor: colors.primary,
-                backgroundColor: colors.primary + '20',
-                tension: 0.4,
-                fill: true
-            }, {
-                label: 'Activities',
-                data: [8, 12, 10, 14, 16, 18, 20, 22, 19, 16, 14, 10],
-                borderColor: colors.success,
-                backgroundColor: colors.success + '20',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
+    // Trends Chart (Line)
+    fetch('/admin/dashboard/data/trends')
+        .then(res => res.json())
+        .then(data => {
+            const ctx = document.getElementById('trendsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Internships',
+                            data: data.internships,
+                            borderColor: colors.primary,
+                            backgroundColor: colors.primary + '20',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Activities',
+                            data: data.activities,
+                            borderColor: colors.success,
+                            backgroundColor: colors.success + '20',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
                 },
-                title: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        x: { grid: { display: false } }
                     }
                 }
-            }
-        }
-    });
+            });
+        });
 
-    // Activity Types Chart
-    const activityTypesCtx = document.getElementById('activityTypesChart').getContext('2d');
-    new Chart(activityTypesCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Workshop', 'Seminar', 'Conference', 'Competition', 'Other'],
-            datasets: [{
-                data: [30, 25, 20, 15, 10],
-                backgroundColor: [
-                    colors.primary,
-                    colors.success,
-                    colors.warning,
-                    colors.danger,
-                    colors.info
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
+    // Activity Types Chart (Doughnut)
+    fetch('/admin/dashboard/data/activity-types')
+        .then(res => res.json())
+        .then(data => {
+            const ctx = document.getElementById('activityTypesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: [colors.primary, colors.success, colors.warning, colors.danger, colors.info, colors.secondary, colors.dark]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
                 }
-            }
-        }
-    });
+            });
+        });
 
-    // Internship Status Chart
-    const internshipStatusCtx = document.getElementById('internshipStatusChart').getContext('2d');
-    new Chart(internshipStatusCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Approved', 'Pending', 'Rejected'],
-            datasets: [{
-                data: [{{ total_internships - pending_internships }}, {{ pending_internships }}, 0],
-        backgroundColor: [
-        colors.success,
-        colors.warning,
-        colors.danger
-    ]
-            }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.1)'
+    // Internship Status Chart (Bar)
+    fetch('/admin/dashboard/data/internship-status')
+        .then(res => res.json())
+        .then(data => {
+            const ctx = document.getElementById('internshipStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: [colors.success, colors.warning, colors.danger]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        x: { grid: { display: false } }
+                    }
                 }
-            },
-            x: {
-                grid: {
-                    display: false
-                }
-            }
-        }
-    }
-    });
+            });
+        });
 
-    // Activity Status Chart
-    const activityStatusCtx = document.getElementById('activityStatusChart').getContext('2d');
-    new Chart(activityStatusCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Approved', 'Pending', 'Rejected'],
-            datasets: [{
-                data: [{{ total_activities - pending_activities }}, {{ pending_activities }}, 0],
-        backgroundColor: [
-        colors.success,
-        colors.warning,
-        colors.danger
-    ]
-            }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.1)'
+    // Activity Status Chart (Bar)
+    fetch('/admin/dashboard/data/activity-status')
+        .then(res => res.json())
+        .then(data => {
+            const ctx = document.getElementById('activityStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: [colors.success, colors.warning, colors.danger]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        x: { grid: { display: false } }
+                    }
                 }
-            },
-            x: {
-                grid: {
-                    display: false
-                }
-            }
-        }
-    }
-    });
+            });
+        });
 </script>
 {% endblock %}

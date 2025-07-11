@@ -229,6 +229,13 @@
             opacity: 1;
         }
     }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: rgba(var(--text-color-rgb, 34, 40, 49), 0.7);
+        opacity: 1;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 </style>
 {% endblock %}
 
@@ -245,7 +252,8 @@
     <div class="row">
         {% for activity in activities %}
         <div class="col-md-6 mb-4">
-            <div class="activity-card animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <div class="activity-card themed-bg themed-text animate-slide-up"
+                style="animation-delay: {{ loop.index0 * 0.1 }}s">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>{{ activity.title }}</h5>
                     <span

@@ -2,7 +2,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch, cm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, Flowable
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from datetime import datetime
@@ -12,6 +12,11 @@ from reportlab.graphics.shapes import Drawing
 from reportlab.graphics import renderPDF
 from reportlab.graphics.shapes import String
 from reportlab.graphics.shapes import Circle
+from reportlab.platypus import Table, TableStyle, Paragraph, Spacer, Image, Flowable
+from reportlab.lib.utils import ImageReader
+from PIL import Image as PILImage
+import requests
+import io
 
 def create_approval_stamp(canvas, x, y):
     """Create a digital approval stamp"""
@@ -306,5 +311,177 @@ def generate_marksheet(student, internships, activities, total_credit_points):
         canvas.saveState()
 
     doc.build(elements, onFirstPage=add_approval_stamp)
+    buffer.seek(0)
+    return buffer 
+
+def generate_internship_pdf(student, internships):
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=36,
+        leftMargin=36,
+        topMargin=36,
+        bottomMargin=36
+    )
+    elements = []
+
+    # --- BACKGROUND COLOR ---
+    def draw_background(canvas, doc):
+        canvas.saveState()
+        # Light yellow/beige background
+        canvas.setFillColorRGB(0.99, 0.96, 0.86)  # RGB for #f8f6e3
+        canvas.rect(0, 0, doc.pagesize[0], doc.pagesize[1], fill=1, stroke=0)
+        canvas.restoreState()
+
+    # --- HEADER ---
+    logo_path = os.path.join('static', 'images', 'college_logo.png')
+    logo_img = None
+    if os.path.exists(logo_path):
+        logo_img = Image(logo_path, width=1.2*inch, height=1.2*inch)
+    college_name = '<b>Shah & Anchor Kutchhi Engineering College</b><br/><font size=10>(An Autonomous Institute Affiliated to University of Mumbai)</font>'
+    course_info = f'<b>Course:</b> {getattr(student, "branch", "")}<br/><b>Permanent Roll No:</b> {getattr(student, "registration_number", "")}<br/>'
+    header_data = [
+        [logo_img if logo_img else '', Paragraph(college_name, getSampleStyleSheet()['Title']), Paragraph(course_info, getSampleStyleSheet()['Normal'])]
+    ]
+    header_table = Table(header_data, colWidths=[1.5*inch, 3.5*inch, 2.0*inch])
+    header_table.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('ALIGN', (1,0), (1,0), 'CENTER'),
+        ('ALIGN', (2,0), (2,0), 'RIGHT'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 12),
+        ('TOPPADDING', (0,0), (-1,-1), 12),
+    ]))
+    elements.append(header_table)
+    elements.append(Spacer(1, 10))
+
+    # --- STUDENT INFO ROW ---
+    # Student photo (left)
+    photo_path = getattr(student, 'profile_image', None)
+    def get_fitted_image(photo_path, width, height):
+        try:
+            if photo_path and photo_path.startswith('http'):
+                response = requests.get(photo_path)
+                img = PILImage.open(io.BytesIO(response.content))
+            else:
+                if not photo_path or not os.path.exists(photo_path):
+                    photo_path = os.path.join('static', 'images', 'default_avatar.png')
+                img = PILImage.open(photo_path)
+            img = img.convert('RGB')
+            img = img.resize((int(width), int(height)), PILImage.LANCZOS)
+            img_byte_arr = io.BytesIO()
+            img.save(img_byte_arr, format='PNG')
+            img_byte_arr.seek(0)
+            return Image(img_byte_arr, width=width, height=height)
+        except Exception:
+            return Image(os.path.join('static', 'images', 'default_avatar.png'), width=width, height=height)
+    photo_img = get_fitted_image(photo_path, 1.3*inch, 1.6*inch)
+    student_details = f"""
+    <b>Name:</b> {student.full_name}<br/>
+    <b>Reg No:</b> {getattr(student, 'prn', getattr(student, 'registration_number', ''))}<br/>
+    <b>Period of Study:</b> {getattr(student, 'batch', '')}<br/>
+    """
+    course_details = f"""
+    <b>Course:</b> {getattr(student, 'branch', '')}<br/>
+    <b>Permanent Roll No:</b> {getattr(student, 'registration_number', '')}<br/>
+    """
+    info_data = [
+        [photo_img, Paragraph(student_details, getSampleStyleSheet()['Normal']), Paragraph(course_details, getSampleStyleSheet()['Normal'])]
+    ]
+    info_table = Table(info_data, colWidths=[1.5*inch, 3.5*inch, 2.0*inch])
+    info_table.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('ALIGN', (1,0), (1,0), 'LEFT'),
+        ('ALIGN', (2,0), (2,0), 'RIGHT'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+        ('TOPPADDING', (0,0), (-1,-1), 8),
+    ]))
+    elements.append(info_table)
+    elements.append(Spacer(1, 10))
+    # --- SECTION LINE ---
+    from reportlab.platypus import HRFlowable
+    elements.append(HRFlowable(width="100%", thickness=1, color=colors.black, spaceBefore=8, spaceAfter=8))
+    # --- INTERNSHIP DETAILS TABLE ---
+    elements.append(Paragraph('<b>Internship Details</b>', getSampleStyleSheet()['Heading2']))
+    table_data = [[
+        'Semester', 'Project Name', 'Duration', 'Skills/technology', 'Company Name / College Name'
+    ]]
+    total_months = 0
+    for internship in internships:
+        # Duration formatting
+        start = getattr(internship, 'start_date', '')
+        end = getattr(internship, 'end_date', '')
+        try:
+            start_dt = datetime.strptime(str(start).split()[0], '%Y-%m-%d')
+            end_dt = datetime.strptime(str(end).split()[0], '%Y-%m-%d')
+            months = (end_dt.year - start_dt.year) * 12 + (end_dt.month - start_dt.month) + 1
+            total_months += months
+            duration = f"Start: {start}\nEnd: {end}\nTotal Hours: {getattr(internship, 'total_hours', '')}"
+        except Exception:
+            months = 0
+            duration = f"Start: {start}\nEnd: {end}\nTotal Hours: {getattr(internship, 'total_hours', '')}"
+        table_data.append([
+            getattr(internship, 'semester', ''),
+            getattr(internship, 'project_name', ''),
+            duration,
+            ', '.join(getattr(internship, 'skills', [])),
+            getattr(internship, 'company_name', '')
+        ])
+    table = Table(table_data, colWidths=[0.8*inch, 1.5*inch, 2.2*inch, 1.7*inch, 2.0*inch])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.black),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,0), 11),
+        ('BOTTOMPADDING', (0,0), (-1,0), 8),
+        ('TOPPADDING', (0,0), (-1,0), 8),
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 8))
+    # --- SUMMARY ---
+    elements.append(Paragraph(f"Total number of Internships: {len(internships)}", getSampleStyleSheet()['Normal']))
+    elements.append(Paragraph(f"Total months worked: {total_months}", getSampleStyleSheet()['Normal']))
+    elements.append(Spacer(1, 20))
+
+    # --- FOOTER ---
+    # Signature lines and QR code area (QR code placeholder as Flowable)
+    class QRPlaceholder(Flowable):
+        def __init__(self, width=60, height=60):
+            Flowable.__init__(self)
+            self.width = width
+            self.height = height
+        def draw(self):
+            self.canv.rect(0, 0, self.width, self.height)
+            self.canv.drawString(5, self.height/2, "QR")
+    footer_data = [
+        [
+            Paragraph('Date:', getSampleStyleSheet()['Normal']),
+            '',
+            Paragraph("Principal's Sign:", getSampleStyleSheet()['Normal']),
+            QRPlaceholder(),
+        ],
+        [
+            Paragraph('Place:', getSampleStyleSheet()['Normal']),
+            '',
+            Paragraph("HOD's Sign:", getSampleStyleSheet()['Normal']),
+            ''
+        ],
+        [
+            '', '', Paragraph('Internship Cell Coordinator Sign:', getSampleStyleSheet()['Normal']), ''
+        ]
+    ]
+    footer_table = Table(footer_data, colWidths=[1.2*inch, 2.2*inch, 2.5*inch, 1.2*inch])
+    footer_table.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('ALIGN', (2,0), (2,-1), 'LEFT'),
+        ('ALIGN', (3,0), (3,0), 'CENTER'),
+        ('TOPPADDING', (0,0), (-1,-1), 10),
+    ]))
+    elements.append(footer_table)
+
+    doc.build(elements, onFirstPage=lambda canvas, doc: (draw_background(canvas, doc)), onLaterPages=lambda canvas, doc: (draw_background(canvas, doc)))
     buffer.seek(0)
     return buffer 

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory, jsonify
 from flask_login import login_required, current_user
 from models.user import User
 from models.internship import Internship
@@ -55,6 +55,75 @@ def dashboard():
     except Exception as e:
         flash(f'Error loading dashboard: {str(e)}', 'error')
         return redirect(url_for('auth.login'))
+
+@admin_bp.route('/dashboard/data/trends')
+@login_required
+def dashboard_trends_data():
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+    from datetime import datetime, timedelta
+    now = datetime.now()
+    # Get the first day of each of the last 12 months
+    months = [(now.replace(day=1) - timedelta(days=30*i)) for i in reversed(range(12))]
+    month_labels = [d.strftime('%b %Y') for d in months]
+    # MongoDB aggregation for internships
+    internship_pipeline = [
+        {"$match": {"created_at": {"$gte": months[0]}}},
+        {"$group": {
+            "_id": {"year": {"$year": "$created_at"}, "month": {"$month": "$created_at"}},
+            "count": {"$sum": 1}
+        }}
+    ]
+    activity_pipeline = [
+        {"$match": {"created_at": {"$gte": months[0]}}},
+        {"$group": {
+            "_id": {"year": {"$year": "$created_at"}, "month": {"$month": "$created_at"}},
+            "count": {"$sum": 1}
+        }}
+    ]
+    internship_results = list(db.internships.aggregate(internship_pipeline))
+    activity_results = list(db.activities.aggregate(activity_pipeline))
+    # Build a map {(year, month): count}
+    internship_map = { (r['_id']['year'], r['_id']['month']): r['count'] for r in internship_results }
+    activity_map = { (r['_id']['year'], r['_id']['month']): r['count'] for r in activity_results }
+    internship_counts = []
+    activity_counts = []
+    for d in months:
+        y, m = d.year, d.month
+        internship_counts.append(internship_map.get((y, m), 0))
+        activity_counts.append(activity_map.get((y, m), 0))
+    return jsonify({'labels': month_labels, 'internships': internship_counts, 'activities': activity_counts})
+
+@admin_bp.route('/dashboard/data/activity-types')
+@login_required
+def dashboard_activity_types_data():
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+    pipeline = [
+        {'$group': {'_id': '$activity_type', 'count': {'$sum': 1}}}
+    ]
+    results = list(db.activities.aggregate(pipeline))
+    labels = [r['_id'] or 'Other' for r in results]
+    data = [r['count'] for r in results]
+    return jsonify({'labels': labels, 'data': data})
+
+@admin_bp.route('/dashboard/data/internship-status')
+@login_required
+def dashboard_internship_status_data():
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+    statuses = ['approved', 'pending', 'rejected']
+    data = [db.internships.count_documents({'status': s}) for s in statuses]
+    return jsonify({'labels': [s.title() for s in statuses], 'data': data})
+
+@admin_bp.route('/dashboard/data/activity-status')
+@login_required
+def dashboard_activity_status_data():
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+    statuses = ['approved', 'pending', 'rejected']
+    data = [db.activities.count_documents({'status': s}) for s in statuses]
+    return jsonify({'labels': [s.title() for s in statuses], 'data': data})
 
 @admin_bp.route('/students')
 @login_required

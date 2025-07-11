@@ -189,6 +189,21 @@
     .invalid-feedback {
         font-size: 0.8rem;
     }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input,
+    textarea,
+    select {
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 </style>
 {% endblock %}
 
@@ -197,7 +212,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
-                <div class="signup-card animate__animated animate__fadeIn">
+                <div class="signup-card themed-bg themed-text animate__animated animate__fadeIn">
                     <!-- Toast notifications for flash messages -->
                     {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
@@ -252,7 +267,8 @@
                             <!-- Basic Information -->
                             <div class="form-grid form-grid-2">
                                 <div class="form-floating">
-                                    {{ form.full_name(class="form-control", placeholder="Full Name") }}
+                                    {{ form.full_name(class="form-control themed-bg themed-text", placeholder="Full
+                                    Name") }}
                                     <label for="full_name">Full Name</label>
                                     {% if form.full_name.errors %}
                                     <div class="invalid-feedback d-block">
@@ -264,7 +280,7 @@
                                 </div>
 
                                 <div class="form-floating">
-                                    {{ form.email(class="form-control", placeholder="Email") }}
+                                    {{ form.email(class="form-control themed-bg themed-text", placeholder="Email") }}
                                     <label for="email">Email</label>
                                     {% if form.email.errors %}
                                     <div class="invalid-feedback d-block">
@@ -279,7 +295,8 @@
                             <!-- Password Fields -->
                             <div class="form-grid form-grid-2">
                                 <div class="form-floating">
-                                    {{ form.password(class="form-control", placeholder="Password") }}
+                                    {{ form.password(class="form-control themed-bg themed-text", placeholder="Password")
+                                    }}
                                     <label for="password">Password</label>
                                     {% if form.password.errors %}
                                     <div class="invalid-feedback d-block">
@@ -291,7 +308,8 @@
                                 </div>
 
                                 <div class="form-floating">
-                                    {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+                                    {{ form.confirm_password(class="form-control themed-bg themed-text",
+                                    placeholder="Confirm Password") }}
                                     <label for="confirm_password">Confirm Password</label>
                                     {% if form.confirm_password.errors %}
                                     <div class="invalid-feedback d-block">
@@ -307,7 +325,7 @@
                             <div class="student-fields">
                                 <div class="form-grid form-grid-2">
                                     <div class="form-floating">
-                                        {{ form.prn(class="form-control", placeholder="PRN") }}
+                                        {{ form.prn(class="form-control themed-bg themed-text", placeholder="PRN") }}
                                         <label for="prn">PRN (Permanent Registration Number)</label>
                                         {% if form.prn.errors %}
                                         <div class="invalid-feedback d-block">
@@ -319,7 +337,8 @@
                                     </div>
 
                                     <div class="form-floating">
-                                        {{ form.registration_number(class="form-control", placeholder="Registration
+                                        {{ form.registration_number(class="form-control themed-bg themed-text",
+                                        placeholder="Registration
                                         Number") }}
                                         <label for="registration_number">Registration Number</label>
                                         {% if form.registration_number.errors %}
@@ -334,7 +353,7 @@
 
                                 <div class="form-grid form-grid-3">
                                     <div class="form-floating">
-                                        {{ form.branch(class="form-select") }}
+                                        {{ form.branch(class="form-select themed-bg themed-text") }}
                                         <label for="branch">Branch</label>
                                         {% if form.branch.errors %}
                                         <div class="invalid-feedback d-block">
@@ -346,7 +365,7 @@
                                     </div>
 
                                     <div class="form-floating">
-                                        {{ form.year(class="form-select") }}
+                                        {{ form.year(class="form-select themed-bg themed-text") }}
                                         <label for="year">Year</label>
                                         {% if form.year.errors %}
                                         <div class="invalid-feedback d-block">
@@ -358,7 +377,8 @@
                                     </div>
 
                                     <div class="form-floating">
-                                        {{ form.mentor_email(class="form-control", placeholder="Mentor Email") }}
+                                        {{ form.mentor_email(class="form-control themed-bg themed-text",
+                                        placeholder="Mentor Email") }}
                                         <label for="mentor_email">Mentor Email</label>
                                         {% if form.mentor_email.errors %}
                                         <div class="invalid-feedback d-block">

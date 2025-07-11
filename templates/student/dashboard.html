@@ -38,7 +38,7 @@
         background: linear-gradient(145deg, #ffffff, #f5f5f5);
         border-radius: 15px;
         padding: 1.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
         height: 100%;
@@ -82,16 +82,26 @@
 
     .internship-card,
     .activity-card {
-        background: linear-gradient(145deg, #ffffff, #f5f5f5);
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
         border-radius: 15px;
         padding: 1.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
         height: 100%;
         border: 1px solid rgba(0, 0, 0, 0.05);
         position: relative;
         overflow: hidden;
+    }
+
+    .internship-card h5,
+    .activity-card h5,
+    .internship-card .text-muted,
+    .activity-card .text-muted,
+    .internship-card small,
+    .activity-card small {
+        color: var(--text-color) !important;
     }
 
     .internship-card::before,
@@ -259,6 +269,21 @@
             opacity: 1;
         }
     }
+
+    input,
+    textarea,
+    select {
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 </style>
 {% endblock %}
 
@@ -284,21 +309,23 @@
 <div class="container">
     <div class="row">
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up mb-4">
                 <i class="fas fa-briefcase stats-icon"></i>
                 <div class="stats-number">{{ internships|length }}</div>
                 <p class="text-muted mb-0">Total Internships</p>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.1s">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up"
+                style="animation-delay: 0.1s mb-4">
                 <i class="fas fa-certificate stats-icon"></i>
                 <div class="stats-number">{{ activities|length }}</div>
                 <p class="text-muted mb-0">Total Activities</p>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.2s">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up"
+                style="animation-delay: 0.2s mb-4">
                 <i class="fas fa-check-circle stats-icon"></i>
                 <div class="stats-number">
                     {{ internships|selectattr('status', 'equalto', 'approved')|list|length }}
@@ -307,7 +334,8 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.3s">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up"
+                style="animation-delay: 0.3s mb-4">
                 <i class="fas fa-trophy stats-icon"></i>
                 <div class="stats-number">
                     {{ activities|selectattr('status', 'equalto', 'approved')|list|length }}
@@ -321,28 +349,29 @@
     <h2 class="mt-4 mb-4">Your Internships</h2>
     <div class="row">
         {% for internship in internships %}
-        <div class="col-md-6 mb-3">
-            <div class="internship-card position-relative animate-slide-up"
-                style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="internship-card themed-bg themed-text animate-slide-up">
                 <span class="status-badge status-{{ internship.status }}">
                     {{ internship.status|title }}
                 </span>
-                <h3>{{ internship.company_name }}</h3>
-                <p class="text-muted">{{ internship.project_name }}</p>
-                <div class="mb-3">
-                    <small class="text-muted">
-                        <i class="far fa-calendar-alt me-1"></i>
+                <h5 class="mb-1">{{ internship.company_name }}</h5>
+                <div class="text-muted mb-1" style="font-size:0.95rem;">{{ internship.project_name }}</div>
+                <div class="mb-2">
+                    <small><i class="far fa-calendar-alt me-1"></i>
                         {{ internship.start_date.strftime('%d %b %Y') }} - {{ internship.end_date.strftime('%d %b %Y')
                         }}
                     </small>
                 </div>
-                <div class="mb-3">
-                    <small class="text-muted">
-                        <i class="far fa-clock me-1"></i>
-                        {{ internship.hours_per_week }} hours/week
-                    </small>
+                <div class="mb-2">
+                    <small><i class="far fa-clock me-1"></i> {{ internship.hours_per_week }} hrs/week</small>
                 </div>
-                <div class="skills">
+                <div class="mb-2">
+                    <small><i class="fas fa-graduation-cap me-1"></i> Semester: {{ internship.semester }}</small>
+                </div>
+                <div class="mb-2">
+                    <small><i class="fas fa-hourglass-half me-1"></i> Total: {{ internship.total_hours }} hrs</small>
+                </div>
+                <div class="skills mt-2">
                     {% for skill in internship.skills %}
                     <span class="skill-badge">{{ skill }}</span>
                     {% endfor %}
@@ -356,27 +385,25 @@
     <h2 class="mt-4 mb-4">Your Activities</h2>
     <div class="row">
         {% for activity in activities %}
-        <div class="col-md-6 mb-3">
-            <div class="activity-card position-relative animate-slide-up"
-                style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="activity-card themed-bg themed-text animate-slide-up">
                 <span class="status-badge status-{{ activity.status }}">
                     {{ activity.status|title }}
                 </span>
-                <h3>{{ activity.title }}</h3>
-                <p class="text-muted">{{ activity.activity_type }}</p>
-                <div class="mb-3">
-                    <small class="text-muted">
-                        <i class="far fa-calendar-alt me-1"></i>
+                <h5 class="mb-1">{{ activity.title }}</h5>
+                <div class="text-muted mb-1" style="font-size:0.95rem;">{{ activity.activity_type|title }}</div>
+                <div class="mb-2">
+                    <small><i class="far fa-calendar-alt me-1"></i>
                         {{ activity.start_date.strftime('%d %b %Y') }} - {{ activity.end_date.strftime('%d %b %Y') }}
                     </small>
                 </div>
-                <div class="mb-3">
-                    <small class="text-muted">
-                        <i class="far fa-clock me-1"></i>
-                        {{ activity.hours_per_week }} hours/week
-                    </small>
+                <div class="mb-2">
+                    <small><i class="far fa-clock me-1"></i> {{ activity.hours_per_week }} hrs/week</small>
                 </div>
-                <div class="skills">
+                <div class="mb-2">
+                    <small><i class="fas fa-graduation-cap me-1"></i> Semester: {{ activity.semester }}</small>
+                </div>
+                <div class="skills mt-2">
                     {% for skill in activity.skills %}
                     <span class="skill-badge">{{ skill }}</span>
                     {% endfor %}

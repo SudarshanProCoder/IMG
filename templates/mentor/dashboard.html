@@ -23,12 +23,16 @@
         }
     }
 
-    .filters-card {
-        background: white;
+    .filters-card,
+    .student-card,
+    .stats-card {
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
         border-radius: 0.5rem;
         padding: 1.25rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .student-card {
@@ -43,16 +47,6 @@
     .student-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .stats-card {
-        background: white;
-        border-radius: 0.5rem;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        height: 100%;
     }
 
     .stats-card:hover {
@@ -238,6 +232,21 @@
             opacity: 1;
         }
     }
+
+    input,
+    textarea,
+    select {
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 </style>
 {% endblock %}
 
@@ -252,28 +261,31 @@
     <!-- Stats Section -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4">
                 <i class="fas fa-users stats-icon"></i>
                 <div class="stats-number">{{ students|length }}</div>
                 <p class="text-muted mb-0">Total Students</p>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.1s">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4"
+                style="animation-delay: 0.1s">
                 <i class="fas fa-clock stats-icon"></i>
                 <div class="stats-number">{{ total_internship_hours }}</div>
                 <p class="text-muted mb-0">Total Internship Hours</p>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.2s">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4"
+                style="animation-delay: 0.2s">
                 <i class="fas fa-tasks stats-icon"></i>
                 <div class="stats-number">{{ total_activity_hours }}</div>
                 <p class="text-muted mb-0">Total Activity Hours</p>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card text-center animate-slide-up" style="animation-delay: 0.3s">
+            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4"
+                style="animation-delay: 0.3s">
                 <i class="fas fa-star stats-icon"></i>
                 <div class="stats-number">{{ total_credit_points }}</div>
                 <p class="text-muted mb-0">Total Credit Points</p>
@@ -282,7 +294,7 @@
     </div>
 
     <!-- Filters -->
-    <div class="filters-card animate-slide-up">
+    <div class="filters-card themed-bg themed-text animate-slide-up w-100 mb-4">
         <form method="GET" class="row g-3">
             <div class="col-12 col-md-6">
                 <label for="year" class="form-label">Year</label>
@@ -306,7 +318,8 @@
     <div class="row">
         {% for student in students %}
         <div class="col-12 col-md-6 col-lg-4 mb-3">
-            <div class="student-card animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <div class="student-card themed-bg themed-text animate-slide-up w-100 mb-4"
+                style="animation-delay: {{ loop.index0 * 0.1 }}s">
                 <div class="d-flex align-items-center mb-3">
                     {% if student.profile_image %}
                     <img src="{{ student.profile_image }}" alt="{{ student.full_name }}" class="student-avatar me-3">

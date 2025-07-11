@@ -5,280 +5,174 @@
 {% block extra_css %}
 <style>
     .marksheet-header {
-        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
-        color: white;
-        padding: 2rem 0;
+        background: #f8f6e3;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1.5rem 1rem;
         margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    .credit-points-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
-        margin-bottom: 2rem;
+    .marksheet-logo {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
     }
 
-    .credit-points-value {
-        font-size: 3rem;
+    .marksheet-title {
+        text-align: center;
+        flex: 1;
+    }
+
+    .marksheet-title h2 {
+        font-size: 1.6rem;
         font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
+        color: #1d3557;
+        margin-bottom: 0.2rem;
     }
 
-    .credit-points-label {
-        color: #6c757d;
-        font-size: 1.1rem;
+    .marksheet-title small {
+        color: #457b9d;
+        font-size: 1rem;
     }
 
-    .activity-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1.5rem;
-        transition: all 0.3s ease;
+    .marksheet-course {
+        text-align: right;
+        font-size: 1rem;
+        color: #222;
+        min-width: 180px;
     }
 
-    .activity-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    .student-info-row {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
     }
 
-    .activity-header {
+    .student-photo {
+        width: 110px;
+        height: 135px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        margin-right: 2rem;
         background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 15px 15px 0 0;
-        border-bottom: 1px solid #e9ecef;
     }
 
-    .activity-body {
-        padding: 1.5rem;
+    .student-details {
+        flex: 1;
+        font-size: 1.05rem;
     }
 
-    .activity-footer {
-        padding: 1rem 1.5rem;
-        background: #f8f9fa;
-        border-radius: 0 0 15px 15px;
-        border-top: 1px solid #e9ecef;
+    .student-details p {
+        margin-bottom: 0.3rem;
     }
 
-    .status-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-size: 0.875rem;
-        font-weight: 500;
+    .marksheet-table th,
+    .marksheet-table td {
+        vertical-align: middle;
+        text-align: center;
     }
 
-    .status-pending {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-
-    .status-approved {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .status-rejected {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .activity-details {
-        font-size: 0.9rem;
-        color: #6c757d;
-    }
-
-    .activity-details i {
-        width: 20px;
-        color: var(--primary-color);
-    }
-
-    .section-title {
-        font-size: 1.5rem;
+    .marksheet-table th {
+        background: #f8f6e3;
+        color: #1d3557;
         font-weight: 600;
+    }
+
+    .marksheet-table td {
+        background: #fff;
+    }
+
+    .summary-row {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-top: 1.5rem;
         margin-bottom: 1.5rem;
-        color: var(--secondary-color);
     }
 
-    .credit-points {
-        font-size: 0.9rem;
-        color: #6c757d;
-    }
-
-    .credit-points i {
-        color: var(--primary-color);
+    .download-btn {
+        margin-top: 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Student Information</h4>
+    <!-- Header -->
+    <div class="marksheet-header">
+        <img src="{{ url_for('static', filename='images/college_logo.png') }}" class="marksheet-logo"
+            alt="College Logo">
+        <div class="marksheet-title">
+            <h2>Shah & Anchor Kutchhi Engineering College</h2>
+            <small>(An Autonomous Institute Affiliated to University of Mumbai)</small>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Name:</strong> {{ current_user.full_name }}</p>
-                    <p><strong>Student ID:</strong> {{ current_user.student_id }}</p>
-                    <p><strong>Department:</strong> {{ current_user.department }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Batch:</strong> {{ current_user.batch }}</p>
-                    <p><strong>Email:</strong> {{ current_user.email }}</p>
-                    <p><strong>Total Credit Points:</strong> {{ total_credit_points }}</p>
-                </div>
-            </div>
+        <div class="marksheet-course">
+            <div><b>Course:</b> {{ current_user.branch or current_user.department }}</div>
+            <div><b>Permanent Roll No:</b> {{ current_user.registration_number or current_user.student_id }}</div>
         </div>
     </div>
-
-    <!-- Internships Section -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Internships</h4>
+    <!-- Student Info Row -->
+    <div class="student-info-row">
+        {% set photo = current_user.profile_image if current_user.profile_image else url_for('static',
+        filename='images/default_avatar.png') %}
+        <img src="{{ photo }}" class="student-photo" alt="Student Photo">
+        <div class="student-details">
+            <p><b>Name:</b> {{ current_user.full_name }}</p>
+            <p><b>Reg No:</b> {{ current_user.prn or current_user.registration_number or current_user.student_id }}</p>
+            <p><b>Period of Study:</b> {{ current_user.batch }}</p>
         </div>
-        <div class="card-body">
-            {% if internships %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Company</th>
-                            <th>Project</th>
-                            <th>Semester</th>
-                            <th>Duration (Months)</th>
-                            <th>Total Hours</th>
-                            <th>Credit Points</th>
-                            <th>Skills Gained</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for internship in internships %}
-                        {% if internship.status == 'approved' %}
-                        <tr>
-                            <td>{{ internship.company_name }}</td>
-                            <td>{{ internship.project_name }}</td>
-                            <td>{{ internship.semester }}</td>
-                            <td>{{ internship.duration_months }}</td>
-                            <td>{{ internship.total_hours }}</td>
-                            <td>{{ (internship.total_hours / 40)|round(1) }}</td>
-                            <td>
-                                {% if internship.skills %}
-                                <ul class="list-unstyled mb-0">
-                                    {% for skill in internship.skills %}
-                                    <li>{{ skill }}</li>
-                                    {% endfor %}
-                                </ul>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge bg-success">Approved</span>
-                            </td>
-                        </tr>
-                        {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> No approved internships found.
-            </div>
-            {% endif %}
+        <div class="student-details">
+            <p><b>Email:</b> {{ current_user.email }}</p>
+            <p><b>Batch:</b> {{ current_user.batch }}</p>
+            <p><b>Department:</b> {{ current_user.department }}</p>
         </div>
     </div>
-
-    <!-- Activities Section -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Activities</h4>
-        </div>
-        <div class="card-body">
-            {% if activities %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Activity Type</th>
-                            <th>Title</th>
-                            <th>Semester</th>
-                            <th>Hours per Week</th>
-                            <th>Credit Points</th>
-                            <th>Skills Gained</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for activity in activities %}
-                        {% if activity.status == 'approved' %}
-                        <tr>
-                            <td>{{ activity.activity_type|title }}</td>
-                            <td>{{ activity.title }}</td>
-                            <td>{{ activity.semester }}</td>
-                            <td>{{ activity.hours_per_week }}</td>
-                            <td>{{ (activity.hours_per_week / 10)|round(1) }}</td>
-                            <td>
-                                {% if activity.skills %}
-                                <ul class="list-unstyled mb-0">
-                                    {% for skill in activity.skills %}
-                                    <li>{{ skill }}</li>
-                                    {% endfor %}
-                                </ul>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge bg-success">Approved</span>
-                            </td>
-                        </tr>
-                        {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> No approved activities found.
-            </div>
-            {% endif %}
-        </div>
+    <!-- Internship Table -->
+    <h4 class="mb-3">Internship Details</h4>
+    <div class="table-responsive">
+        <table class="table marksheet-table">
+            <thead>
+                <tr>
+                    <th>Semester</th>
+                    <th>Project Name</th>
+                    <th>Duration</th>
+                    <th>Skills/Technology</th>
+                    <th>Company Name / College Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for internship in internships %}
+                <tr>
+                    <td>{{ internship.semester }}</td>
+                    <td>{{ internship.project_name }}</td>
+                    <td>
+                        Start: {{ internship.start_date.strftime('%Y-%m-%d') if internship.start_date }}<br>
+                        End: {{ internship.end_date.strftime('%Y-%m-%d') if internship.end_date }}<br>
+                        Total Hours: {{ internship.total_hours }}
+                    </td>
+                    <td>{{ internship.skills|join(', ') }}</td>
+                    <td>{{ internship.company_name }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    <!-- Summary Section -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Summary</h4>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Total Internship Hours:</strong>
-                        {{ internships|selectattr('status', 'equalto', 'approved')|map(attribute='total_hours')|sum }}
-                    </p>
-                    <p><strong>Total Activity Hours per Week:</strong>
-                        {{ activities|selectattr('status', 'equalto', 'approved')|map(attribute='hours_per_week')|sum }}
-                    </p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Total Credit Points:</strong> {{ total_credit_points }}</p>
-                </div>
-            </div>
-        </div>
+    <div class="summary-row">
+        Total number of Internships: {{ internships|length }}<br>
+        Total months worked: {{ internships|map(attribute='duration_months')|sum }}
     </div>
-
-    {% if current_user.role == 'mentor' %}
-    <div class="mt-4 text-center">
-        <button class="btn btn-success me-2">
-            <i class="fas fa-check"></i> Approve Marksheet
-        </button>
-    </div>
-    {% endif %}
-
-    <div class="mt-4 text-center">
+    <div class="download-btn text-center">
         <a href="{{ url_for('student.download_marksheet') }}" class="btn btn-primary">
-            <i class="fas fa-download"></i> Download Marksheet
+            <i class="fas fa-download"></i> Download Marksheet (PDF)
         </a>
     </div>
 </div>
