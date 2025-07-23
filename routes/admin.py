@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory, jsonify, Response
 from flask_login import login_required, current_user
 from models.user import User
 from models.internship import Internship
@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 from config.database import db
 import os
 from datetime import datetime
+import csv
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -493,22 +494,6 @@ def mentors():
         flash(f'Error loading mentors: {str(e)}', 'error')
         return redirect(url_for('admin.dashboard'))
 
-@admin_bp.route('/student/<student_id>/approve', methods=['POST'])
-@login_required
-def approve_student(student_id):
-    if current_user.role != 'admin':
-        flash('Access denied.', 'error')
-        return redirect(url_for('auth.login'))
-    
-    student = User.get_by_id(current_app.db, student_id)
-    if student and student.role == 'student':
-        student.update(current_app.db, {'is_approved': True})
-        flash('Student approved successfully!', 'success')
-    else:
-        flash('Student not found.', 'error')
-    
-    return redirect(url_for('admin.students'))
-
 @admin_bp.route('/mentor/<mentor_id>/approve', methods=['POST'])
 @login_required
 def approve_mentor(mentor_id):
@@ -523,6 +508,23 @@ def approve_mentor(mentor_id):
     else:
         flash('Mentor not found.', 'error')
     
+    return redirect(url_for('admin.mentors'))
+
+@admin_bp.route('/mentor/<mentor_id>/delete', methods=['POST'])
+@login_required
+def delete_mentor(mentor_id):
+    if current_user.role != 'admin':
+        flash('Access denied.', 'error')
+        return redirect(url_for('admin.mentors'))
+    try:
+        mentor = db.users.find_one({'_id': ObjectId(mentor_id), 'role': 'mentor'})
+        if not mentor:
+            flash('Mentor not found.', 'error')
+            return redirect(url_for('admin.mentors'))
+        db.users.delete_one({'_id': ObjectId(mentor_id)})
+        flash('Mentor deleted successfully.', 'success')
+    except Exception as e:
+        flash(f'Error deleting mentor: {str(e)}', 'error')
     return redirect(url_for('admin.mentors'))
 
 @admin_bp.route('/uploads/<path:filename>')
@@ -542,3 +544,105 @@ def serve_pdf(filename):
     except Exception as e:
         flash(f'Error serving PDF: {str(e)}', 'error')
         return redirect(url_for('admin.dashboard')) 
+
+@admin_bp.route('/export-csv')
+@login_required
+def export_csv():
+    if current_user.role != 'admin':
+        flash('Access denied.', 'error')
+        return redirect(url_for('auth.login'))
+    # Get all students and mentors
+    users = list(db.users.find({'role': {'$in': ['student', 'mentor']}}))
+    if not users:
+        flash('No data to export.', 'warning')
+        return redirect(url_for('admin.dashboard'))
+    # Get all unique keys for CSV header
+    all_keys = set()
+    for user in users:
+        all_keys.update(user.keys())
+    all_keys = sorted(all_keys)
+    # Write CSV to memory
+    def generate():
+        yield ','.join(all_keys) + '\n'
+        for user in users:
+            row = []
+            for key in all_keys:
+                val = user.get(key, '')
+                # Convert lists/dicts to string
+                if isinstance(val, (list, dict)):
+                    val = str(val)
+                # Convert ObjectId to string
+                if hasattr(val, 'hex') or hasattr(val, 'binary'):
+                    val = str(val)
+                # Escape commas and newlines
+                if isinstance(val, str):
+                    val = val.replace(',', ';').replace('\n', ' ')
+                row.append(f'"{val}"')
+            yield ','.join(row) + '\n'
+    return Response(generate(), mimetype='text/csv', headers={
+        'Content-Disposition': 'attachment; filename=students_mentors_export.csv'
+    }) 
+
+@admin_bp.route('/export-students-csv')
+@login_required
+def export_students_csv():
+    if current_user.role != 'admin':
+        flash('Access denied.', 'error')
+        return redirect(url_for('auth.login'))
+    users = list(db.users.find({'role': 'student'}))
+    if not users:
+        flash('No student data to export.', 'warning')
+        return redirect(url_for('admin.dashboard'))
+    all_keys = set()
+    for user in users:
+        all_keys.update(user.keys())
+    all_keys = sorted(all_keys)
+    def generate():
+        yield ','.join(all_keys) + '\n'
+        for user in users:
+            row = []
+            for key in all_keys:
+                val = user.get(key, '')
+                if isinstance(val, (list, dict)):
+                    val = str(val)
+                if hasattr(val, 'hex') or hasattr(val, 'binary'):
+                    val = str(val)
+                if isinstance(val, str):
+                    val = val.replace(',', ';').replace('\n', ' ')
+                row.append(f'"{val}"')
+            yield ','.join(row) + '\n'
+    return Response(generate(), mimetype='text/csv', headers={
+        'Content-Disposition': 'attachment; filename=students_export.csv'
+    })
+
+@admin_bp.route('/export-mentors-csv')
+@login_required
+def export_mentors_csv():
+    if current_user.role != 'admin':
+        flash('Access denied.', 'error')
+        return redirect(url_for('auth.login'))
+    users = list(db.users.find({'role': 'mentor'}))
+    if not users:
+        flash('No mentor data to export.', 'warning')
+        return redirect(url_for('admin.dashboard'))
+    all_keys = set()
+    for user in users:
+        all_keys.update(user.keys())
+    all_keys = sorted(all_keys)
+    def generate():
+        yield ','.join(all_keys) + '\n'
+        for user in users:
+            row = []
+            for key in all_keys:
+                val = user.get(key, '')
+                if isinstance(val, (list, dict)):
+                    val = str(val)
+                if hasattr(val, 'hex') or hasattr(val, 'binary'):
+                    val = str(val)
+                if isinstance(val, str):
+                    val = val.replace(',', ';').replace('\n', ' ')
+                row.append(f'"{val}"')
+            yield ','.join(row) + '\n'
+    return Response(generate(), mimetype='text/csv', headers={
+        'Content-Disposition': 'attachment; filename=mentors_export.csv'
+    }) 

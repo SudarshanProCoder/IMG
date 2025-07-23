@@ -284,10 +284,17 @@
                             <i class="fas fa-chalkboard-teacher me-1"></i>Mentors
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin.export_csv') }}">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="exportDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-file-csv me-1"></i>Export CSV
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('admin.export_students_csv') }}">Export
+                                    Students CSV</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.export_mentors_csv') }}">Export Mentors
+                                    CSV</a></li>
+                        </ul>
                     </li>
                     {% elif current_user.role == 'mentor' %}
                     <li class="nav-item">

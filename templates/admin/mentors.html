@@ -47,6 +47,8 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Department</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,6 +57,15 @@
                     <td>{{ mentor.full_name }}</td>
                     <td>{{ mentor.email }}</td>
                     <td>{{ mentor.department }}</td>
+                    <td>{{ mentor.phone or 'N/A' }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin.delete_mentor', mentor_id=mentor.id) }}"
+                            style="display:inline;"
+                            onsubmit="return confirm('Are you sure you want to delete this mentor?');">
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i>
+                                Delete</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
