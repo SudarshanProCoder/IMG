@@ -17,6 +17,7 @@ class Activity:
         self.hours_per_week = activity_data.get('hours_per_week')
         self.total_hours = activity_data.get('total_hours')
         self.certificate_path = activity_data.get('certificate_path')
+        self.academic_year = activity_data.get('academic_year')
         self.skills = activity_data.get('skills', [])
         self.status = activity_data.get('status', 'pending')
         self.created_at = activity_data.get('created_at', datetime.now())
@@ -35,6 +36,7 @@ class Activity:
             'hours_per_week': self.hours_per_week,
             'total_hours': self.total_hours,
             'certificate_path': self.certificate_path,
+            'academic_year': self.academic_year,
             'skills': self.skills,
             'status': self.status,
             'created_at': self.created_at,

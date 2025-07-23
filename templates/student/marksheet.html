@@ -116,7 +116,7 @@
             <small>(An Autonomous Institute Affiliated to University of Mumbai)</small>
         </div>
         <div class="marksheet-course">
-            <div><b>Course:</b> {{ current_user.branch or current_user.department }}</div>
+            <div><b>Course:</b> {{ current_user.department }}</div>
             <div><b>Permanent Roll No:</b> {{ current_user.registration_number or current_user.student_id }}</div>
         </div>
     </div>

@@ -3,6 +3,7 @@
 {% block title %}{% if internship %}Edit Internship{% else %}Add New Internship{% endif %}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
     .form-header {
         background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
@@ -139,147 +140,140 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h4>{% if internship %}Edit Internship{% else %}Add New Internship{% endif %}</h4>
-        </div>
-        <div class="card-body">
-            <form method="POST" enctype="multipart/form-data">
-                <!-- Company Details -->
-                <div class="mb-3">
-                    <label for="company_name" class="form-label">Company Name</label>
-                    <input type="text" class="form-control" id="company_name" name="company_name" required
-                        value="{{ internship.company_name if internship else '' }}">
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-12 col-lg-10">
+            <div class="card shadow-lg overflow-hidden" style="border-radius: 20px; min-height: 500px;">
+                <!-- Top Bar -->
+                <div class="card-header themed-bg themed-text d-flex align-items-center" style="min-height: 70px;">
+                    <i class="fas fa-briefcase fa-2x me-3"></i>
+                    <h2 class="mb-0">Add New Internship</h2>
                 </div>
-
-                <div class="mb-3">
-                    <label for="project_name" class="form-label">Project Name</label>
-                    <input type="text" class="form-control" id="project_name" name="project_name" required
-                        value="{{ internship.project_name if internship else '' }}">
-                </div>
-
-                <!-- Dates -->
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" required
-                                value="{{ internship.start_date.strftime('%Y-%m-%d') if internship and internship.start_date else '' }}">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="end_date" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="end_date" name="end_date" required
-                                value="{{ internship.end_date.strftime('%Y-%m-%d') if internship and internship.end_date else '' }}">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="joining_date" class="form-label">Joining Date</label>
-                            <input type="date" class="form-control" id="joining_date" name="joining_date" required
-                                value="{{ internship.joining_date.strftime('%Y-%m-%d') if internship and internship.joining_date else '' }}">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Semester -->
-                <div class="mb-3">
-                    <label for="semester" class="form-label">Semester</label>
-                    <select class="form-select" id="semester" name="semester" required>
-                        <option value="">Select Semester</option>
-                        {% for i in range(1, 9) %}
-                        <option value="Semester {{ i }}" {% if internship and internship.semester=='Semester ' +
-                            i|string %}selected{% endif %}>
-                            Semester {{ i }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Hours per Week -->
-                <div class="mb-3">
-                    <label for="hours_per_week" class="form-label">Hours per Week</label>
-                    <input type="number" class="form-control" id="hours_per_week" name="hours_per_week" min="1" max="40"
-                        required value="{{ internship.hours_per_week if internship else '' }}">
-                </div>
-
-                <!-- Skills -->
-                <div class="mb-3">
-                    <label for="skills" class="form-label">Skills (comma-separated)</label>
-                    <input type="text" class="form-control" id="skills" name="skills" required
-                        value="{{ internship.skills|join(', ') if internship and internship.skills else '' }}"
-                        placeholder="e.g., Python, Flask, Java, C++">
-                </div>
-
-                <!-- Documents -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="offer_letter" class="form-label">Offer Letter (Image)</label>
-                            <input type="file" class="form-control" id="offer_letter" name="offer_letter"
-                                accept="image/*">
-                            <div class="form-text">Upload an image of your offer letter (JPG, PNG, or GIF format)</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="completion_letter" class="form-label">Completion Letter (Image)</label>
-                            <input type="file" class="form-control" id="completion_letter" name="completion_letter"
-                                accept="image/*">
-                            <div class="form-text">Upload an image of your completion letter (JPG, PNG, or GIF format)
+                <!-- Form Content -->
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" enctype="multipart/form-data" class="w-100">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label for="company_name" class="form-label">Company Name</label>
+                                <input type="text" class="form-control" id="company_name" name="company_name" required
+                                    value="{{ internship.company_name if internship else '' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="project_name" class="form-label">Project Name</label>
+                                <input type="text" class="form-control" id="project_name" name="project_name" required
+                                    value="{{ internship.project_name if internship else '' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="skills" class="form-label">Skills (comma-separated)</label>
+                                <input type="text" class="form-control" id="skills" name="skills" required
+                                    value="{{ internship.skills|join(', ') if internship and internship.skills else '' }}"
+                                    placeholder="e.g., Python, Flask, Java, C++">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date"
+                                    value="{{ internship.start_date.strftime('%Y-%m-%d') if internship and internship.start_date else '' }}"
+                                    required placeholder="DD-MM-YYYY">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date"
+                                    value="{{ internship.end_date.strftime('%Y-%m-%d') if internship and internship.end_date else '' }}"
+                                    required placeholder="DD-MM-YYYY">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="academic_year" class="form-label">Academic Year</label>
+                                <input type="text" class="form-control" id="academic_year" name="academic_year" readonly
+                                    required
+                                    value="{{ internship.academic_year if internship and internship.academic_year else '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="semester" class="form-label">Semester</label>
+                                <select class="form-select" id="semester" name="semester" required>
+                                    <option value="">Select Semester</option>
+                                    {% for i in range(1, 9) %}
+                                    <option value="Semester {{ i }}" {% if internship and
+                                        internship.semester=='Semester ' + i|string %}selected{% endif %}>Semester {{ i
+                                        }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="hours_per_week" class="form-label">Hours per Week</label>
+                                <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
+                                    min="1" max="40" required
+                                    value="{{ internship.hours_per_week if internship else '' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="offer_letter" class="form-label">Offer Letter (Image)</label>
+                                <input type="file" class="form-control" id="offer_letter" name="offer_letter"
+                                    accept="image/*">
+                                <div class="form-text">Upload an image of your offer letter (JPG, PNG, or GIF format)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="completion_letter" class="form-label">Completion Letter (Image)</label>
+                                <input type="file" class="form-control" id="completion_letter" name="completion_letter"
+                                    accept="image/*">
+                                <div class="form-text">Upload an image of your completion letter (JPG, PNG, or GIF
+                                    format)</div>
                             </div>
                         </div>
-                    </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('student.internships') }}" class="btn btn-secondary"><i
+                                    class="fas fa-arrow-left me-2"></i>Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if internship %}<i class="fas fa-save me-2"></i>Update Internship{% else %}<i
+                                    class="fas fa-paper-plane me-2"></i>Submit Internship Details{% endif %}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <!-- Submit Button -->
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        {% if internship %}Update Internship{% else %}Submit Internship Details{% endif %}
-                    </button>
-                    <a href="{{ url_for('student.internships') }}" class="btn btn-secondary">Cancel</a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
 {% block scripts %}
 <script>
-    // Set default dates to today
-    document.addEventListener('DOMContentLoaded', function () {
-        const today = new Date().toISOString().split('T')[0];
-        if (!document.getElementById('start_date').value) {
-            document.getElementById('start_date').value = today;
-        }
-        if (!document.getElementById('end_date').value) {
-            document.getElementById('end_date').value = today;
-        }
-        if (!document.getElementById('joining_date').value) {
-            document.getElementById('joining_date').value = today;
-        }
-    });
-
     // Validate dates
-    document.getElementById('end_date').addEventListener('change', function () {
-        const startDate = new Date(document.getElementById('start_date').value);
-        const endDate = new Date(this.value);
-        if (endDate <= startDate) {
-            alert('End date must be after start date');
-            this.value = '';
-        }
-    });
+    document.getElementById('start_date').addEventListener('change', validateDates);
+    document.getElementById('end_date').addEventListener('change', validateDates);
 
-    document.getElementById('joining_date').addEventListener('change', function () {
+    function validateDates() {
         const startDate = new Date(document.getElementById('start_date').value);
-        const joiningDate = new Date(this.value);
-        if (joiningDate > startDate) {
-            alert('Joining date must be on or before start date');
-            this.value = '';
+        const endDate = new Date(document.getElementById('end_date').value);
+        if (startDate && endDate && startDate > endDate) {
+            alert('End date must be after start date');
+            document.getElementById('end_date').value = '';
         }
-    });
+    }
+
+    // Academic year calculation
+    function calculateAcademicYear() {
+        const startInput = document.getElementById('start_date');
+        const endInput = document.getElementById('end_date');
+        const academicYearInput = document.getElementById('academic_year');
+        if (!startInput.value || !endInput.value) {
+            academicYearInput.value = '';
+            return;
+        }
+        const startDate = new Date(startInput.value);
+        let year = startDate.getFullYear();
+        let month = startDate.getMonth() + 1; // JS months 0-11
+        let academicYear = '';
+        if (month >= 1 && month <= 5) {
+            // Jan-May: previous + current
+            academicYear = (year - 1) + '-' + (year.toString().slice(-2));
+        } else {
+            // Jun-Dec: current + next
+            academicYear = year + '-' + ((year + 1).toString().slice(-2));
+        }
+        academicYearInput.value = academicYear;
+    }
+    document.getElementById('start_date').addEventListener('change', calculateAcademicYear);
+    document.getElementById('end_date').addEventListener('change', calculateAcademicYear);
+    calculateAcademicYear();
 </script>
-{% endblock %}
 {% endblock %}

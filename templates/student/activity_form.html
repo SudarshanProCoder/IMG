@@ -113,115 +113,104 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm themed-bg themed-text">
-                <div class="card-header themed-bg themed-text">
-                    <h4 class="mb-0">{{ 'Edit' if activity else 'New' }} Activity</h4>
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-12 col-lg-10">
+            <div class="card shadow-lg overflow-hidden" style="border-radius: 20px; min-height: 500px;">
+                <!-- Top Bar -->
+                <div class="card-header themed-bg themed-text d-flex align-items-center" style="min-height: 70px;">
+                    <i class="fas fa-tasks fa-2x me-3"></i>
+                    <h2 class="mb-0">{% if activity %}Edit Activity{% else %}Add New Activity{% endif %}</h2>
                 </div>
-                <div class="card-body">
-                    <form method="POST" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="activity_type" class="form-label">Activity Type</label>
-                            <select class="form-select" id="activity_type" name="activity_type" required>
-                                <option value="">Select Activity Type</option>
-                                <option value="workshop" {% if activity and activity.activity_type=='workshop'
-                                    %}selected{% endif %}>Workshop</option>
-                                <option value="seminar" {% if activity and activity.activity_type=='seminar'
-                                    %}selected{% endif %}>Seminar</option>
-                                <option value="competition" {% if activity and activity.activity_type=='competition'
-                                    %}selected{% endif %}>Competition</option>
-                                <option value="project" {% if activity and activity.activity_type=='project'
-                                    %}selected{% endif %}>Project</option>
-                                <option value="other" {% if activity and activity.activity_type=='other' %}selected{%
-                                    endif %}>Other</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="title" name="title"
-                                value="{{ activity.title if activity else '' }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"
-                                required>{{ activity.description if activity else '' }}</textarea>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="start_date" class="form-label">Start Date</label>
-                                    <input type="date" class="form-control" id="start_date" name="start_date"
-                                        value="{{ activity.start_date.strftime('%Y-%m-%d') if activity else '' }}"
-                                        required>
-                                </div>
+                <!-- Form Content -->
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" enctype="multipart/form-data" class="w-100">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label for="activity_type" class="form-label">Activity Type</label>
+                                <select class="form-select" id="activity_type" name="activity_type" required>
+                                    <option value="">Select Activity Type</option>
+                                    <option value="workshop" {% if activity and activity.activity_type=='workshop'
+                                        %}selected{% endif %}>Workshop</option>
+                                    <option value="seminar" {% if activity and activity.activity_type=='seminar'
+                                        %}selected{% endif %}>Seminar</option>
+                                    <option value="competition" {% if activity and activity.activity_type=='competition'
+                                        %}selected{% endif %}>Competition</option>
+                                    <option value="project" {% if activity and activity.activity_type=='project'
+                                        %}selected{% endif %}>Project</option>
+                                    <option value="other" {% if activity and activity.activity_type=='other'
+                                        %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                    value="{{ activity.title if activity else '' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="skills" class="form-label">Skills</label>
+                                <input type="text" class="form-control" id="skills" name="skills"
+                                    value="{{ activity.skills|join(', ') if activity and activity.skills else '' }}"
+                                    placeholder="Enter skills separated by commas" required>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="end_date" class="form-label">End Date</label>
-                                    <input type="date" class="form-control" id="end_date" name="end_date"
-                                        value="{{ activity.end_date.strftime('%Y-%m-%d') if activity else '' }}"
-                                        required>
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="2"
+                                    required>{{ activity.description if activity else '' }}</textarea>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date"
+                                    value="{{ activity.start_date.strftime('%Y-%m-%d') if activity else '' }}" required
+                                    placeholder="DD-MM-YYYY">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date"
+                                    value="{{ activity.end_date.strftime('%Y-%m-%d') if activity else '' }}" required
+                                    placeholder="DD-MM-YYYY">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="academic_year" class="form-label">Academic Year</label>
+                                <input type="text" class="form-control" id="academic_year" name="academic_year" readonly
+                                    required
+                                    value="{{ activity.academic_year if activity and activity.academic_year else '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="semester" class="form-label">Semester</label>
+                                <select class="form-select" id="semester" name="semester" required>
+                                    <option value="">Select Semester</option>
+                                    {% for i in range(1, 9) %}
+                                    <option value="{{ i }}" {% if activity and activity.semester==i|string %}selected{%
+                                        endif %}>Semester {{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="hours_per_week" class="form-label">Hours per Week</label>
+                                <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
+                                    min="1" max="40" value="{{ activity.hours_per_week if activity else '' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="certificate" class="form-label">Certificate (Image)</label>
+                                <input type="file" class="form-control" id="certificate" name="certificate"
+                                    accept="image/*" {% if not activity %}required{% endif %}>
+                                <div class="form-text">Upload certificate as image file (JPG, PNG, GIF)</div>
+                                {% if activity and activity.certificate_url %}
+                                <div class="mt-2">
+                                    <img src="{{ activity.certificate_url }}" alt="Current Certificate"
+                                        class="img-thumbnail" style="max-height: 120px;">
+                                    <div class="form-text">Current certificate</div>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="semester" class="form-label">Semester</label>
-                                    <select class="form-select" id="semester" name="semester" required>
-                                        <option value="">Select Semester</option>
-                                        {% for i in range(1, 9) %}
-                                        <option value="{{ i }}" {% if activity and activity.semester==i|string
-                                            %}selected{% endif %}>
-                                            Semester {{ i }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="hours_per_week" class="form-label">Hours per Week</label>
-                                    <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
-                                        value="{{ activity.hours_per_week if activity else '' }}" min="1" max="40"
-                                        required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="skills" class="form-label">Skills</label>
-                            <input type="text" class="form-control" id="skills" name="skills"
-                                value="{{ activity.skills|join(', ') if activity and activity.skills else '' }}"
-                                placeholder="Enter skills separated by commas">
-                            <div class="form-text">Enter skills separated by commas (e.g., Leadership, Teamwork,
-                                Communication)</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="certificate" class="form-label">Certificate (Image)</label>
-                            <input type="file" class="form-control" id="certificate" name="certificate" accept="image/*"
-                                {% if not activity %}required{% endif %}>
-                            <div class="form-text">Upload certificate as image file (JPG, PNG, GIF)</div>
-                            {% if activity and activity.certificate_url %}
-                            <div class="mt-2">
-                                <img src="{{ activity.certificate_url }}" alt="Current Certificate"
-                                    class="img-thumbnail" style="max-height: 200px;">
-                                <div class="form-text">Current certificate</div>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('student.activities') }}" class="btn btn-secondary">Cancel</a>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('student.activities') }}" class="btn btn-secondary"><i
+                                    class="fas fa-arrow-left me-2"></i>Cancel</a>
                             <button type="submit" class="btn btn-primary">
-                                {{ 'Update' if activity else 'Submit' }} Activity
+                                {% if activity %}<i class="fas fa-save me-2"></i>Update Activity{% else %}<i
+                                    class="fas fa-paper-plane me-2"></i>Submit Activity{% endif %}
                             </button>
                         </div>
                     </form>
@@ -247,6 +236,32 @@
             document.getElementById('end_date').value = '';
         }
     }
+
+    // Academic year calculation
+    function calculateAcademicYear() {
+        const startInput = document.getElementById('start_date');
+        const endInput = document.getElementById('end_date');
+        const academicYearInput = document.getElementById('academic_year');
+        if (!startInput.value || !endInput.value) {
+            academicYearInput.value = '';
+            return;
+        }
+        const startDate = new Date(startInput.value);
+        let year = startDate.getFullYear();
+        let month = startDate.getMonth() + 1; // JS months 0-11
+        let academicYear = '';
+        if (month >= 1 && month <= 5) {
+            // Jan-May: previous + current
+            academicYear = (year - 1) + '-' + (year.toString().slice(-2));
+        } else {
+            // Jun-Dec: current + next
+            academicYear = year + '-' + ((year + 1).toString().slice(-2));
+        }
+        academicYearInput.value = academicYear;
+    }
+    document.getElementById('start_date').addEventListener('change', calculateAcademicYear);
+    document.getElementById('end_date').addEventListener('change', calculateAcademicYear);
+    calculateAcademicYear();
 
     // Preview image before upload
     document.getElementById('certificate').addEventListener('change', function (e) {

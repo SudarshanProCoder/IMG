@@ -13,7 +13,7 @@ class Internship:
         self.semester = data.get('semester')
         self.hours_per_week = data.get('hours_per_week')
         self.total_hours = data.get('total_hours')
-        self.joining_date = data.get('joining_date')
+        self.academic_year = data.get('academic_year')
         self.offer_letter_url = data.get('offer_letter_url')
         self.completion_letter_url = data.get('completion_letter_url')
         self.skills = data.get('skills', [])
@@ -32,7 +32,7 @@ class Internship:
             'semester': self.semester,
             'hours_per_week': self.hours_per_week,
             'total_hours': self.total_hours,
-            'joining_date': self.joining_date,
+            'academic_year': self.academic_year,
             'offer_letter_url': self.offer_letter_url,
             'completion_letter_url': self.completion_letter_url,
             'skills': self.skills,

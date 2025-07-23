@@ -107,8 +107,13 @@ def new_internship():
             project_name = request.form.get('project_name')
             start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
             end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')
-            joining_date = datetime.strptime(request.form.get('joining_date'), '%Y-%m-%d')
-            semester = request.form.get('semester')
+            # Calculate academic year
+            month = start_date.month
+            year = start_date.year
+            if 1 <= month <= 5:
+                academic_year = f"{year-1}-{str(year)[-2:]}"
+            else:
+                academic_year = f"{year}-{str(year+1)[-2:]}"
             hours_per_week = int(request.form.get('hours_per_week'))
             skills = [skill.strip() for skill in request.form.get('skills').split(',')]
 
@@ -147,14 +152,14 @@ def new_internship():
                 'project_name': project_name,
                 'start_date': start_date,
                 'end_date': end_date,
-                'joining_date': joining_date,
                 'duration_months': round(duration_days / 30, 1),
-                'semester': semester,
+                'semester': request.form.get('semester'), # Assuming semester is selected in the form
                 'hours_per_week': hours_per_week,
                 'total_hours': round(total_hours),
                 'offer_letter_url': offer_letter_url,
                 'completion_letter_url': completion_letter_url,
                 'skills': skills,
+                'academic_year': academic_year,
                 'status': 'pending',
                 'created_at': datetime.utcnow(),
                 'updated_at': datetime.utcnow()
@@ -218,6 +223,14 @@ def new_activity():
             weeks = duration_months * 4.345  # Average weeks in a month
             total_hours = round(weeks * hours_per_week)
             
+            # Calculate academic year
+            month = start_date.month
+            year = start_date.year
+            if 1 <= month <= 5:
+                academic_year = f"{year-1}-{str(year)[-2:]}"
+            else:
+                academic_year = f"{year}-{str(year+1)[-2:]}"
+
             # Create activity data
             activity_data = {
                 'student_id': str(current_user.id),
@@ -232,6 +245,7 @@ def new_activity():
                 'total_hours': total_hours,
                 'certificate_url': certificate_url,
                 'skills': request.form.getlist('skills'),
+                'academic_year': academic_year,
                 'status': 'pending',
                 'created_at': datetime.utcnow(),
                 'updated_at': datetime.utcnow()
@@ -307,7 +321,15 @@ def edit_internship(internship_id):
         hours_per_week = int(request.form.get('hours_per_week', 0))
         total_hours = duration_months * 4 * hours_per_week
         
-        # Update internship data
+        # Update internship data (edit_internship)
+        start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
+        end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')
+        month = start_date.month
+        year = start_date.year
+        if 1 <= month <= 5:
+            academic_year = f"{year-1}-{str(year)[-2:]}"
+        else:
+            academic_year = f"{year}-{str(year+1)[-2:]}"
         internship_data = {
             'company_name': request.form.get('company_name'),
             'project_name': request.form.get('project_name'),
@@ -317,10 +339,10 @@ def edit_internship(internship_id):
             'semester': request.form.get('semester'),
             'hours_per_week': hours_per_week,
             'total_hours': total_hours,
-            'joining_date': datetime.strptime(request.form.get('joining_date'), '%Y-%m-%d'),
             'offer_letter_url': offer_letter_url,
             'completion_letter_url': completion_letter_url,
             'skills': request.form.getlist('skills'),
+            'academic_year': academic_year,
             'status': 'pending'  # Reset status to pending when edited
         }
         
@@ -381,6 +403,14 @@ def edit_activity(activity_id):
         hours_per_week = int(request.form.get('hours_per_week', 0))
         total_hours = duration_months * 4 * hours_per_week
         
+        # Calculate academic year
+        month = start_date.month
+        year = start_date.year
+        if 1 <= month <= 5:
+            academic_year = f"{year-1}-{str(year)[-2:]}"
+        else:
+            academic_year = f"{year}-{str(year+1)[-2:]}"
+
         # Update activity data
         activity_data = {
             'activity_type': request.form.get('activity_type'),
@@ -394,6 +424,7 @@ def edit_activity(activity_id):
             'total_hours': total_hours,
             'certificate_url': certificate_url,
             'skills': request.form.getlist('skills'),
+            'academic_year': academic_year,
             'status': 'pending'  # Reset status to pending when edited
         }
         
