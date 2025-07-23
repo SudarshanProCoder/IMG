@@ -150,7 +150,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for internship in internships %}
+                {% for internship in internships if internship.status != 'rejected' %}
                 <tr>
                     <td>{{ internship.semester }}</td>
                     <td>{{ internship.project_name }}</td>
@@ -166,14 +166,66 @@
             </tbody>
         </table>
     </div>
-    <div class="summary-row">
-        Total number of Internships: {{ internships|length }}<br>
-        Total months worked: {{ internships|map(attribute='duration_months')|sum }}
-    </div>
-    <div class="download-btn text-center">
-        <a href="{{ url_for('student.download_marksheet') }}" class="btn btn-primary">
-            <i class="fas fa-download"></i> Download Marksheet (PDF)
-        </a>
-    </div>
+    {% macro months_diff(start, end) %}
+    {%- set months = 0 -%}
+    {%- if start and end -%}
+    {%- set s = start.strftime('%Y-%m-%d') -%}
+    {%- set e = end.strftime('%Y-%m-%d') -%}
+    {%- set sdt = s.split('-') -%}
+    {%- set edt = e.split('-') -%}
+    {%- set y1 = sdt[0]|int -%}
+    {%- set m1 = sdt[1]|int -%}
+    {%- set d1 = sdt[2]|int -%}
+    {%- set y2 = edt[0]|int -%}
+    {%- set m2 = edt[1]|int -%}
+    {%- set d2 = edt[2]|int -%}
+    {%- set months = (y2 - y1) * 12 + (m2 - m1) -%}
+    {%- if d2 > d1 -%}
+    {%- set months = months + 1 -%}
+    {%- endif -%}
+    {%- if months < 0 -%} {%- set months=0 -%} {%- endif -%} {%- endif -%} {{ months }} {% endmacro %} <div
+        class="summary-row">
+        Total number of Internships: {{ internships|selectattr('status', 'equalto', 'approved')|list|length }}<br>
+        Total months worked: {{ total_internship_months }}
+</div>
+<!-- Activities Table -->
+<h4 class="mb-3">Activity Details</h4>
+<div class="table-responsive">
+    <table class="table marksheet-table">
+        <thead>
+            <tr>
+                <th>Semester</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Duration</th>
+                <th>Skills</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity in activities if activity.status != 'rejected' %}
+            <tr>
+                <td>{{ activity.semester }}</td>
+                <td>{{ activity.title }}</td>
+                <td>{{ activity.activity_type }}</td>
+                <td>
+                    Start: {{ activity.start_date.strftime('%Y-%m-%d') if activity.start_date }}<br>
+                    End: {{ activity.end_date.strftime('%Y-%m-%d') if activity.end_date }}<br>
+                    Total Hours: {{ activity.total_hours }}
+                </td>
+                <td>{{ activity.skills|join(', ') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="summary-row">
+    Total number of Activities: {{ activities|selectattr('status', 'equalto', 'approved')|list|length }}<br>
+    Total months: {{ total_activity_months }}
+</div>
+<div class="download-btn text-center">
+    <a href="{{ url_for('student.download_marksheet') }}" class="btn btn-primary">
+        <i class="fas fa-download"></i> Download Marksheet (PDF)
+    </a>
+</div>
 </div>
 {% endblock %}

@@ -135,6 +135,8 @@ def students():
     try:
         branch = request.args.get('branch')
         year = request.args.get('year')
+        academic_year = request.args.get('academic_year')
+        semester = request.args.get('semester')
         search_query = request.args.get('search', '').strip()
         
         query = {'role': 'student'}
@@ -142,6 +144,10 @@ def students():
             query['branch'] = branch
         if year:
             query['year'] = year
+        if academic_year:
+            query['academic_year'] = academic_year
+        if semester:
+            query['semester'] = semester
         
         students = []
         for student_data in db.users.find(query):
@@ -160,16 +166,22 @@ def students():
             else:
                 students.append(student)
         
-        # Get unique branches and years for filters
+        # Get unique branches, years, academic_years, and semesters for filters
         branches = list(db.users.distinct('branch', {'role': 'student'}))
         years = list(db.users.distinct('year', {'role': 'student'}))
+        academic_years = list(db.users.distinct('academic_year', {'role': 'student'}))
+        semesters = list(db.users.distinct('semester', {'role': 'student'}))
         
         return render_template('admin/students.html',
                             students=students,
                             branches=branches,
                             years=years,
+                            academic_years=academic_years,
+                            semesters=semesters,
                             selected_branch=branch,
                             selected_year=year,
+                            selected_academic_year=academic_year,
+                            selected_semester=semester,
                             search_query=search_query)
     except Exception as e:
         flash(f'Error loading students: {str(e)}', 'error')

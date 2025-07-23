@@ -6,7 +6,7 @@ import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import logging
-from utils.pdf_generator import generate_marksheet
+from utils.pdf_generator import generate_marksheet, generate_internship_pdf, generate_custom_marksheet
 from io import BytesIO
 import cloudinary
 import cloudinary.uploader
@@ -17,6 +17,8 @@ import io
 import fitz  # PyMuPDF
 import base64
 from utils.pdf_generator import generate_internship_pdf
+from models.user import User
+from dateutil.relativedelta import relativedelta
 
 student_bp = Blueprint('student', __name__)
 
@@ -274,6 +276,42 @@ def marksheet():
 
     internships = Internship.get_by_student_id(current_app.db, current_user.id)
     activities = Activity.get_by_student_id(current_app.db, current_user.id)
+    # Calculate total months for approved internships
+    total_internship_months = 0
+    for internship in internships:
+        if getattr(internship, 'status', None) == 'approved' and internship.start_date and internship.end_date:
+            try:
+                start = internship.start_date
+                end = internship.end_date
+                start_dt = start if isinstance(start, datetime) else datetime.strptime(str(start).split()[0], '%Y-%m-%d')
+                end_dt = end if isinstance(end, datetime) else datetime.strptime(str(end).split()[0], '%Y-%m-%d')
+                rdelta = relativedelta(end_dt, start_dt)
+                months = rdelta.years * 12 + rdelta.months
+                if rdelta.days > 0:
+                    months += 1
+                if months < 0:
+                    months = 0
+                total_internship_months += months
+            except Exception:
+                pass
+    # Calculate total months for approved activities
+    total_activity_months = 0
+    for activity in activities:
+        if getattr(activity, 'status', None) == 'approved' and activity.start_date and activity.end_date:
+            try:
+                start = activity.start_date
+                end = activity.end_date
+                start_dt = start if isinstance(start, datetime) else datetime.strptime(str(start).split()[0], '%Y-%m-%d')
+                end_dt = end if isinstance(end, datetime) else datetime.strptime(str(end).split()[0], '%Y-%m-%d')
+                rdelta = relativedelta(end_dt, start_dt)
+                months = rdelta.years * 12 + rdelta.months
+                if rdelta.days > 0:
+                    months += 1
+                if months < 0:
+                    months = 0
+                total_activity_months += months
+            except Exception:
+                pass
     total_credit_points = 0
     for internship in internships:
         if hasattr(internship, 'total_hours') and internship.total_hours:
@@ -281,7 +319,7 @@ def marksheet():
     for activity in activities:
         if hasattr(activity, 'hours_per_week') and activity.hours_per_week:
             total_credit_points += round(activity.hours_per_week / 10, 1)
-    return render_template('student/marksheet.html', internships=internships, activities=activities, total_credit_points=total_credit_points)
+    return render_template('student/marksheet.html', internships=internships, activities=activities, total_credit_points=total_credit_points, total_internship_months=total_internship_months, total_activity_months=total_activity_months)
 
 @student_bp.route('/internship/<internship_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -461,13 +499,14 @@ def download_marksheet():
         return redirect(url_for('index'))
 
     internships = Internship.get_by_student_id(current_app.db, current_user.id)
-    # Ensure profile image path is correct (absolute or URL)
+    activities = Activity.get_by_student_id(current_app.db, current_user.id)
     student = current_user
     if student.profile_image and not student.profile_image.startswith('http') and not os.path.exists(student.profile_image):
-        # If the image is not a URL and not a local file, use default
         student.profile_image = os.path.join('static', 'images', 'default_avatar.png')
-    pdf_buffer = generate_internship_pdf(student, internships)
-    safe_name = student.full_name.replace(' ', '_')
+    # Generate a student-specific URL for the QR code
+    safe_name = student.full_name.strip().replace(' ', '-').lower()
+    marksheet_url = f"{request.url_root.rstrip('/')}/student/{safe_name}"
+    pdf_buffer = generate_custom_marksheet(student, internships, activities, marksheet_url)
     filename = f'marksheet_{safe_name}_{student.id}.pdf'
     return send_file(
         pdf_buffer,
@@ -475,3 +514,22 @@ def download_marksheet():
         as_attachment=True,
         download_name=filename
     ) 
+
+@student_bp.route('/<student_slug>')
+def public_marksheet(student_slug):
+    student = User.get_by_slug(student_slug)
+    if not student or student.role != 'student':
+        return render_template('404.html'), 404
+    from models.internship import Internship
+    from models.activity import Activity
+    from flask import current_app
+    internships = Internship.get_by_student_id(current_app.db, student.id)
+    activities = Activity.get_by_student_id(current_app.db, student.id)
+    total_credit_points = 0
+    for internship in internships:
+        if hasattr(internship, 'total_hours') and internship.total_hours:
+            total_credit_points += round(internship.total_hours / 40, 1)
+    for activity in activities:
+        if hasattr(activity, 'hours_per_week') and activity.hours_per_week:
+            total_credit_points += round(activity.hours_per_week / 10, 1)
+    return render_template('student/marksheet.html', internships=internships, activities=activities, total_credit_points=total_credit_points, current_user=student, minimal=True) 

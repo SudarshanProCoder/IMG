@@ -13,3 +13,4 @@ Pillow==10.0.0
 Flask-WTF==1.1.1
 email-validator==2.0.0
 python-dateutil==2.8.2 
+qrcode==7.4.2 

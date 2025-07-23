@@ -219,6 +219,15 @@
     <div class="filters-card animate-slide-up">
         <form method="GET" class="row g-3">
             <div class="col-12 col-md-3">
+                <label for="academic_year" class="form-label">Academic Year</label>
+                <select name="academic_year" id="academic_year" class="form-select">
+                    <option value="">All Academic Years</option>
+                    {% for ay in academic_years %}
+                    <option value="{{ ay }}" {% if ay==selected_academic_year %}selected{% endif %}>{{ ay }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
                 <label for="branch" class="form-label">Branch</label>
                 <select name="branch" id="branch" class="form-select">
                     <option value="">All Branches</option>
@@ -229,7 +238,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-2">
                 <label for="year" class="form-label">Year</label>
                 <select name="year" id="year" class="form-select">
                     <option value="">All Years</option>
@@ -240,15 +249,24 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-12 col-md-4">
-                <label for="search" class="form-label">Search</label>
-                <input type="text" class="form-control" id="search" name="search"
-                    placeholder="Search by name, email or registration number" value="{{ search_query }}">
+            <div class="col-12 col-md-2">
+                <label for="semester" class="form-label">Semester</label>
+                <select name="semester" id="semester" class="form-select">
+                    <option value="">All Semesters</option>
+                    {% for sem in semesters %}
+                    <option value="{{ sem }}" {% if sem==selected_semester %}selected{% endif %}>{{ sem }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="col-12 col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Search
-                </button>
+            <div class="col-12 col-md-2">
+                <label for="search" class="form-label">Search</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="search" name="search"
+                        placeholder="Search by name, email or registration number" value="{{ search_query }}">
+                    <button class="btn btn-outline-secondary" type="submit" style="border-radius: 0 0.5rem 0.5rem 0;">
+                        <i class="fas fa-search fa-xs"></i>
+                    </button>
+                </div>
             </div>
         </form>
     </div>

@@ -88,6 +88,22 @@ class User(UserMixin):
         return None
 
     @staticmethod
+    def get_by_slug(slug):
+        # Slug is full_name with spaces replaced by hyphens, lowercased
+        user_data = db.users.find_one({
+            'role': 'student',
+            '$expr': {
+                '$eq': [
+                    { '$toLower': { '$replaceAll': { 'input': '$full_name', 'find': ' ', 'replacement': '-' } } },
+                    slug.lower()
+                ]
+            }
+        })
+        if user_data:
+            return User(user_data)
+        return None
+
+    @staticmethod
     def get_by_id(db, user_id):
         try:
             if not user_id:
