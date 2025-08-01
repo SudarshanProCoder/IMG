@@ -38,27 +38,6 @@
             --chart-grid-color: rgba(0, 0, 0, 0.1);
         }
 
-        body[data-theme='dark'] {
-            --primary-color: #00ADB5;
-            --secondary-color: #393E46;
-            --accent-color: #00FFF5;
-            --gradient-primary: linear-gradient(135deg, #232526 0%, #414345 100%);
-            --gradient-secondary: linear-gradient(135deg, #232526 0%, #414345 100%);
-            --background-color: #18191A;
-            --text-color: #F5F6FA;
-            --text-color-rgb: 245, 246, 250;
-            --card-bg: #23272b;
-            --input-bg: #2c3034;
-            --input-text: #F5F6FA;
-            --input-border: #495057;
-            --footer-bg: var(--gradient-secondary);
-            --footer-text: var(--accent-color);
-            --skill-badge-bg: linear-gradient(145deg, #2c3034, #23272b);
-            --skill-badge-color: #e9ecef;
-            --skill-badge-border: rgba(255, 255, 255, 0.05);
-            --chart-grid-color: rgba(255, 255, 255, 0.1);
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--background-color);
@@ -245,25 +224,7 @@
             color: var(--accent-color);
         }
 
-        body,
-        .card,
-        .navbar,
-        .footer,
-        .form-control,
-        .page-header {
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
 
-        /* Themed helpers for full theme switching */
-        .themed-bg {
-            background: var(--card-bg) !important;
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .themed-text {
-            color: var(--text-color) !important;
-            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -285,13 +246,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <!-- Dark/Light Mode Toggle Button -->
-                    <li class="nav-item d-flex align-items-center me-2">
-                        <button id="theme-toggle" class="btn btn-outline-light" title="Toggle dark/light mode"
-                            style="border-radius: 50%; padding: 0.4rem 0.7rem;">
-                            <i id="theme-icon" class="fas fa-moon"></i>
-                        </button>
-                    </li>
+
                     {% if current_user.is_authenticated %}
                     {% if current_user.role == 'admin' %}
                     <li class="nav-item">
@@ -472,41 +427,7 @@
         // Show all toasts
         toastList.forEach(toast => toast.show());
 
-        // Theme toggle logic
-        function updateChartColors() {
-            // Create a custom event that charts can listen for
-            const themeChangeEvent = new CustomEvent('themeChanged');
-            document.dispatchEvent(themeChangeEvent);
-        }
-        
-        function setTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            document.getElementById('theme-icon').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            
-            // Update chart colors if any charts exist
-            updateChartColors();
-        }
-        
-        // On load, set theme from localStorage or system preference
-        (function () {
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-            setTheme(theme);
-            
-            // Listen for system theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (!localStorage.getItem('theme')) {
-                    setTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        })();
-        
-        document.getElementById('theme-toggle').addEventListener('click', function () {
-            const current = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            setTheme(current);
-        });
+
     </script>
     {% block extra_js %}{% endblock %}
 </body>

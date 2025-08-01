@@ -255,33 +255,7 @@ def generate_marksheet(student, internships, activities, total_credit_points):
 
     elements.append(Spacer(1, 20))
 
-    # Summary Section
-    elements.append(Paragraph("Summary", styles['Heading2']))
-    
-    # Calculate totals for approved entries only
-    total_internship_hours = sum(i.total_hours for i in approved_internships)
-    total_activity_hours = sum(a.total_hours for a in approved_activities)
-    
-    # Calculate total credit points
-    internship_credit_points = sum(round(i.total_hours / 40, 1) for i in approved_internships)
-    activity_credit_points = sum(round(a.total_hours / 10, 1) for a in approved_activities)
-    total_credit_points = internship_credit_points + activity_credit_points
-    
-    summary_data = [
-        ['Total Internship Hours', str(total_internship_hours)],
-        ['Total Activity Hours', str(total_activity_hours)],
-        ['Total Credit Points', str(round(total_credit_points, 1))]
-    ]
-    summary_table = Table(summary_data, colWidths=[3*inch, 2*inch])
-    summary_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
-        ('TEXTCOLOR', (0, 0), (0, -1), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (0, -1), 12),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ]))
-    elements.append(summary_table)
+    # No summary section in PDF as per requirement
 
     # Add date and signature
     elements.append(Spacer(1, 40))
@@ -705,6 +679,8 @@ def generate_custom_marksheet(student, internships, activities, marksheet_url):
     elements.append(Paragraph(f"Total number of Activities: {len(approved_activities)}", getSampleStyleSheet()['Normal']))
     elements.append(Paragraph(f"Total months: {total_activity_months}", getSampleStyleSheet()['Normal']))
     elements.append(Spacer(1, 12))
+    
+    # No summary section in PDF as per requirement
 
     # --- FOOTER ---
     class QRImage(Flowable):

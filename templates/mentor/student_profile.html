@@ -207,8 +207,8 @@
 <!-- Stats Section -->
 <div class="container py-4">
     <!-- Student Details Card -->
-    <div class="card mb-4 themed-bg themed-text">
-        <div class="card-header themed-bg themed-text">
+    <div class="card mb-4">
+        <div class="card-header">
             <h5 class="card-title mb-0">
                 <i class="fas fa-user me-2"></i>Student Details
             </h5>
@@ -250,39 +250,39 @@
 
     <!-- Stats Cards -->
     <div class="row mb-4">
-        <div class="col-md-4 themed-bg themed-text">
-            <div class="card themed-bg themed-text">
+        <div class="col-md-4">
+            <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Total Internship Hours</h5>
                     <h2 class="card-text">{{ total_internship_hours }}</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 themed-bg themed-text">
-            <div class="card themed-bg themed-text">
+        <div class="col-md-4">
+            <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Total Activity Hours</h5>
                     <h2 class="card-text">{{ total_activity_hours }}</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 themed-bg themed-text">
-            <div class="card themed-bg themed-text">
+        <div class="col-md-4">
+            <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Total Credit Points</h5>
-                    <h2 class="card-text">{{ total_credit_points }}</h2>
+                    <h2 class="card-text">{{ "%.2f"|format(total_credit_points) }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filters -->
-    <div class="card mb-4 themed-bg themed-text">
+    <div class="card mb-4">
         <div class="card-body">
             <form method="GET" class="row g-3">
                 <div class="col-md-5">
                     <label for="internship_status" class="form-label">Internship Status</label>
-                    <select name="internship_status" id="internship_status" class="form-select themed-bg themed-text">
+                    <select name="internship_status" id="internship_status" class="form-select">
                         <option value="">All Statuses</option>
                         <option value="pending" {% if internship_status=='pending' %}selected{% endif %}>Pending
                         </option>
@@ -294,7 +294,7 @@
                 </div>
                 <div class="col-md-5">
                     <label for="activity_status" class="form-label">Activity Status</label>
-                    <select name="activity_status" id="activity_status" class="form-select themed-bg themed-text">
+                    <select name="activity_status" id="activity_status" class="form-select">
                         <option value="">All Statuses</option>
                         <option value="pending" {% if activity_status=='pending' %}selected{% endif %}>Pending</option>
                         <option value="approved" {% if activity_status=='approved' %}selected{% endif %}>Approved
@@ -304,7 +304,7 @@
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100 themed-bg themed-text">
+                    <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-filter me-2"></i>Filter
                     </button>
                 </div>
@@ -313,38 +313,38 @@
     </div>
 
     <!-- Internships Section -->
-    <h2 class="section-title themed-text"><i class="fas fa-briefcase"></i>Internships</h2>
+    <h2 class="section-title"><i class="fas fa-briefcase"></i>Internships</h2>
     {% if internships %}
     <div class="row">
         {% for internship in internships %}
-        <div class="col-md-6 mb-4 themed-bg themed-text">
-            <div class="card h-100 themed-bg themed-text">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title themed-text">{{ internship.title }}</h5>
-                        <span class="status-badge status-{{ internship.status }} themed-bg themed-text">
+                        <h5 class="card-title">{{ internship.title }}</h5>
+                        <span class="status-badge status-{{ internship.status }}">
                             {{ internship.status|title }}
                         </span>
                     </div>
-                    <p class="card-text themed-text">{{ internship.description }}</p>
+                    <p class="card-text">{{ internship.description }}</p>
                     <div class="mb-3">
                         <strong>Duration:</strong> {{ internship.start_date }} to {{ internship.end_date }}
                     </div>
                     <div class="mb-3">
                         <strong>Hours per Week:</strong> {{ internship.hours_per_week }}
                     </div>
-                    <button class="btn btn-outline-primary mb-2 themed-bg themed-text" data-bs-toggle="modal"
+                    <button class="btn btn-outline-primary mb-2" data-bs-toggle="modal"
                         data-bs-target="#internshipModal{{ internship._id }}">
                         <i class="fas fa-eye"></i> View Details
                     </button>
                     {% if internship.status == 'pending' %}
                     <div class="d-flex gap-2">
                         <a href="{{ url_for('mentor.approve_internship', internship_id=internship._id) }}"
-                            class="btn btn-success themed-bg themed-text">
+                            class="btn btn-success">
                             <i class="fas fa-check me-2"></i>Approve
                         </a>
                         <a href="{{ url_for('mentor.reject_internship', internship_id=internship._id) }}"
-                            class="btn btn-danger themed-bg themed-text">
+                            class="btn btn-danger">
                             <i class="fas fa-times me-2"></i>Reject
                         </a>
                     </div>
@@ -358,102 +358,102 @@
     <div class="modal fade" id="internshipModal{{ internship._id }}" tabindex="-1"
         aria-labelledby="internshipModalLabel{{ internship._id }}" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <div class="modal-content themed-bg themed-text">
-                <div class="modal-header themed-bg themed-text">
-                    <h5 class="modal-title themed-text" id="internshipModalLabel{{ internship._id }}">Internship Details
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="internshipModalLabel{{ internship._id }}">Internship Details
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body themed-bg themed-text">
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Company Name</div>
-                                <div class="detail-value themed-text">{{ internship.company_name|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Company Name</div>
+                                <div class="detail-value">{{ internship.company_name|default('N/A') }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Project Name</div>
-                                <div class="detail-value themed-text">{{ internship.project_name|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Project Name</div>
+                                <div class="detail-value">{{ internship.project_name|default('N/A') }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Role</div>
-                                <div class="detail-value themed-text">{{ internship.role|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Role</div>
+                                <div class="detail-value">{{ internship.role|default('N/A') }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Duration</div>
-                                <div class="detail-value themed-text">{{ internship.start_date|default('N/A') }} to {{
+                            <div class="detail-item">
+                                <div class="detail-label">Duration</div>
+                                <div class="detail-value">{{ internship.start_date|default('N/A') }} to {{
                                     internship.end_date|default('N/A') }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Total Hours</div>
-                                <div class="detail-value themed-text">{{ internship.total_hours|default(0) }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Total Hours</div>
+                                <div class="detail-value">{{ internship.total_hours|default(0) }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Semester</div>
-                                <div class="detail-value themed-text">{{ internship.semester|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Semester</div>
+                                <div class="detail-value">{{ internship.semester|default('N/A') }}</div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Status</div>
-                                <div class="detail-value themed-text"><span
-                                        class="badge {% if internship.status == 'approved' %}bg-success{% elif internship.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %} themed-bg themed-text">{{
+                            <div class="detail-item">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value"><span
+                                        class="badge {% if internship.status == 'approved' %}bg-success{% elif internship.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">{{
                                         internship.status|default('pending')|title }}</span></div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Created At</div>
-                                <div class="detail-value themed-text">{{ internship.created_at|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Created At</div>
+                                <div class="detail-value">{{ internship.created_at|default('N/A') }}</div>
                             </div>
                             {% if internship.offer_letter_url %}
-                            <div class="mb-3 themed-text">
+                            <div class="mb-3">
                                 <h6>Offer Letter</h6>
-                                <div class="image-container themed-bg themed-text">
+                                <div class="image-container">
                                     <img src="{{ internship.offer_letter_url }}" alt="Offer Letter"
                                         class="img-fluid rounded mb-2">
-                                    <div class="mt-2 themed-text">
+                                    <div class="mt-2">
                                         <a href="{{ internship.offer_letter_url }}" target="_blank"
                                             rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm themed-bg themed-text">
+                                            class="btn btn-primary btn-sm">
                                             <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
                                         <a href="{{ internship.offer_letter_url }}" download="offer_letter.jpg"
-                                            class="btn btn-secondary btn-sm themed-bg themed-text">
+                                            class="btn btn-secondary btn-sm">
                                             <i class="fas fa-download"></i> Download</a>
                                     </div>
                                 </div>
                             </div>
                             {% endif %}
                             {% if internship.completion_letter_url %}
-                            <div class="mb-3 themed-text">
+                            <div class="mb-3">
                                 <h6>Completion Letter</h6>
-                                <div class="image-container themed-bg themed-text">
+                                <div class="image-container">
                                     <img src="{{ internship.completion_letter_url }}" alt="Completion Letter"
                                         class="img-fluid rounded mb-2">
-                                    <div class="mt-2 themed-text">
+                                    <div class="mt-2">
                                         <a href="{{ internship.completion_letter_url }}" target="_blank"
                                             rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm themed-bg themed-text">
+                                            class="btn btn-primary btn-sm">
                                             <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
                                         <a href="{{ internship.completion_letter_url }}"
                                             download="completion_letter.jpg"
-                                            class="btn btn-secondary btn-sm themed-bg themed-text">
+                                            class="btn btn-secondary btn-sm">
                                             <i class="fas fa-download"></i> Download</a>
                                     </div>
                                 </div>
                             </div>
                             {% endif %}
                             {% if internship.certificate_url %}
-                            <div class="mb-3 themed-text">
+                            <div class="mb-3">
                                 <h6>Certificate</h6>
-                                <div class="image-container themed-bg themed-text">
+                                <div class="image-container">
                                     <img src="{{ internship.certificate_url }}" alt="Certificate"
                                         class="img-fluid rounded mb-2">
-                                    <div class="mt-2 themed-text">
+                                    <div class="mt-2">
                                         <a href="{{ internship.certificate_url }}" target="_blank"
                                             rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm themed-bg themed-text">
+                                            class="btn btn-primary btn-sm">
                                             <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
                                         <a href="{{ internship.certificate_url }}" download="certificate.jpg"
-                                            class="btn btn-secondary btn-sm themed-bg themed-text">
+                                            class="btn btn-secondary btn-sm">
                                             <i class="fas fa-download"></i> Download</a>
                                     </div>
                                 </div>
@@ -461,30 +461,30 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="row mt-3 themed-text">
+                    <div class="row mt-3">
                         <div class="col-12">
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Skills Gained</div>
-                                <div class="detail-value themed-text">
-                                    <div class="skills-list themed-bg themed-text">{% for skill in
+                            <div class="detail-item">
+                                <div class="detail-label">Skills Gained</div>
+                                <div class="detail-value">
+                                    <div class="skills-list">{% for skill in
                                         internship.skills|default([]) %}<span
-                                            class="skill-badge themed-bg themed-text">{{ skill }}</span>{% endfor %}
+                                            class="skill-badge">{{ skill }}</span>{% endfor %}
                                     </div>
                                 </div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Description</div>
-                                <div class="detail-value themed-text">{{ internship.description|default('No description
+                            <div class="detail-item">
+                                <div class="detail-label">Description</div>
+                                <div class="detail-value">{{ internship.description|default('No description
                                     provided')
                                     }}</div>
                             </div>
-                            {% if internship.feedback %}<div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Feedback</div>
-                                <div class="detail-value themed-text">{{ internship.feedback }}</div>
+                            {% if internship.feedback %}<div class="detail-item">
+                                <div class="detail-label">Feedback</div>
+                                <div class="detail-value">{{ internship.feedback }}</div>
                             </div>{% endif %}
-                            {% if internship.mentor_comments %}<div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Mentor Comments</div>
-                                <div class="detail-value themed-text">{{ internship.mentor_comments }}</div>
+                            {% if internship.mentor_comments %}<div class="detail-item">
+                                <div class="detail-label">Mentor Comments</div>
+                                <div class="detail-value">{{ internship.mentor_comments }}</div>
                             </div>{% endif %}
                         </div>
                     </div>
@@ -494,44 +494,44 @@
     </div>
     {% endfor %}
     {% else %}
-    <div class="alert alert-info themed-bg themed-text">
+    <div class="alert alert-info">
         <i class="fas fa-info-circle me-2"></i>No internships found.
     </div>
     {% endif %}
 
     <!-- Activities Section -->
-    <h2 class="section-title themed-text mt-5"><i class="fas fa-tasks"></i>Activities</h2>
+    <h2 class="section-title mt-5"><i class="fas fa-tasks"></i>Activities</h2>
     {% if activities %}
     <div class="row">
         {% for activity in activities %}
-        <div class="col-md-6 mb-4 themed-bg themed-text">
-            <div class="card h-100 themed-bg themed-text">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title themed-text">{{ activity.title }}</h5>
-                        <span class="status-badge status-{{ activity.status }} themed-bg themed-text">
+                        <h5 class="card-title">{{ activity.title }}</h5>
+                        <span class="status-badge status-{{ activity.status }}">
                             {{ activity.status|title }}
                         </span>
                     </div>
-                    <p class="card-text themed-text">{{ activity.description }}</p>
+                    <p class="card-text">{{ activity.description }}</p>
                     <div class="mb-3">
                         <strong>Duration:</strong> {{ activity.start_date }} to {{ activity.end_date }}
                     </div>
                     <div class="mb-3">
                         <strong>Hours per Week:</strong> {{ activity.hours_per_week }}
                     </div>
-                    <button class="btn btn-outline-primary mb-2 themed-bg themed-text" data-bs-toggle="modal"
+                    <button class="btn btn-outline-primary mb-2" data-bs-toggle="modal"
                         data-bs-target="#activityModal{{ activity._id }}">
                         <i class="fas fa-eye"></i> View Details
                     </button>
                     {% if activity.status == 'pending' %}
                     <div class="d-flex gap-2">
                         <a href="{{ url_for('mentor.approve_activity', activity_id=activity._id) }}"
-                            class="btn btn-success themed-bg themed-text">
+                            class="btn btn-success">
                             <i class="fas fa-check me-2"></i>Approve
                         </a>
                         <a href="{{ url_for('mentor.reject_activity', activity_id=activity._id) }}"
-                            class="btn btn-danger themed-bg themed-text">
+                            class="btn btn-danger">
                             <i class="fas fa-times me-2"></i>Reject
                         </a>
                     </div>
@@ -545,68 +545,68 @@
     <div class="modal fade" id="activityModal{{ activity._id }}" tabindex="-1"
         aria-labelledby="activityModalLabel{{ activity._id }}" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <div class="modal-content themed-bg themed-text">
-                <div class="modal-header themed-bg themed-text">
-                    <h5 class="modal-title themed-text" id="activityModalLabel{{ activity._id }}">Activity Details</h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="activityModalLabel{{ activity._id }}">Activity Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body themed-bg themed-text">
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Title</div>
-                                <div class="detail-value themed-text">{{ activity.title|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Title</div>
+                                <div class="detail-value">{{ activity.title|default('N/A') }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Type</div>
-                                <div class="detail-value themed-text">{{ activity.activity_type|default('N/A')|title }}
+                            <div class="detail-item">
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">{{ activity.activity_type|default('N/A')|title }}
                                 </div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Date</div>
-                                <div class="detail-value themed-text">{{ activity.date|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value">{{ activity.date|default('N/A') }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Hours Spent</div>
-                                <div class="detail-value themed-text">{{ activity.hours_spent|default(0) }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Hours Spent</div>
+                                <div class="detail-value">{{ activity.hours_spent|default(0) }}</div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Semester</div>
-                                <div class="detail-value themed-text">{{ activity.semester|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Semester</div>
+                                <div class="detail-value">{{ activity.semester|default('N/A') }}</div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Status</div>
-                                <div class="detail-value themed-text"><span
-                                        class="badge {% if activity.status == 'approved' %}bg-success{% elif activity.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %} themed-bg themed-text">{{
+                            <div class="detail-item">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value"><span
+                                        class="badge {% if activity.status == 'approved' %}bg-success{% elif activity.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">{{ 
                                         activity.status|default('pending')|title }}</span></div>
                             </div>
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Created At</div>
-                                <div class="detail-value themed-text">{{ activity.created_at|default('N/A') }}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Created At</div>
+                                <div class="detail-value">{{ activity.created_at|default('N/A') }}</div>
                             </div>
-                            {% if activity.venue %}<div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Venue</div>
-                                <div class="detail-value themed-text">{{ activity.venue }}</div>
+                            {% if activity.venue %}<div class="detail-item">
+                                <div class="detail-label">Venue</div>
+                                <div class="detail-value">{{ activity.venue }}</div>
                             </div>{% endif %}
-                            {% if activity.organizer %}<div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Organizer</div>
-                                <div class="detail-value themed-text">{{ activity.organizer }}</div>
+                            {% if activity.organizer %}<div class="detail-item">
+                                <div class="detail-label">Organizer</div>
+                                <div class="detail-value">{{ activity.organizer }}</div>
                             </div>{% endif %}
                             {% if activity.certificate_url %}
-                            <div class="mb-3 themed-text">
+                            <div class="mb-3">
                                 <h6>Certificate</h6>
-                                <div class="image-container themed-bg themed-text">
+                                <div class="image-container">
                                     <img src="{{ activity.certificate_url }}" alt="Certificate"
                                         class="img-fluid rounded mb-2">
-                                    <div class="mt-2 themed-text">
+                                    <div class="mt-2">
                                         <a href="{{ activity.certificate_url }}" target="_blank"
                                             rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm themed-bg themed-text">
+                                            class="btn btn-primary btn-sm">
                                             <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
                                         <a href="{{ activity.certificate_url }}" download="certificate.jpg"
-                                            class="btn btn-secondary btn-sm themed-bg themed-text">
+                                            class="btn btn-secondary btn-sm">
                                             <i class="fas fa-download"></i> Download</a>
                                     </div>
                                 </div>
@@ -614,25 +614,25 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="row mt-3 themed-text">
+                    <div class="row mt-3">
                         <div class="col-12">
-                            <div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Description</div>
-                                <div class="detail-value themed-text">{{ activity.description|default('No description
+                            <div class="detail-item">
+                                <div class="detail-label">Description</div>
+                                <div class="detail-value">{{ activity.description|default('No description
                                     provided') }}
                                 </div>
                             </div>
-                            {% if activity.achievements %}<div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Achievements</div>
-                                <div class="detail-value themed-text">{{ activity.achievements }}</div>
+                            {% if activity.achievements %}<div class="detail-item">
+                                <div class="detail-label">Achievements</div>
+                                <div class="detail-value">{{ activity.achievements }}</div>
                             </div>{% endif %}
-                            {% if activity.feedback %}<div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Feedback</div>
-                                <div class="detail-value themed-text">{{ activity.feedback }}</div>
+                            {% if activity.feedback %}<div class="detail-item">
+                                <div class="detail-label">Feedback</div>
+                                <div class="detail-value">{{ activity.feedback }}</div>
                             </div>{% endif %}
-                            {% if activity.mentor_comments %}<div class="detail-item themed-text">
-                                <div class="detail-label themed-text">Mentor Comments</div>
-                                <div class="detail-value themed-text">{{ activity.mentor_comments }}</div>
+                            {% if activity.mentor_comments %}<div class="detail-item">
+                                <div class="detail-label">Mentor Comments</div>
+                                <div class="detail-value">{{ activity.mentor_comments }}</div>
                             </div>{% endif %}
                         </div>
                     </div>
@@ -642,7 +642,7 @@
     </div>
     {% endfor %}
     {% else %}
-    <div class="alert alert-info themed-bg themed-text">
+    <div class="alert alert-info">
         <i class="fas fa-info-circle me-2"></i>No activities found.
     </div>
     {% endif %}

@@ -326,10 +326,11 @@ def marksheet():
     total_credit_points = 0
     for internship in internships:
         if hasattr(internship, 'total_hours') and internship.total_hours:
-            total_credit_points += round(internship.total_hours / 40, 1)
+            total_credit_points += round(internship.total_hours / 40, 2)
     for activity in activities:
         if hasattr(activity, 'hours_per_week') and activity.hours_per_week:
-            total_credit_points += round(activity.hours_per_week / 10, 1)
+            total_credit_points += round(activity.hours_per_week / 10, 2)
+    total_credit_points = round(total_credit_points, 2)
     return render_template('student/marksheet.html', internships=internships, activities=activities, total_credit_points=total_credit_points, total_internship_months=total_internship_months, total_activity_months=total_activity_months)
 
 @student_bp.route('/internship/<internship_id>/edit', methods=['GET', 'POST'])
@@ -656,8 +657,9 @@ def public_marksheet(student_slug):
     total_credit_points = 0
     for internship in internships:
         if hasattr(internship, 'total_hours') and internship.total_hours:
-            total_credit_points += round(internship.total_hours / 40, 1)
+            total_credit_points += round(internship.total_hours / 40, 2)
     for activity in activities:
         if hasattr(activity, 'hours_per_week') and activity.hours_per_week:
-            total_credit_points += round(activity.hours_per_week / 10, 1)
+            total_credit_points += round(activity.hours_per_week / 10, 2)
+    total_credit_points = round(total_credit_points, 2)
     return render_template('student/marksheet.html', internships=internships, activities=activities, total_credit_points=total_credit_points, current_user=student, minimal=True)
