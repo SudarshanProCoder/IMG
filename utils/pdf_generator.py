@@ -513,19 +513,16 @@ def generate_custom_marksheet(student, internships, activities, marksheet_url):
     logo_img = None
     if os.path.exists(logo_path):
         logo_img = Image(logo_path, width=1.3*inch, height=1.3*inch)
-    # Center logo above the college name
-    if logo_img:
-        elements.append(Spacer(1, 8))
-        elements.append(logo_img)
-        elements.append(Spacer(1, 8))
     college_name = '<b>Shah & Anchor Kutchhi Engineering College</b><br/><font size=10>(An Autonomous Institute Affiliated to University of Mumbai)</font>'
+    # Place logo on left and college name on right
     header_data = [
-        ['', Paragraph(college_name, getSampleStyleSheet()['Title']), '']
+        [logo_img, Paragraph(college_name, getSampleStyleSheet()['Title'])]
     ]
-    header_table = Table(header_data, colWidths=[1.2*inch, 4.2*inch, 1.2*inch])
+    header_table = Table(header_data, colWidths=[1.5*inch, 5.1*inch])
     header_table.setStyle(TableStyle([
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('ALIGN', (1,0), (1,0), 'CENTER'),
+        ('ALIGN', (0,0), (0,0), 'LEFT'),
+        ('ALIGN', (1,0), (1,0), 'RIGHT'),
         ('BOTTOMPADDING', (0,0), (-1,-1), 8),
         ('TOPPADDING', (0,0), (-1,-1), 8),
         ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
@@ -727,24 +724,33 @@ def generate_custom_marksheet(student, internships, activities, marksheet_url):
     qr_byte_arr.seek(0)
     qr_img_for_pdf = PILImage.open(qr_byte_arr)
     qr_flowable = QRImage(qr_img_for_pdf, width=50, height=50)
-    # Footer: left = QR code + sign lines, right = date/place
-    left_col = [qr_flowable, Spacer(1, 6),
+    # Footer: left = date/place, middle = signatures, right = QR code
+    left_col = [
+        Paragraph("<b>Date:</b>", getSampleStyleSheet()['Normal']), 
+        Spacer(1, 15),  # Added more space for date entry
+        Paragraph("<b>Place:</b>", getSampleStyleSheet()['Normal']),
+        Spacer(1, 15)  # Added more space for place entry
+    ]
+    middle_col = [
         Paragraph("<b>HOD sign:</b>", getSampleStyleSheet()['Normal']),
-        Spacer(1, 2),
+        Spacer(1, 15),  # Added more space for signature
         Paragraph("<b>Mentor sign:</b>", getSampleStyleSheet()['Normal']),
-        Spacer(1, 2),
-        Paragraph("<b>Internship Incharge sign:</b>", getSampleStyleSheet()['Normal'])
+        Spacer(1, 15),  # Added more space for signature
+        Paragraph("<b>Internship Incharge sign:</b>", getSampleStyleSheet()['Normal']),
+        Spacer(1, 15)  # Added more space for signature
     ]
-    right_col = [Paragraph("<b>Date:</b>", getSampleStyleSheet()['Normal']), Spacer(1, 8), Paragraph("<b>Place:</b>", getSampleStyleSheet()['Normal'])]
+    right_col = [qr_flowable]
     footer_data = [
-        [left_col, right_col]
+        [left_col, middle_col, right_col]
     ]
-    footer_table = Table(footer_data, colWidths=[2.2*inch, 5.7*inch])
+    footer_table = Table(footer_data, colWidths=[2.0*inch, 3.7*inch, 2.0*inch])
     footer_table.setStyle(TableStyle([
         ('VALIGN', (0,0), (0,0), 'TOP'),
         ('VALIGN', (1,0), (1,0), 'TOP'),
+        ('VALIGN', (2,0), (2,0), 'TOP'),
         ('ALIGN', (0,0), (0,0), 'LEFT'),
-        ('ALIGN', (1,0), (1,0), 'RIGHT'),
+        ('ALIGN', (1,0), (1,0), 'LEFT'),
+        ('ALIGN', (2,0), (2,0), 'RIGHT'),
         ('TOPPADDING', (0,0), (-1,-1), 8),
         ('BOTTOMPADDING', (0,0), (-1,-1), 8),
         ('LEFTPADDING', (0,0), (-1,-1), 8),
@@ -754,4 +760,4 @@ def generate_custom_marksheet(student, internships, activities, marksheet_url):
 
     doc.build(elements, onFirstPage=lambda canvas, doc: (draw_background(canvas, doc)), onLaterPages=lambda canvas, doc: (draw_background(canvas, doc)))
     buffer.seek(0)
-    return buffer 
+    return buffer

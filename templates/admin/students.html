@@ -289,6 +289,9 @@
                             <div><i class="fas fa-id-card me-2"></i>{{ student.registration_number }}</div>
                             <div><i class="fas fa-graduation-cap me-2"></i>{{ student.branch }}</div>
                             <div><i class="fas fa-calendar me-2"></i>Year {{ student.year }}</div>
+                            {% if selected_academic_year %}
+                            <div><i class="fas fa-university me-2"></i>Academic Year: {{ selected_academic_year }}</div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

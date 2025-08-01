@@ -25,9 +25,17 @@
             --gradient-secondary: linear-gradient(135deg, #222831 0%, #393E46 100%);
             --background-color: #f8f9fa;
             --text-color: #222831;
+            --text-color-rgb: 34, 40, 49;
             --card-bg: #fff;
+            --input-bg: #fff;
+            --input-text: #222831;
+            --input-border: #e9ecef;
             --footer-bg: var(--gradient-secondary);
             --footer-text: var(--accent-color);
+            --skill-badge-bg: linear-gradient(145deg, #e9ecef, #f8f9fa);
+            --skill-badge-color: #495057;
+            --skill-badge-border: rgba(0, 0, 0, 0.05);
+            --chart-grid-color: rgba(0, 0, 0, 0.1);
         }
 
         body[data-theme='dark'] {
@@ -38,9 +46,17 @@
             --gradient-secondary: linear-gradient(135deg, #232526 0%, #414345 100%);
             --background-color: #18191A;
             --text-color: #F5F6FA;
+            --text-color-rgb: 245, 246, 250;
             --card-bg: #23272b;
+            --input-bg: #2c3034;
+            --input-text: #F5F6FA;
+            --input-border: #495057;
             --footer-bg: var(--gradient-secondary);
             --footer-text: var(--accent-color);
+            --skill-badge-bg: linear-gradient(145deg, #2c3034, #23272b);
+            --skill-badge-color: #e9ecef;
+            --skill-badge-border: rgba(255, 255, 255, 0.05);
+            --chart-grid-color: rgba(255, 255, 255, 0.1);
         }
 
         body {
@@ -169,14 +185,23 @@
 
         .form-control {
             border-radius: 10px;
-            border: 2px solid #e9ecef;
+            border: 2px solid var(--input-border);
             padding: 0.75rem 1rem;
             transition: all 0.3s ease;
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(0, 173, 181, 0.25);
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+        }
+        
+        .form-control::placeholder {
+            color: var(--input-text);
+            opacity: 0.7;
         }
 
         .page-header {
@@ -448,18 +473,36 @@
         toastList.forEach(toast => toast.show());
 
         // Theme toggle logic
+        function updateChartColors() {
+            // Create a custom event that charts can listen for
+            const themeChangeEvent = new CustomEvent('themeChanged');
+            document.dispatchEvent(themeChangeEvent);
+        }
+        
         function setTheme(theme) {
             document.body.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
             document.getElementById('theme-icon').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            // Update chart colors if any charts exist
+            updateChartColors();
         }
+        
         // On load, set theme from localStorage or system preference
         (function () {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const theme = savedTheme || (prefersDark ? 'dark' : 'light');
             setTheme(theme);
+            
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
         })();
+        
         document.getElementById('theme-toggle').addEventListener('click', function () {
             const current = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             setTheme(current);

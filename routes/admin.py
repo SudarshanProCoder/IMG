@@ -8,8 +8,98 @@ from config.database import db
 import os
 from datetime import datetime
 import csv
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+from utils.certificate_generator import generate_internship_certificate
 
 admin_bp = Blueprint('admin', __name__)
+
+@admin_bp.route('/students/<student_id>/send_certificate', methods=['POST'])
+@login_required
+def send_certificate(student_id):
+    if current_user.role != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('main.index'))
+    
+    try:
+        # Validate student_id format
+        if not ObjectId.is_valid(student_id):
+            flash('Invalid student ID format.', 'danger')
+            return redirect(url_for('admin.students'))
+        
+        # Get student details
+        student_data = db.users.find_one({'_id': ObjectId(student_id), 'role': 'student'})
+        if not student_data:
+            flash('Student not found.', 'danger')
+            return redirect(url_for('admin.students'))
+        
+        # Create a User object from the data
+        student = User(student_data)
+        
+        # Get approved internships
+        internships = list(db.internships.find({'student_id': str(student_id), 'status': 'approved'}))
+        
+        # Calculate total credit points
+        total_hours = sum(i.get('total_hours', 0) for i in internships)
+        total_credit_points = round(total_hours / 40, 1) if total_hours > 0 else 0
+        
+        # Generate certificate
+        certificate_pdf = generate_internship_certificate(student, total_credit_points)
+        
+        # Send email with certificate
+        sender_email = os.getenv('SMTP_EMAIL')
+        sender_password = os.getenv('SMTP_PASSWORD')
+        
+        if not sender_email or not sender_password:
+            flash('SMTP credentials not configured. Cannot send email.', 'danger')
+            return redirect(url_for('admin.view_student', student_id=student_id))
+        
+        # Create email
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = student.email
+        msg['Subject'] = "Internship Completion Certificate - Shah and Anchor College"
+        
+        # Email body
+        body = f"""Dear {student.full_name},
+
+Congratulations on successfully completing your internship requirements!
+
+We are pleased to present you with the attached Internship Completion Certificate. This certificate recognizes your dedication and hard work in earning {total_credit_points} credit points through your internship activities.
+
+Your commitment to professional development is commendable, and we wish you continued success in your future endeavors.
+
+Best regards,
+Shah and Anchor Kutchhi Engineering College
+Internship Program"""
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Attach certificate
+        pdf_attachment = MIMEApplication(certificate_pdf.read())
+        pdf_attachment.add_header('Content-Disposition', 'attachment', filename='internship_certificate.pdf')
+        msg.attach(pdf_attachment)
+        
+        # Send email
+        try:
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+            server.quit()
+            flash('Certificate sent successfully to student email.', 'success')
+        except Exception as e:
+            current_app.logger.error(f"Error sending email: {str(e)}")
+            flash(f'Error sending email: {str(e)}', 'danger')
+        
+        return redirect(url_for('admin.view_student', student_id=student_id))
+    
+    except Exception as e:
+        current_app.logger.error(f"Error generating certificate: {str(e)}")
+        flash(f'Error generating certificate: {str(e)}', 'danger')
+        return redirect(url_for('admin.view_student', student_id=student_id))
 
 @admin_bp.route('/dashboard')
 @login_required
@@ -140,22 +230,38 @@ def students():
         semester = request.args.get('semester')
         search_query = request.args.get('search', '').strip()
         
+        # Base query for students
         query = {'role': 'student'}
         if branch:
             query['branch'] = branch
         if year:
             query['year'] = year
-        if academic_year:
-            query['academic_year'] = academic_year
         if semester:
             query['semester'] = semester
         
         students = []
         for student_data in db.users.find(query):
             student = User(student_data)
+            
             # Get internships and activities for each student
-            student.internships = list(db.internships.find({'student_id': str(student.id)}))
-            student.activities = list(db.activities.find({'student_id': str(student.id)}))
+            if academic_year:
+                # Filter internships and activities by academic year
+                student.internships = list(db.internships.find({
+                    'student_id': str(student.id),
+                    'academic_year': academic_year
+                }))
+                student.activities = list(db.activities.find({
+                    'student_id': str(student.id),
+                    'academic_year': academic_year
+                }))
+                
+                # Only add student if they have matching internships or activities
+                if not student.internships and not student.activities:
+                    continue
+            else:
+                # Get all internships and activities
+                student.internships = list(db.internships.find({'student_id': str(student.id)}))
+                student.activities = list(db.activities.find({'student_id': str(student.id)}))
             
             # Apply search filter if search query exists
             if search_query:
@@ -170,7 +276,12 @@ def students():
         # Get unique branches, years, academic_years, and semesters for filters
         branches = list(db.users.distinct('branch', {'role': 'student'}))
         years = list(db.users.distinct('year', {'role': 'student'}))
-        academic_years = list(db.users.distinct('academic_year', {'role': 'student'}))
+        
+        # Get academic years from both internships and activities
+        internship_academic_years = list(db.internships.distinct('academic_year'))
+        activity_academic_years = list(db.activities.distinct('academic_year'))
+        academic_years = sorted(list(set(internship_academic_years + activity_academic_years)))
+        
         semesters = list(db.users.distinct('semester', {'role': 'student'}))
         
         return render_template('admin/students.html',
@@ -257,6 +368,10 @@ def view_student(student_id):
         activity_count = len(activities)
         approved_internships = sum(1 for i in internships if i.get('status') == 'approved')
         approved_activities = sum(1 for a in activities if a.get('status') == 'approved')
+        
+        # Calculate total credit points (1 credit point per 40 hours)
+        total_hours = sum(i.get('total_hours', 0) for i in internships if i.get('status') == 'approved')
+        total_credit_points = round(total_hours / 40, 1) if total_hours > 0 else 0
 
         # Format dates and convert ObjectIds to strings for internships
         for internship in internships:
@@ -328,7 +443,8 @@ def view_student(student_id):
                             internship_count=internship_count,
                             activity_count=activity_count,
                             approved_internships=approved_internships,
-                            approved_activities=approved_activities)
+                            approved_activities=approved_activities,
+                            total_credit_points=total_credit_points)
     except Exception as e:
         import traceback
         current_app.logger.error(f"Error loading student profile: {str(e)}")
@@ -645,4 +761,4 @@ def export_mentors_csv():
             yield ','.join(row) + '\n'
     return Response(generate(), mimetype='text/csv', headers={
         'Content-Disposition': 'attachment; filename=mentors_export.csv'
-    }) 
+    })

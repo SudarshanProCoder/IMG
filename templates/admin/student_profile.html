@@ -419,6 +419,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card themed-bg themed-text">
+                                <div class="card-body text-center">
+                                    <h6>Total Credit Points</h6>
+                                    <h3>{{ total_credit_points|default(0) }}</h3>
+                                    {% if approved_internships > 0 %}
+                                    <form action="{{ url_for('admin.send_certificate', student_id=student._id) }}" method="post">
+                                        <button type="submit" class="btn btn-success mt-2">
+                                            <i class="fas fa-certificate"></i> Send Completion Certificate
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <small class="text-muted">Student needs approved internships to receive a certificate</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -446,8 +465,9 @@
                                         <span class="me-3"><i class="fas fa-clock"></i> {{
                                             internship.total_hours|default(0) }}
                                             hours</span>
-                                        <span><i class="fas fa-user-tie"></i> {{ internship.role|default('N/A')
+                                        <span class="me-3"><i class="fas fa-user-tie"></i> {{ internship.role|default('N/A')
                                             }}</span>
+                                        <span><i class="fas fa-graduation-cap"></i> {{ internship.academic_year|default('N/A') }}</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center">
@@ -505,8 +525,9 @@
                                             activity.hours_spent|default(0) }}
                                             hours</span>
                                         {% if activity.venue %}
-                                        <span><i class="fas fa-map-marker-alt"></i> {{ activity.venue }}</span>
+                                        <span class="me-3"><i class="fas fa-map-marker-alt"></i> {{ activity.venue }}</span>
                                         {% endif %}
+                                        <span><i class="fas fa-graduation-cap"></i> {{ activity.academic_year|default('N/A') }}</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center">
@@ -583,6 +604,10 @@
                             <div class="detail-item">
                                 <div class="detail-label">Semester</div>
                                 <div class="detail-value">{{ internship.semester|default('N/A') }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Academic Year</div>
+                                <div class="detail-value">{{ internship.academic_year|default('N/A') }}</div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -740,6 +765,10 @@
                             <div class="detail-item">
                                 <div class="detail-label">Semester</div>
                                 <div class="detail-value">{{ activity.semester|default('N/A') }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Academic Year</div>
+                                <div class="detail-value">{{ activity.academic_year|default('N/A') }}</div>
                             </div>
                         </div>
                         <div class="col-md-6">

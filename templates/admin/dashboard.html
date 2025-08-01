@@ -292,14 +292,15 @@
     input,
     textarea,
     select {
-        background: var(--card-bg) !important;
-        color: var(--text-color) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--input-bg) !important;
+        color: var(--input-text) !important;
+        border-color: var(--input-border) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     input::placeholder,
     textarea::placeholder {
-        color: var(--text-color);
+        color: var(--input-text);
         opacity: 0.7;
         transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -493,17 +494,29 @@
 
     document.querySelectorAll('.stats-card, .pending-card, .chart-card').forEach((el) => observer.observe(el));
 
-    // Chart colors
-    const colors = {
-        primary: '#0d6efd',
-        success: '#198754',
-        warning: '#ffc107',
-        danger: '#dc3545',
-        info: '#0dcaf0',
-        secondary: '#6c757d',
-        light: '#f8f9fa',
-        dark: '#212529'
-    };
+    // Chart colors based on theme
+    function getChartColors() {
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        return {
+            primary: '#0d6efd',
+            success: '#198754',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#0dcaf0',
+            secondary: '#6c757d',
+            light: isDark ? '#23272b' : '#f8f9fa',
+            dark: isDark ? '#f8f9fa' : '#212529',
+            gridColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color')
+        };
+    }
+    
+    let colors = getChartColors();
+    
+    // Update colors when theme changes
+    document.addEventListener('themeChanged', function() {
+        colors = getChartColors();
+        // If charts are stored in variables, they could be updated here
+    });
 
     // Trends Chart (Line)
     fetch('/admin/dashboard/data/trends')
@@ -538,7 +551,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { position: 'top' } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        y: { beginAtZero: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color') } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -586,7 +599,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        y: { beginAtZero: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color') } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -612,7 +625,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        y: { beginAtZero: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color') } },
                         x: { grid: { display: false } }
                     }
                 }

@@ -19,6 +19,10 @@ import base64
 from utils.pdf_generator import generate_internship_pdf
 from models.user import User
 from dateutil.relativedelta import relativedelta
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 
 student_bp = Blueprint('student', __name__)
 
@@ -109,13 +113,16 @@ def new_internship():
             project_name = request.form.get('project_name')
             start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
             end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')
-            # Calculate academic year
-            month = start_date.month
-            year = start_date.year
-            if 1 <= month <= 5:
-                academic_year = f"{year-1}-{str(year)[-2:]}"
-            else:
-                academic_year = f"{year}-{str(year+1)[-2:]}"
+            # Get academic year from form (calculated by JavaScript)
+            academic_year = request.form.get('academic_year')
+            # If academic_year is not provided in the form, calculate it
+            if not academic_year:
+                month = start_date.month
+                year = start_date.year
+                if 1 <= month <= 5:
+                    academic_year = f"{year-1}-{str(year)[-2:]}"
+                else:
+                    academic_year = f"{year}-{str(year+1)[-2:]}"
             hours_per_week = int(request.form.get('hours_per_week'))
             skills = [skill.strip() for skill in request.form.get('skills').split(',')]
 
@@ -225,13 +232,17 @@ def new_activity():
             weeks = duration_months * 4.345  # Average weeks in a month
             total_hours = round(weeks * hours_per_week)
             
-            # Calculate academic year
-            month = start_date.month
-            year = start_date.year
-            if 1 <= month <= 5:
-                academic_year = f"{year-1}-{str(year)[-2:]}"
-            else:
-                academic_year = f"{year}-{str(year+1)[-2:]}"
+            # Get academic year from form (calculated by JavaScript)
+            academic_year = request.form.get('academic_year')
+            # If academic_year is not provided in the form, calculate it as fallback
+            if not academic_year:
+                month = start_date.month
+                year = start_date.year
+                if 1 <= month <= 5:
+                    academic_year = f"{year-1}-{str(year)[-2:]}"
+                else:
+                    academic_year = f"{year}-{str(year+1)[-2:]}"
+            current_app.logger.info(f"Using academic year: {academic_year}")
 
             # Create activity data
             activity_data = {
@@ -513,7 +524,124 @@ def download_marksheet():
         mimetype='application/pdf',
         as_attachment=True,
         download_name=filename
-    ) 
+    )
+
+# Certificate download route disabled for students - only available for admins
+# @student_bp.route('/certificate/download')
+# @login_required
+# def download_certificate():
+#     if current_user.role != 'student':
+#         flash('Access denied.', 'error')
+#         return redirect(url_for('index'))
+#     
+#     # Calculate total credit points
+#     internships = Internship.get_by_student_id(current_app.db, current_user.id)
+#     activities = Activity.get_by_student_id(current_app.db, current_user.id)
+#     
+#     total_credit_points = 0
+#     for internship in internships:
+#         if hasattr(internship, 'status') and internship.status == 'approved' and hasattr(internship, 'total_hours') and internship.total_hours:
+#             total_credit_points += round(internship.total_hours / 40, 1)
+#     
+#     for activity in activities:
+#         if hasattr(activity, 'status') and activity.status == 'approved' and hasattr(activity, 'hours_per_week') and activity.hours_per_week:
+#             total_credit_points += round(activity.hours_per_week / 10, 1)
+#     
+#     # Generate the certificate
+#     from utils.certificate_generator import generate_svg_certificate
+#     pdf_buffer = generate_svg_certificate(current_user, total_credit_points)
+#     
+#     # Create filename
+#     safe_name = current_user.full_name.strip().replace(' ', '-').lower()
+#     filename = f'certificate_{safe_name}_{current_user.id}.pdf'
+#     
+#     return send_file(
+#         pdf_buffer,
+#         mimetype='application/pdf',
+#         as_attachment=True,
+#         download_name=filename
+#     )
+
+# Certificate email route disabled for students - only available for admins
+# @student_bp.route('/certificate/send-email')
+# @login_required
+# def send_certificate_email():
+#     if current_user.role != 'student':
+#         flash('Access denied.', 'error')
+#         return redirect(url_for('index'))
+#     
+#     try:
+#         # Calculate total credit points
+#         internships = Internship.get_by_student_id(current_app.db, current_user.id)
+#         activities = Activity.get_by_student_id(current_app.db, current_user.id)
+#         
+#         total_credit_points = 0
+#         for internship in internships:
+#             if hasattr(internship, 'status') and internship.status == 'approved' and hasattr(internship, 'total_hours') and internship.total_hours:
+#                 total_credit_points += round(internship.total_hours / 40, 1)
+#         
+#         for activity in activities:
+#             if hasattr(activity, 'status') and activity.status == 'approved' and hasattr(activity, 'hours_per_week') and activity.hours_per_week:
+#                 total_credit_points += round(activity.hours_per_week / 10, 1)
+#         
+#         # Generate certificate
+#         from utils.certificate_generator import generate_svg_certificate
+#         certificate_pdf = generate_svg_certificate(current_user, total_credit_points)
+#         
+#         # Send email with certificate
+#         sender_email = os.getenv('SMTP_EMAIL')
+#         sender_password = os.getenv('SMTP_PASSWORD')
+#         
+#         if not sender_email or not sender_password:
+#             flash('SMTP credentials not configured. Cannot send email.', 'danger')
+#             return redirect(url_for('student.marksheet'))
+#         
+#         # Create email
+#         msg = MIMEMultipart()
+#         msg['From'] = sender_email
+#         msg['To'] = current_user.email
+#         msg['Subject'] = "Internship Completion Certificate - Shah and Anchor College"
+#         
+#         # Email body
+#         body = f"""Dear {current_user.full_name},
+
+# Congratulations on successfully completing your internship requirements!
+
+# We are pleased to present you with the attached Internship Completion Certificate. This certificate recognizes your dedication and hard work in earning {total_credit_points} credit points through your internship activities.
+
+# Your commitment to professional development is commendable, and we wish you continued success in your future endeavors.
+
+# Best regards,
+# Shah and Anchor Kutchhi Engineering College
+# Internship Program"""
+#         
+#         msg.attach(MIMEText(body, 'plain'))
+#         
+#         # Attach certificate
+#         pdf_attachment = MIMEApplication(certificate_pdf.read())
+#         safe_name = current_user.full_name.strip().replace(' ', '-').lower()
+#         pdf_attachment.add_header('Content-Disposition', 'attachment', 
+#                                  filename=f'certificate_{safe_name}.pdf')
+#         msg.attach(pdf_attachment)
+#         
+#         # Send email
+#         try:
+#             server = smtplib.SMTP('smtp.gmail.com', 587)
+#             server.starttls()
+#             server.login(sender_email, sender_password)
+#             server.send_message(msg)
+#             server.quit()
+#             flash('Certificate sent successfully to your email.', 'success')
+#         except Exception as e:
+#             current_app.logger.error(f"Error sending email: {str(e)}")
+#             flash(f'Error sending email: {str(e)}', 'danger')
+#         
+#         return redirect(url_for('student.marksheet'))
+#     
+#     except Exception as e:
+#         current_app.logger.error(f"Error generating certificate: {str(e)}")
+#         flash(f'Error generating certificate: {str(e)}', 'danger')
+#         return redirect(url_for('student.marksheet'))
 
 @student_bp.route('/<student_slug>')
 def public_marksheet(student_slug):
@@ -532,4 +660,4 @@ def public_marksheet(student_slug):
     for activity in activities:
         if hasattr(activity, 'hours_per_week') and activity.hours_per_week:
             total_credit_points += round(activity.hours_per_week / 10, 1)
-    return render_template('student/marksheet.html', internships=internships, activities=activities, total_credit_points=total_credit_points, current_user=student, minimal=True) 
+    return render_template('student/marksheet.html', internships=internships, activities=activities, total_credit_points=total_credit_points, current_user=student, minimal=True)

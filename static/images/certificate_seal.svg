@@ -1,0 +1,49 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gold seal for certificate -->
+  <defs>
+    <radialGradient id="sealGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#f9d423" stop-opacity="1" />
+      <stop offset="100%" stop-color="#e6b422" stop-opacity="1" />
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="2" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Main seal circle -->
+  <circle cx="100" cy="100" r="80" fill="url(#sealGradient)" filter="url(#shadow)" />
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#ffffff" stroke-width="2" />
+  
+  <!-- Inner decorative circle -->
+  <circle cx="100" cy="100" r="65" fill="none" stroke="#ffffff" stroke-width="1" />
+  
+  <!-- Outer decorative points -->
+  <g>
+    <!-- Create 12 decorative points around the seal -->
+    <path d="M100,20 L105,35 L95,35 Z" fill="#ffffff" />
+    <path d="M140,30 L135,45 L125,40 Z" fill="#ffffff" />
+    <path d="M170,60 L155,70 L150,60 Z" fill="#ffffff" />
+    <path d="M180,100 L165,105 L165,95 Z" fill="#ffffff" />
+    <path d="M170,140 L155,135 L150,145 Z" fill="#ffffff" />
+    <path d="M140,170 L130,155 L120,165 Z" fill="#ffffff" />
+    <path d="M100,180 L95,165 L105,165 Z" fill="#ffffff" />
+    <path d="M60,170 L65,155 L75,160 Z" fill="#ffffff" />
+    <path d="M30,140 L45,130 L50,140 Z" fill="#ffffff" />
+    <path d="M20,100 L35,95 L35,105 Z" fill="#ffffff" />
+    <path d="M30,60 L45,65 L50,55 Z" fill="#ffffff" />
+    <path d="M60,30 L70,45 L80,35 Z" fill="#ffffff" />
+  </g>
+  
+  <!-- Text in the seal -->
+  <text x="100" y="85" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">OFFICIAL</text>
+  <text x="100" y="110" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">CERTIFICATE</text>
+  <text x="100" y="135" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle" fill="#ffffff">OF ACHIEVEMENT</text>
+</svg>
