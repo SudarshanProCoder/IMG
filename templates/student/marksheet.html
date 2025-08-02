@@ -218,7 +218,8 @@
 </div>
 <div class="summary-row">
     Total number of Activities: {{ activities|selectattr('status', 'equalto', 'approved')|list|length }}<br>
-    Total months: {{ total_activity_months }}
+    Total months: {{ total_activity_months }}<br>
+    Total Credit Points: {{ "%.2f"|format(total_credit_points) }}
 </div>
 <div class="download-btn text-center">
     <a href="{{ url_for('student.download_marksheet') }}" class="btn btn-primary">

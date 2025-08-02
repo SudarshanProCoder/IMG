@@ -353,15 +353,7 @@
         margin: 0 0.25rem;
     }
 
-    .themed-bg {
-        background: var(--card-bg) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
 
-    .themed-text {
-        color: var(--text-color) !important;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
 </style>
 {% endblock %}
 
@@ -370,7 +362,7 @@
     <div class="row">
         <!-- Student Information -->
         <div class="col-md-4">
-            <div class="card mb-4 themed-bg themed-text">
+            <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Student Information</h5>
                 </div>
@@ -394,14 +386,14 @@
             </div>
 
             <!-- Statistics Card -->
-            <div class="card mb-4 themed-bg themed-text">
+            <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Statistics</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <div class="card themed-bg themed-text">
+                            <div class="card">
                                 <div class="card-body text-center">
                                     <h6>Total Internships</h6>
                                     <h3>{{ internship_count|default(0) }}</h3>
@@ -410,7 +402,7 @@
                             </div>
                         </div>
                         <div class="col-6 mb-3">
-                            <div class="card themed-bg themed-text">
+                            <div class="card">
                                 <div class="card-body text-center">
                                     <h6>Total Activities</h6>
                                     <h3>{{ activity_count|default(0) }}</h3>
@@ -421,10 +413,10 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col-12">
-                            <div class="card themed-bg themed-text">
+                            <div class="card">
                                 <div class="card-body text-center">
                                     <h6>Total Credit Points</h6>
-                                    <h3>{{ total_credit_points|default(0) }}</h3>
+                                    <h3>{{ "%.2f"|format(total_credit_points|default(0)) }}</h3>
                                     {% if approved_internships > 0 %}
                                     <form action="{{ url_for('admin.send_certificate', student_id=student._id) }}" method="post">
                                         <button type="submit" class="btn btn-success mt-2">
@@ -445,7 +437,7 @@
         <!-- Internships and Activities -->
         <div class="col-md-8">
             <!-- Internships -->
-            <div class="card mb-4 themed-bg themed-text">
+            <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Internships</h5>
                 </div>
@@ -505,7 +497,7 @@
             </div>
 
             <!-- Activities -->
-            <div class="card themed-bg themed-text">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">Activities</h5>
                 </div>

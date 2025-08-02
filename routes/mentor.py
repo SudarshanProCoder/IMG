@@ -50,9 +50,9 @@ def dashboard():
             # Calculate student statistics
             student.total_internship_hours = sum(i.get('total_hours', 0) for i in student.internships if i.get('status') == 'approved')
             student.total_activity_hours = sum(a.get('hours_per_week', 0) for a in student.activities if a.get('status') == 'approved')
-            student.internship_credit_points = round(student.total_internship_hours / 40, 1) if student.total_internship_hours else 0
-            student.activity_credit_points = round(student.total_activity_hours / 10, 1) if student.total_activity_hours else 0
-            student.total_credit_points = student.internship_credit_points + student.activity_credit_points
+            student.internship_credit_points = round(student.total_internship_hours / 40, 2) if student.total_internship_hours else 0
+            student.activity_credit_points = round(student.total_activity_hours / 10, 2) if student.total_activity_hours else 0
+            student.total_credit_points = round(student.internship_credit_points + student.activity_credit_points, 2)
             
             # Update overall totals
             total_internship_hours += student.total_internship_hours
@@ -111,9 +111,9 @@ def view_student(student_id):
     # Calculate statistics
     total_internship_hours = sum(i.get('total_hours', 0) for i in internships if i.get('status') == 'approved')
     total_activity_hours = sum(a.get('hours_per_week', 0) for a in activities if a.get('status') == 'approved')
-    internship_credit_points = round(total_internship_hours / 40, 1) if total_internship_hours else 0
-    activity_credit_points = round(total_activity_hours / 10, 1) if total_activity_hours else 0
-    total_credit_points = internship_credit_points + activity_credit_points
+    internship_credit_points = round(total_internship_hours / 40, 2) if total_internship_hours else 0
+    activity_credit_points = round(total_activity_hours / 10, 2) if total_activity_hours else 0
+    total_credit_points = round(internship_credit_points + activity_credit_points, 2)
     
     return render_template('mentor/student_profile.html',
                          student=student,
@@ -211,4 +211,4 @@ def reject_activity(activity_id):
     activity.status = 'rejected'
     activity.save(current_app.db)
     flash('Activity rejected.', 'success')
-    return redirect(url_for('mentor.view_student', student_id=activity.student_id)) 
+    return redirect(url_for('mentor.view_student', student_id=activity.student_id))

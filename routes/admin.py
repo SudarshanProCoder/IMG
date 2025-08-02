@@ -43,7 +43,7 @@ def send_certificate(student_id):
         
         # Calculate total credit points
         total_hours = sum(i.get('total_hours', 0) for i in internships)
-        total_credit_points = round(total_hours / 40, 1) if total_hours > 0 else 0
+        total_credit_points = round(total_hours / 40, 2) if total_hours > 0 else 0
         
         # Generate certificate
         certificate_pdf = generate_internship_certificate(student, total_credit_points)
@@ -371,7 +371,7 @@ def view_student(student_id):
         
         # Calculate total credit points (1 credit point per 40 hours)
         total_hours = sum(i.get('total_hours', 0) for i in internships if i.get('status') == 'approved')
-        total_credit_points = round(total_hours / 40, 1) if total_hours > 0 else 0
+        total_credit_points = round(total_hours / 40, 2) if total_hours > 0 else 0
 
         # Format dates and convert ObjectIds to strings for internships
         for internship in internships:

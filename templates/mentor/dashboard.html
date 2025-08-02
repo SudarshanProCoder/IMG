@@ -288,7 +288,7 @@
             <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4"
                 style="animation-delay: 0.3s">
                 <i class="fas fa-star stats-icon"></i>
-                <div class="stats-number">{{ total_credit_points }}</div>
+                <div class="stats-number">{{ "%.2f"|format(total_credit_points) }}</div>
                 <p class="text-muted mb-0">Total Credit Points</p>
             </div>
         </div>
@@ -352,7 +352,7 @@
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-star"></i>
-                        <span>Credits: {{ student.total_credit_points }}</span>
+                        <span>Credits: {{ "%.2f"|format(student.total_credit_points) }}</span>
                     </div>
                 </div>
                 {% if student.internships|selectattr('status', 'equalto', 'pending')|list|length > 0 %}
