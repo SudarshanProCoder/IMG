@@ -17,14 +17,21 @@ def dashboard():
     
     try:
         # Get filter parameters
+        department = request.args.get('department')
+        academic_year = request.args.get('academic_year')
+        semester = request.args.get('semester')
         year = request.args.get('year')
         internship_status = request.args.get('internship_status')
         activity_status = request.args.get('activity_status')
         
         # Build query for students
         query = {'mentor_email': current_user.email}
+        if department:
+            query['department'] = department
         if year:
             query['year'] = year
+        if semester:
+            query['semester'] = semester
         
         # Get students
         students = []
@@ -32,12 +39,19 @@ def dashboard():
         total_activity_hours = 0
         total_credit_points = 0
         
+        # Debug: Print the actual query being used
+        current_app.logger.debug(f"Student query: {query}")
+        
         for student_data in db.users.find(query):
             student = User(student_data)
             
             # Get internships and activities
             internship_query = {'student_id': student.id}
             activity_query = {'student_id': student.id}
+            
+            if academic_year:
+                internship_query['academic_year'] = academic_year
+                activity_query['academic_year'] = academic_year
             
             if internship_status:
                 internship_query['status'] = internship_status
@@ -63,13 +77,49 @@ def dashboard():
             if (not internship_status or student.internships) and (not activity_status or student.activities):
                 students.append(student)
         
-        # Get unique years for filter
-        years = list(db.users.distinct('year', {'mentor_email': current_user.email}))
+        # Get unique values for filters from mentor's students
+        mentor_students_query = {'mentor_email': current_user.email}
+        
+        # If department is selected, filter other options based on that department
+        if department:
+            mentor_students_query['department'] = department
+        
+        # Get departments, years, and semesters from mentor's students
+        departments = list(db.users.distinct('department', {'mentor_email': current_user.email, 'department': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        years = list(db.users.distinct('year', {**mentor_students_query, 'year': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        semesters = list(db.users.distinct('semester', {**mentor_students_query, 'semester': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        
+        # Get academic years from both internships and activities of mentor's students
+        mentor_student_ids = [str(student['_id']) for student in db.users.find(mentor_students_query, {'_id': 1})]
+        
+        internship_academic_years = list(db.internships.distinct('academic_year', {'student_id': {'$in': mentor_student_ids}, 'academic_year': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        activity_academic_years = list(db.activities.distinct('academic_year', {'student_id': {'$in': mentor_student_ids}, 'academic_year': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        academic_years = sorted(list(set(internship_academic_years + activity_academic_years)))
+        
+        # Debug logging
+        current_app.logger.debug(f"Filter params: dept={department}, year={year}, semester={semester}, academic_year={academic_year}")
+        current_app.logger.debug(f"Query: {query}")
+        current_app.logger.debug(f"Found {len(students)} students")
+        current_app.logger.debug(f"Available years: {years}")
+        current_app.logger.debug(f"Available semesters: {semesters}")
+        current_app.logger.debug(f"Available academic years: {academic_years}")
+        
+        # Ensure we're passing the correct filter values (not None if they're empty strings)
+        selected_department = department if department else None
+        selected_year = year if year else None
+        selected_semester = semester if semester else None
+        selected_academic_year = academic_year if academic_year else None
         
         return render_template('mentor/dashboard.html',
                             students=students,
+                            departments=departments,
                             years=years,
-                            selected_year=year,
+                            semesters=semesters,
+                            academic_years=academic_years,
+                            selected_department=selected_department,
+                            selected_year=selected_year,
+                            selected_semester=selected_semester,
+                            selected_academic_year=selected_academic_year,
                             internship_status=internship_status,
                             activity_status=activity_status,
                             total_internship_hours=total_internship_hours,
