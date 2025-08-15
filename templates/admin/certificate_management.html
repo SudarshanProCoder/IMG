@@ -1,0 +1,643 @@
+{% extends "base.html" %}
+
+{% block title %}Certificate Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .certificate-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-radius: 0 0 2rem 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .certificate-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .certificate-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .stats-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.9;
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .filter-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .filter-card h5 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #2c3e50;
+        font-size: 0.95rem;
+    }
+
+    .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 0.75rem;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: white;
+        outline: none;
+    }
+
+    .btn-apply-filters {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-apply-filters:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .action-btn {
+        padding: 1.25rem 2rem;
+        border-radius: 1rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        text-decoration: none;
+    }
+
+    .btn-send {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-send:hover {
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+
+    .btn-download {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        box-shadow: 0 5px 20px rgba(0, 123, 255, 0.3);
+    }
+
+    .btn-download:hover {
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+        color: white;
+    }
+
+    .students-list {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+    }
+
+    .students-list h5 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .student-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        padding: 1.5rem;
+        border: 1px solid #e9ecef;
+        border-radius: 1rem;
+        margin-bottom: 1rem;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        gap: 1.5rem;
+    }
+
+    .student-item:hover {
+        background: white;
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+    }
+
+    .student-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #667eea;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .student-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .student-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .student-details {
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .student-status {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: center;
+        min-width: 120px;
+    }
+
+    .status-eligible {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        box-shadow: 0 3px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .status-not-eligible {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        box-shadow: 0 3px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 1rem;
+        margin-top: 1.5rem;
+        box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+    }
+
+    .info-box small {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .no-students {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #6c757d;
+    }
+
+    .no-students i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+        .certificate-header {
+            padding: 2rem 1rem;
+            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+        }
+
+        .certificate-header h1 {
+            font-size: 2rem;
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .student-item {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .student-avatar {
+            margin: 0 auto;
+        }
+
+        .stats-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .themed-text {
+        color: var(--text-color) !important;
+        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .themed-bg {
+        background: var(--card-bg) !important;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .filter-card,
+    .students-list {
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    .form-select {
+        background: var(--input-bg) !important;
+        color: var(--input-text) !important;
+        border-color: var(--input-border) !important;
+    }
+
+    .student-item {
+        background: var(--item-bg) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    .student-item:hover {
+        background: var(--hover-bg) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="certificate-header">
+        <div class="container">
+            <h1>
+                <i class="fas fa-certificate me-3"></i>
+                Certificate Management
+            </h1>
+            <p>Manage and distribute internship completion certificates to students</p>
+        </div>
+    </div>
+
+    <!-- Statistics Summary -->
+    <div class="stats-summary">
+        <div class="stat-card">
+            <div class="stat-number">{{ students|length }}</div>
+            <div class="stat-label">Total Students</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ eligible_count }}</div>
+            <div class="stat-label">Eligible for Certificates</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_credit_points }}</div>
+            <div class="stat-label">Total Credit Points</div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-card themed-bg themed-text">
+        <h5>
+            <i class="fas fa-filter me-2"></i>
+            Filter Students
+        </h5>
+
+        <form method="GET" class="filter-form">
+            <div class="form-group">
+                <label for="department" class="form-label">Department</label>
+                <select name="department" id="department" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {% if dept==selected_department %}selected{% endif %}>
+                        {{ dept }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="academic_year" class="form-label">Academic Year</label>
+                <select name="academic_year" id="academic_year" class="form-select">
+                    <option value="">All Academic Years</option>
+                    {% for year in academic_years %}
+                    <option value="{{ year }}" {% if year==selected_year %}selected{% endif %}>
+                        {{ year }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn-apply-filters">
+                    <i class="fas fa-search me-2"></i>
+                    Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="filter-card themed-bg themed-text">
+        <h5>
+            <i class="fas fa-cogs me-2"></i>
+            Certificate Actions
+        </h5>
+
+        <div class="action-buttons">
+            <form method="POST" action="{{ url_for('admin.send_certificates') }}" style="display: contents;">
+                <input type="hidden" name="department" value="{{ selected_department }}">
+                <input type="hidden" name="academic_year" value="{{ selected_year }}">
+                <button type="submit" class="action-btn btn-send" id="send-btn">
+                    <i class="fas fa-envelope"></i>
+                    Send Certificates via Email
+                </button>
+            </form>
+
+            <form method="POST" action="{{ url_for('admin.download_certificates') }}" style="display: contents;">
+                <input type="hidden" name="department" value="{{ selected_department }}">
+                <input type="hidden" name="academic_year" value="{{ selected_year }}">
+                <button type="submit" class="action-btn btn-download" id="download-btn">
+                    <i class="fas fa-download"></i>
+                    Download Certificates (ZIP)
+                </button>
+            </form>
+        </div>
+
+        <div class="info-box">
+            <small>
+                <i class="fas fa-info-circle me-1"></i>
+                Only students with approved internships will receive certificates.
+                Certificates will be generated based on the selected filters.
+            </small>
+        </div>
+    </div>
+
+    <!-- Students List -->
+    <div class="students-list themed-bg themed-text">
+        <h5>
+            <i class="fas fa-users me-2"></i>
+            Students ({{ students|length }})
+        </h5>
+
+        {% if students %}
+        {% for student in students %}
+        <div class="student-item" data-student-id="{{ student._id }}">
+            <img src="{{ student.profile_image or url_for('static', filename='images/default_avatar.png') }}" 
+                 alt="{{ student.full_name }}"
+                 class="student-avatar" 
+                 onerror="this.src='{{ url_for('static', filename='images/default_avatar.png') }}'">
+
+            <div class="student-info">
+                <div class="student-name">{{ student.full_name }}</div>
+                <div class="student-details">
+                    <strong>Department:</strong> {{ student.department or 'Not specified' }} |
+                    <strong>Email:</strong> {{ student.email }}
+                </div>
+            </div>
+
+            <div class="student-status {% if eligible_students[student._id] > 0 %}status-eligible{% else %}status-not-eligible{% endif %}"
+                id="status-{{ student._id }}">
+                {% if eligible_students[student._id] > 0 %}
+                {{ eligible_students[student._id] }} Credit Points
+                {% else %}
+                Not Eligible
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-students">
+            <i class="fas fa-users"></i>
+            <p>No students found with the selected filters.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add loading states to action buttons
+        const sendBtn = document.getElementById('send-btn');
+        const downloadBtn = document.getElementById('download-btn');
+
+        // Send certificates form
+        const sendForm = sendBtn.closest('form');
+        sendForm.addEventListener('submit', function () {
+            sendBtn.innerHTML = '<span class="loading-spinner"></span> Sending...';
+            sendBtn.disabled = true;
+            // Show a message to user
+            const infoBox = document.querySelector('.info-box');
+            if (infoBox) {
+                infoBox.innerHTML = '<small><i class="fas fa-spinner fa-spin me-1"></i> Sending certificates via email. Please wait...</small>';
+            }
+        });
+
+        // Download certificates form
+        const downloadForm = downloadBtn.closest('form');
+        downloadForm.addEventListener('submit', function () {
+            downloadBtn.innerHTML = '<span class="loading-spinner"></span> Preparing...';
+            downloadBtn.disabled = true;
+            // Show a message to user
+            const infoBox = document.querySelector('.info-box');
+            if (infoBox) {
+                infoBox.innerHTML = '<small><i class="fas fa-spinner fa-spin me-1"></i> Preparing ZIP file. Please wait...</small>';
+            }
+            
+            // Reset button state after a delay (since download doesn't reload page)
+            setTimeout(() => {
+                downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Certificates (ZIP)';
+                downloadBtn.disabled = false;
+                // Reset info box
+                if (infoBox) {
+                    infoBox.innerHTML = '<small><i class="fas fa-info-circle me-1"></i> Only students with approved internships will receive certificates. Certificates will be generated based on the selected filters.</small>';
+                }
+            }, 3000); // Reset after 3 seconds
+            
+            // Alternative: Reset when user clicks anywhere (indicating download started)
+            const resetOnClick = () => {
+                downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Certificates (ZIP)';
+                downloadBtn.disabled = false;
+                if (infoBox) {
+                    infoBox.innerHTML = '<small><i class="fas fa-info-circle me-1"></i> Only students with approved internships will receive certificates. Certificates will be generated based on the selected filters.</small>';
+                }
+                document.removeEventListener('click', resetOnClick);
+            };
+            document.addEventListener('click', resetOnClick);
+        });
+
+        // Auto-submit form when filters change (optional)
+        const departmentSelect = document.getElementById('department');
+        const yearSelect = document.getElementById('academic_year');
+
+        function updateFilters() {
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = window.location.pathname;
+
+            if (departmentSelect.value) {
+                const deptInput = document.createElement('input');
+                deptInput.type = 'hidden';
+                deptInput.name = 'department';
+                deptInput.value = departmentSelect.value;
+                form.appendChild(deptInput);
+            }
+
+            if (yearSelect.value) {
+                const yearInput = document.createElement('input');
+                yearInput.type = 'hidden';
+                yearInput.name = 'academic_year';
+                yearInput.value = yearSelect.value;
+                form.appendChild(yearInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Uncomment the lines below if you want instant filtering
+        // departmentSelect.addEventListener('change', updateFilters);
+        // yearSelect.addEventListener('change', updateFilters);
+    });
+</script>
+{% endblock %}

@@ -353,7 +353,7 @@ def generate_internship_certificate(student, credit_points):
     # Background pattern for certificate
     def draw_background(canvas, doc):
         # Draw the certificate pattern background
-        pattern_path = os.path.join('static', 'images', 'certificate-pattern.svg')
+        pattern_path = os.path.join('static', 'images', 'certificate.svg')
         if os.path.exists(pattern_path):
             canvas.saveState()
             

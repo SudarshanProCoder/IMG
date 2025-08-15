@@ -762,3 +762,359 @@ def export_mentors_csv():
     return Response(generate(), mimetype='text/csv', headers={
         'Content-Disposition': 'attachment; filename=mentors_export.csv'
     })
+
+@admin_bp.route('/certificate-management')
+@login_required
+def certificate_management():
+    if current_user.role != 'admin':
+        flash('Access denied.', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    try:
+        # Check database connection
+        if db is None:
+            flash('Database connection not available. Please try again.', 'danger')
+            return redirect(url_for('admin.dashboard'))
+        
+        current_app.logger.info("Starting certificate management route")
+        
+        # Get unique departments and academic years for filtering
+        try:
+            departments = list(db.users.distinct('department', {'role': 'student', 'department': {'$exists': True, '$ne': None}}))
+            current_app.logger.info(f"Found {len(departments)} departments")
+        except Exception as e:
+            current_app.logger.error(f"Error getting departments: {str(e)}")
+            departments = []
+        
+        try:
+            # Get academic years from internships table (this is more reliable)
+            academic_years = list(db.internships.distinct('academic_year', {'academic_year': {'$exists': True, '$ne': None}}))
+            current_app.logger.info(f"Found {len(academic_years)} academic years from internships")
+        except Exception as e:
+            current_app.logger.error(f"Error getting academic years from internships: {str(e)}")
+            academic_years = []
+        
+        # Remove the user_years fallback - only use academic_year from internships
+        all_academic_years = sorted(academic_years)
+        current_app.logger.info(f"Academic years from internships: {all_academic_years}")
+        
+        # Get filter parameters
+        selected_department = request.args.get('department', '')
+        selected_year = request.args.get('academic_year', '')
+        current_app.logger.info(f"Filters: department={selected_department}, academic_year={selected_year}")
+        
+        # Build filter query for students
+        filter_query = {'role': 'student'}
+        if selected_department:
+            filter_query['department'] = selected_department
+        
+        # Get students based on filters
+        try:
+            students = list(db.users.find(filter_query))
+            current_app.logger.info(f"Found {len(students)} students")
+        except Exception as e:
+            current_app.logger.error(f"Error getting students: {str(e)}")
+            students = []
+        
+        # Count eligible students (with approved internships)
+        eligible_count = 0
+        total_credit_points = 0.0
+        eligible_students = {}
+        
+        for i, student_data in enumerate(students):
+            try:
+                current_app.logger.debug(f"Processing student {i+1}/{len(students)}: {student_data.get('_id', 'Unknown')}")
+                
+                # Convert ObjectId to string for consistent key handling
+                student_id = str(student_data['_id'])
+                current_app.logger.debug(f"Student ID converted to string: {student_id}")
+                
+                # Get approved internships for the student
+                internship_query = {'student_id': student_id, 'status': 'approved'}
+                
+                # If academic year is selected, filter internships by that year
+                if selected_year:
+                    internship_query['academic_year'] = selected_year
+                
+                try:
+                    internships = list(db.internships.find(internship_query))
+                    current_app.logger.debug(f"Found {len(internships)} approved internships for student {student_id}")
+                except Exception as e:
+                    current_app.logger.error(f"Error getting internships for student {student_id}: {str(e)}")
+                    internships = []
+                
+                if internships:
+                    eligible_count += 1
+                    # Calculate total hours from approved internships
+                    total_hours = sum(i.get('total_hours', 0) for i in internships)
+                    credit_points = round(total_hours / 40, 2) if total_hours > 0 else 0.0
+                    total_credit_points += credit_points
+                    eligible_students[student_id] = credit_points
+                    current_app.logger.debug(f"Student {student_id} eligible with {credit_points} credit points")
+                else:
+                    # Student has no approved internships
+                    eligible_students[student_id] = 0.0
+                    current_app.logger.debug(f"Student {student_id} not eligible")
+                    
+            except Exception as e:
+                current_app.logger.error(f"Error processing student {i+1}: {str(e)}")
+                # Set default values for this student
+                try:
+                    student_id = str(student_data.get('_id', 'unknown'))
+                except:
+                    student_id = f'unknown_{i}'
+                eligible_students[student_id] = 0.0
+                continue
+        
+        # Round total credit points to 2 decimal places
+        total_credit_points = round(total_credit_points, 2)
+        
+        # Convert student ObjectIds to strings for template compatibility and ensure profile_image
+        for i, student in enumerate(students):
+            try:
+                student['_id'] = str(student['_id'])
+                # Ensure profile_image field exists
+                if 'profile_image' not in student or not student['profile_image']:
+                    student['profile_image'] = None  # Will use default image in template
+                current_app.logger.debug(f"Converted student {i+1} ID to string: {student['_id']}")
+            except Exception as e:
+                current_app.logger.error(f"Error converting student {i+1} ID: {str(e)}")
+                student['_id'] = f'unknown_{i}'
+                student['profile_image'] = None
+        
+        # Debug logging
+        current_app.logger.info(f"Certificate management loaded: {len(students)} students, {eligible_count} eligible")
+        current_app.logger.debug(f"Eligible students keys: {list(eligible_students.keys())[:5]}...")
+        current_app.logger.debug(f"Sample student IDs: {[str(s.get('_id', 'unknown'))[:10] for s in students[:3]]}")
+        
+        return render_template('admin/certificate_management.html',
+                             departments=departments,
+                             academic_years=all_academic_years,
+                             selected_department=selected_department,
+                             selected_year=selected_year,
+                             students=students,
+                             eligible_count=eligible_count,
+                             total_credit_points=total_credit_points,
+                             eligible_students=eligible_students)
+                             
+    except Exception as e:
+        current_app.logger.error(f"Error in certificate_management: {str(e)}")
+        import traceback
+        current_app.logger.error(f"Traceback: {traceback.format_exc()}")
+        flash(f'Error loading certificate management: {str(e)}', 'danger')
+        return redirect(url_for('admin.dashboard'))
+
+@admin_bp.route('/send-certificates', methods=['POST'])
+@login_required
+def send_certificates():
+    if current_user.role != 'admin':
+        flash('Access denied.', 'error')
+        return redirect(url_for('admin.certificate_management'))
+    
+    try:
+        # Get filter parameters
+        department = request.form.get('department', '')
+        academic_year = request.form.get('academic_year', '')
+        
+        current_app.logger.info(f"Sending certificates for department: {department}, academic_year: {academic_year}")
+        
+        # Build filter query
+        filter_query = {'role': 'student'}
+        if department:
+            filter_query['department'] = department
+        
+        # Get students based on filters
+        students = list(db.users.find(filter_query))
+        
+        if not students:
+            flash('No students found with the selected filters.', 'warning')
+            return redirect(url_for('admin.certificate_management'))
+        
+        # Send certificates to each student
+        sent_count = 0
+        failed_count = 0
+        
+        for student_data in students:
+            try:
+                student = User(student_data)
+                student_id = str(student_data['_id'])
+                
+                # Get approved internships for the student
+                internship_query = {'student_id': student_id, 'status': 'approved'}
+                
+                # If academic year is selected, filter internships by that year
+                if academic_year:
+                    internship_query['academic_year'] = academic_year
+                
+                internships = list(db.internships.find(internship_query))
+                
+                if not internships:
+                    current_app.logger.info(f"Student {student.full_name} has no approved internships, skipping")
+                    continue  # Skip students with no approved internships
+                
+                # Calculate total credit points and round to 2 decimal places
+                total_hours = sum(i.get('total_hours', 0) for i in internships)
+                total_credit_points = round(total_hours / 40, 2) if total_hours > 0 else 0.0
+                
+                current_app.logger.info(f"Generating certificate for {student.full_name} with {total_credit_points} credit points")
+                
+                # Generate certificate using SVG format
+                certificate_pdf = generate_internship_certificate(student, total_credit_points)
+                
+                # Send email with certificate
+                sender_email = os.getenv('SMTP_EMAIL')
+                sender_password = os.getenv('SMTP_PASSWORD')
+                
+                if not sender_email or not sender_password:
+                    flash('SMTP credentials not configured. Cannot send emails.', 'danger')
+                    return redirect(url_for('admin.certificate_management'))
+                
+                # Create email
+                msg = MIMEMultipart()
+                msg['From'] = sender_email
+                msg['To'] = student.email
+                msg['Subject'] = f"Internship Completion Certificate - {student.full_name} ({academic_year or 'N/A'})"
+                
+                # Email body
+                body = f"""Dear {student.full_name},
+
+Congratulations on successfully completing your internship requirements!
+
+We are pleased to present you with the attached Internship Completion Certificate. This certificate recognizes your dedication and hard work in earning {total_credit_points} credit points through your internship activities.
+
+Your commitment to professional development is commendable, and we wish you continued success in your future endeavors.
+
+Best regards,
+Shah and Anchor Kutchhi Engineering College
+Internship Program"""
+                
+                msg.attach(MIMEText(body, 'plain'))
+                
+                # Attach certificate
+                pdf_attachment = MIMEApplication(certificate_pdf.read())
+                pdf_attachment.add_header('Content-Disposition', 'attachment', 
+                                       filename=f'{student.full_name.replace(" ", "_")}_{academic_year or "N/A"}_certificate.pdf')
+                msg.attach(pdf_attachment)
+                
+                # Send email
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.send_message(msg)
+                server.quit()
+                
+                sent_count += 1
+                current_app.logger.info(f"Successfully sent certificate to {student.full_name}")
+                
+            except Exception as e:
+                current_app.logger.error(f"Error sending certificate to {student_data.get('email', 'Unknown')}: {str(e)}")
+                failed_count += 1
+        
+        if sent_count > 0:
+            flash(f'Successfully sent {sent_count} certificates. {failed_count} failed.', 'success')
+        else:
+            flash('No certificates were sent successfully.', 'warning')
+            
+    except Exception as e:
+        current_app.logger.error(f"Error in send_certificates: {str(e)}")
+        flash(f'Error sending certificates: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin.certificate_management'))
+
+@admin_bp.route('/download-certificates', methods=['POST'])
+@login_required
+def download_certificates():
+    if current_user.role != 'admin':
+        flash('Access denied.', 'error')
+        return redirect(url_for('admin.certificate_management'))
+    
+    try:
+        # Get filter parameters
+        department = request.form.get('department', '')
+        academic_year = request.form.get('academic_year', '')
+        
+        current_app.logger.info(f"Downloading certificates for department: {department}, academic_year: {academic_year}")
+        
+        # Build filter query
+        filter_query = {'role': 'student'}
+        if department:
+            filter_query['department'] = department
+        
+        # Get students based on filters
+        students = list(db.users.find(filter_query))
+        
+        if not students:
+            flash('No students found with the selected filters.', 'warning')
+            return redirect(url_for('admin.certificate_management'))
+        
+        # Create zip file in memory
+        import zipfile
+        import io
+        
+        zip_buffer = io.BytesIO()
+        certificates_added = 0
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for student_data in students:
+                try:
+                    student = User(student_data)
+                    student_id = str(student_data['_id'])
+                    
+                    # Get approved internships for the student
+                    internship_query = {'student_id': student_id, 'status': 'approved'}
+                    
+                    # If academic year is selected, filter internships by that year
+                    if academic_year:
+                        internship_query['academic_year'] = academic_year
+                    
+                    internships = list(db.internships.find(internship_query))
+                    
+                    if not internships:
+                        current_app.logger.info(f"Student {student.full_name} has no approved internships, skipping")
+                        continue  # Skip students with no approved internships
+                    
+                    # Calculate total credit points and round to 2 decimal places
+                    total_hours = sum(i.get('total_hours', 0) for i in internships)
+                    total_credit_points = round(total_hours / 40, 2) if total_hours > 0 else 0.0
+                    
+                    current_app.logger.info(f"Generating certificate for {student.full_name} with {total_credit_points} credit points")
+                    
+                    # Generate certificate using SVG format
+                    certificate_pdf = generate_internship_certificate(student, total_credit_points)
+                    
+                    # Add to zip file with proper naming: student_name_academic_year
+                    filename = f"{student.full_name.replace(' ', '_')}_{academic_year or 'N/A'}_certificate.pdf"
+                    zip_file.writestr(filename, certificate_pdf.getvalue())
+                    certificates_added += 1
+                    
+                except Exception as e:
+                    current_app.logger.error(f"Error generating certificate for {student_data.get('email', 'Unknown')}: {str(e)}")
+                    continue
+        
+        if certificates_added == 0:
+            flash('No certificates were generated. Please check if students have approved internships.', 'warning')
+            return redirect(url_for('admin.certificate_management'))
+        
+        # Reset buffer position
+        zip_buffer.seek(0)
+        
+        # Generate filename based on filters
+        filename_parts = ['certificates']
+        if department:
+            filename_parts.append(department.replace(' ', '_'))
+        if academic_year:
+            filename_parts.append(academic_year.replace(' ', '_'))
+        filename = '_'.join(filename_parts) + '.zip'
+        
+        current_app.logger.info(f"Successfully created zip file with {certificates_added} certificates")
+        
+        return Response(
+            zip_buffer.getvalue(),
+            mimetype='application/zip',
+            headers={'Content-Disposition': f'attachment; filename={filename}'}
+        )
+        
+    except Exception as e:
+        current_app.logger.error(f"Error in download_certificates: {str(e)}")
+        flash(f'Error downloading certificates: {str(e)}', 'danger')
+        return redirect(url_for('admin.certificate_management'))

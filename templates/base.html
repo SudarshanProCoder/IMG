@@ -177,7 +177,7 @@
             background-color: var(--input-bg) !important;
             color: var(--input-text) !important;
         }
-        
+
         .form-control::placeholder {
             color: var(--input-text);
             opacity: 0.7;
@@ -223,8 +223,6 @@
         .footer-link:hover {
             color: var(--accent-color);
         }
-
-
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -275,6 +273,11 @@
                             <li><a class="dropdown-item" href="{{ url_for('admin.export_mentors_csv') }}">Export Mentors
                                     CSV</a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.certificate_management') }}">
+                            <i class="fas fa-certificate me-1"></i>Certificates
+                        </a>
                     </li>
                     {% elif current_user.role == 'mentor' %}
                     <li class="nav-item">
