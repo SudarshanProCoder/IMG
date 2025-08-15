@@ -103,34 +103,61 @@ def signup():
     
     form = SignupForm()
     if form.validate_on_submit():
-        # Generate verification token
-        verification_token = secrets.token_urlsafe(32)
-        
-        # Create user object
-        user = User(
-            full_name=form.full_name.data,
-            email=form.email.data,
-            password=form.password.data,
-            role=form.role.data,
-            prn=form.prn.data if form.role.data == 'student' else None,
-            registration_number=form.registration_number.data if form.role.data == 'student' else None,
-            branch=form.branch.data if form.role.data == 'student' else None,
-            year=form.year.data if form.role.data == 'student' else None,
-            mentor_email=form.mentor_email.data if form.role.data == 'student' else None
-        )
-        
-        # Set verification token and save user
-        user.verification_token = verification_token
-        user.is_verified = False
-        user.save()
-        
-        # Send verification email
-        if send_verification_email(user.email, verification_token):
-            flash('Account created successfully! Please check your email to verify your account.', 'success')
-        else:
-            flash('Account created, but there was an error sending the verification email. Please contact support.', 'warning')
-        
-        return redirect(url_for('auth.login'))
+        try:
+            # Handle profile photo upload
+            profile_image_url = None
+            if form.profile_photo.data and form.profile_photo.data.filename:
+                try:
+                    # Upload to Cloudinary
+                    result = cloudinary.uploader.upload(
+                        form.profile_photo.data,
+                        folder="profile_images",
+                        transformation=[
+                            {'width': 400, 'height': 400, 'crop': 'fill'},
+                            {'radius': 'max'}
+                        ]
+                    )
+                    profile_image_url = result['secure_url']
+                except Exception as e:
+                    current_app.logger.error(f"Error uploading profile photo: {str(e)}")
+                    flash('Error uploading profile photo. Please try again.', 'danger')
+                    return render_template('auth/signup.html', form=form)
+            
+            # Generate verification token
+            verification_token = secrets.token_urlsafe(32)
+            
+            # Create user object
+            user = User(
+                full_name=form.full_name.data,
+                email=form.email.data,
+                password=form.password.data,
+                role=form.role.data,
+                profile_image=profile_image_url,
+                prn=form.prn.data if form.role.data == 'student' else None,
+                registration_number=form.registration_number.data if form.role.data == 'student' else None,
+                branch=form.branch.data if form.role.data == 'student' else None,
+                year=form.year.data if form.role.data == 'student' else None,
+                mentor_email=form.mentor_email.data if form.role.data == 'student' else None
+            )
+            
+            # Set verification token and save user
+            user.verification_token = verification_token
+            user.is_verified = False
+            user.save()
+            
+            # Send verification email
+            if send_verification_email(user.email, verification_token):
+                flash('Account created successfully! Please check your email to verify your account.', 'success')
+            else:
+                flash('Account created, but there was an error sending the verification email. Please contact support.', 'warning')
+            
+            return redirect(url_for('auth.login'))
+            
+        except Exception as e:
+            current_app.logger.error(f"Error creating user: {str(e)}")
+            flash('Error creating account. Please try again.', 'danger')
+            return render_template('auth/signup.html', form=form)
+            
     return render_template('auth/signup.html', form=form)
 
 @auth_bp.route('/verify-email/<token>')

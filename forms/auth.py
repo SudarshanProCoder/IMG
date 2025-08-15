@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SelectField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from models.user import User
@@ -36,6 +37,9 @@ class SignupForm(FlaskForm):
         ('mentor', 'Mentor'),
         ('admin', 'Admin')
     ])
+    profile_photo = FileField('Profile Photo', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Only image files are allowed!')
+    ])
     prn = StringField('PRN (Permanent Registration Number)', validators=[
         Length(max=20)
     ])
@@ -65,6 +69,11 @@ class SignupForm(FlaskForm):
         user = User.get_by_email(email.data)
         if user:
             raise ValidationError('Email already registered. Please use a different email.')
+
+    def validate_profile_photo(self, profile_photo):
+        if self.role.data == 'student':
+            if not profile_photo.data or not profile_photo.data.filename:
+                raise ValidationError('Profile photo is required for students.')
 
     def validate_prn(self, prn):
         if self.role.data == 'student':
