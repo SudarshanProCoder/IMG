@@ -224,7 +224,7 @@ def students():
         return redirect(url_for('auth.login'))
     
     try:
-        branch = request.args.get('branch')
+        department = request.args.get('department')
         year = request.args.get('year')
         academic_year = request.args.get('academic_year')
         semester = request.args.get('semester')
@@ -232,8 +232,8 @@ def students():
         
         # Base query for students
         query = {'role': 'student'}
-        if branch:
-            query['branch'] = branch
+        if department:
+            query['department'] = department
         if year:
             query['year'] = year
         if semester:
@@ -273,27 +273,33 @@ def students():
             else:
                 students.append(student)
         
-        # Get unique branches, years, academic_years, and semesters for filters
-        branches = list(db.users.distinct('branch', {'role': 'student'}))
-        years = list(db.users.distinct('year', {'role': 'student'}))
+        # Get unique values for filters
+        departments = list(db.users.distinct('department', {'role': 'student', 'department': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        years = list(db.users.distinct('year', {'role': 'student', 'year': {'$exists': True, '$ne': None, '$ne': 'None'}}))
         
         # Get academic years from both internships and activities
-        internship_academic_years = list(db.internships.distinct('academic_year'))
-        activity_academic_years = list(db.activities.distinct('academic_year'))
+        internship_academic_years = list(db.internships.distinct('academic_year', {'academic_year': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        activity_academic_years = list(db.activities.distinct('academic_year', {'academic_year': {'$exists': True, '$ne': None, '$ne': 'None'}}))
         academic_years = sorted(list(set(internship_academic_years + activity_academic_years)))
         
-        semesters = list(db.users.distinct('semester', {'role': 'student'}))
+        semesters = list(db.users.distinct('semester', {'role': 'student', 'semester': {'$exists': True, '$ne': None, '$ne': 'None'}}))
+        
+        # Ensure we're passing the correct filter values (not None if they're empty strings)
+        selected_department = department if department else None
+        selected_year = year if year else None
+        selected_academic_year = academic_year if academic_year else None
+        selected_semester = semester if semester else None
         
         return render_template('admin/students.html',
                             students=students,
-                            branches=branches,
+                            departments=departments,
                             years=years,
                             academic_years=academic_years,
                             semesters=semesters,
-                            selected_branch=branch,
-                            selected_year=year,
-                            selected_academic_year=academic_year,
-                            selected_semester=semester,
+                            selected_department=selected_department,
+                            selected_year=selected_year,
+                            selected_academic_year=selected_academic_year,
+                            selected_semester=selected_semester,
                             search_query=search_query)
     except Exception as e:
         flash(f'Error loading students: {str(e)}', 'error')
