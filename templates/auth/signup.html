@@ -522,6 +522,7 @@
         grid-template-columns: repeat(3, 1fr);
     }
 
+    /* Responsive styles for different screen sizes */
     @media (max-width: 768px) {
         .signup-container {
             padding: 1rem;
@@ -544,6 +545,101 @@
             grid-template-columns: 1fr;
         }
     }
+    
+    /* Landscape orientation styles */
+    @media (max-height: 600px) and (orientation: landscape) {
+        .signup-container {
+            padding: 0.5rem;
+            min-height: auto;
+            align-items: flex-start;
+        }
+        
+        .signup-card {
+            margin: 0.5rem auto;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .signup-header {
+            padding: 1.5rem 1rem;
+            margin: -1.5rem -1.5rem 1rem -1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .signup-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .signup-header p {
+            font-size: 1rem;
+        }
+        
+        .signup-form {
+            padding: 1rem;
+        }
+        
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        
+        .form-floating > .form-control {
+            padding: 0.75rem 1rem;
+            height: calc(3rem + 2px);
+        }
+        
+        .role-selector {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .role-selector .form-label {
+            margin-bottom: 0.75rem;
+            width: 100%;
+        }
+        
+        .role-option {
+            padding: 1rem;
+            flex: 0 0 48%;
+            margin: 1%;
+        }
+        
+        .role-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .student-fields .row {
+            margin: 0 -5px;
+        }
+        
+        .student-fields .col-md-4,
+        .student-fields .col-md-8 {
+            padding: 0 5px;
+        }
+        
+        .profile-upload-container {
+            margin-bottom: 10px;
+        }
+        
+        .form-grid {
+            gap: 10px;
+        }
+        
+        /* Hide floating shapes in landscape mode to save space */
+        .floating-shapes {
+            display: none;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -557,7 +653,7 @@
 
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
+            <div class="col-md-10 col-lg-8">
                 <div class="signup-card animate__animated animate__fadeInUp">
                     <!-- Toast notifications for flash messages -->
                     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -676,103 +772,111 @@
 
                             <!-- Student Fields -->
                             <div class="student-fields">
-                                <!-- Profile Photo Upload -->
-                                <div class="form-group">
-                                    <label for="profile_photo" class="form-label">
-                                        <i class="fas fa-camera"></i>Profile Photo <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="profile-upload-container">
-                                        <input type="file" class="form-control" id="profile_photo" name="profile_photo"
-                                            accept="image/*" required>
-                                        <div class="upload-preview" id="upload-preview" style="display: none;">
-                                            <img id="preview-image" src="" alt="Preview" class="img-thumbnail">
+                                <div class="row">
+                                    <!-- Left column with profile photo upload -->
+                                    <div class="col-md-4">
+                                        <!-- Profile Photo Upload -->
+                                        <div class="form-group">
+                                            <label for="profile_photo" class="form-label">
+                                                <i class="fas fa-camera"></i>Profile Photo <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="profile-upload-container">
+                                                <input type="file" class="form-control" id="profile_photo" name="profile_photo"
+                                                    accept="image/*" required>
+                                                <div class="upload-preview" id="upload-preview" style="display: none;">
+                                                    <img id="preview-image" src="" alt="Preview" class="img-thumbnail">
+                                                </div>
+                                                <small class="form-text text-muted mt-2 d-block">
+                                                    Upload a clear photo (JPG, PNG, GIF). Maximum size: 5MB.
+                                                </small>
+                                                {% if form.profile_photo.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.profile_photo.errors %}
+                                                    {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                        <small class="form-text text-muted mt-2 d-block">
-                                            Upload a clear photo (JPG, PNG, GIF). Maximum size: 5MB.
-                                        </small>
-                                        {% if form.profile_photo.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.profile_photo.errors %}
-                                            {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
                                     </div>
-                                </div>
+                                    
+                                    <!-- Right column with form fields -->
+                                    <div class="col-md-8">
+                                        <div class="form-grid form-grid-2">
+                                            <div class="form-floating">
+                                                {{ form.prn(class="form-control", placeholder="PRN", id="prn") }}
+                                                <label for="prn">
+                                                    <i class="fas fa-id-card me-2"></i>PRN
+                                                </label>
+                                                {% if form.prn.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.prn.errors %}
+                                                    {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
 
-                                <div class="form-grid form-grid-2">
-                                    <div class="form-floating">
-                                        {{ form.prn(class="form-control", placeholder="PRN", id="prn") }}
-                                        <label for="prn">
-                                            <i class="fas fa-id-card me-2"></i>PRN
-                                        </label>
-                                        {% if form.prn.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.prn.errors %}
-                                            {{ error }}
-                                            {% endfor %}
+                                            <div class="form-floating">
+                                                {{ form.registration_number(class="form-control", placeholder="Registration
+                                                Number", id="registration_number") }}
+                                                <label for="registration_number">
+                                                    <i class="fas fa-hashtag me-2"></i>Registration Number
+                                                </label>
+                                                {% if form.registration_number.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.registration_number.errors %}
+                                                    {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                        {% endif %}
-                                    </div>
 
-                                    <div class="form-floating">
-                                        {{ form.registration_number(class="form-control", placeholder="Registration
-                                        Number", id="registration_number") }}
-                                        <label for="registration_number">
-                                            <i class="fas fa-hashtag me-2"></i>Registration Number
-                                        </label>
-                                        {% if form.registration_number.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.registration_number.errors %}
-                                            {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
+                                        <div class="form-grid form-grid-3">
+                                            <div class="form-floating">
+                                                {{ form.branch(class="form-select", id="branch") }}
+                                                <label for="branch">
+                                                    <i class="fas fa-graduation-cap me-2"></i>Branch
+                                                </label>
+                                                {% if form.branch.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.branch.errors %}
+                                                    {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
 
-                                <div class="form-grid form-grid-3">
-                                    <div class="form-floating">
-                                        {{ form.branch(class="form-select", id="branch") }}
-                                        <label for="branch">
-                                            <i class="fas fa-graduation-cap me-2"></i>Branch
-                                        </label>
-                                        {% if form.branch.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.branch.errors %}
-                                            {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                    </div>
+                                            <div class="form-floating">
+                                                {{ form.year(class="form-select", id="year") }}
+                                                <label for="year">
+                                                    <i class="fas fa-calendar me-2"></i>Year
+                                                </label>
+                                                {% if form.year.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.year.errors %}
+                                                    {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
 
-                                    <div class="form-floating">
-                                        {{ form.year(class="form-select", id="year") }}
-                                        <label for="year">
-                                            <i class="fas fa-calendar me-2"></i>Year
-                                        </label>
-                                        {% if form.year.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.year.errors %}
-                                            {{ error }}
-                                            {% endfor %}
+                                            <div class="form-floating">
+                                                {{ form.mentor_email(class="form-control", placeholder="Mentor Email",
+                                                id="mentor_email") }}
+                                                <label for="mentor_email">
+                                                    <i class="fas fa-user-tie me-2"></i>Mentor Email
+                                                </label>
+                                                {% if form.mentor_email.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.mentor_email.errors %}
+                                                    {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="form-floating">
-                                        {{ form.mentor_email(class="form-control", placeholder="Mentor Email",
-                                        id="mentor_email") }}
-                                        <label for="mentor_email">
-                                            <i class="fas fa-user-tie me-2"></i>Mentor Email
-                                        </label>
-                                        {% if form.mentor_email.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.mentor_email.errors %}
-                                            {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

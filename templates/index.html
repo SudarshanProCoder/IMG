@@ -5,68 +5,195 @@
 {% block extra_css %}
 <style>
     .hero-section {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)),
         url("{{ url_for('static', filename='images/college.jpg') }}");
         background-size: cover;
         background-position: center;
         color: white;
-        padding: 100px 0;
+        padding: 170px 0;
         margin-top: -1.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(0,173,181,0.2) 0%, rgba(0,0,0,0) 70%);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        animation: fadeIn 1.8s ease-in-out;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hero-content h1 {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        letter-spacing: 0.5px;
+    }
+    
+    .hero-content p {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 2s ease-in-out 0.3s both;
     }
 
     .feature-card {
-        transition: transform 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 18px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        height: 100%;
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
     }
 
     .feature-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+        background: #ffffff;
+    }
+    
+    .feature-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #00ADB5, #3F72AF);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    
+    .feature-card:hover::after {
+        transform: scaleX(1);
     }
 
     .feature-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
+        font-size: 3.2rem;
+        margin-bottom: 1.8rem;
         color: #00ADB5;
+        transition: all 0.4s ease;
+        display: inline-block;
+        background: linear-gradient(135deg, rgba(0,173,181,0.1) 0%, rgba(255,255,255,0) 80%);
+        padding: 1.5rem;
+        border-radius: 50%;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: scale(1.15) rotate(5deg);
+        color: #3F72AF;
     }
 
     .stats-section {
-        background-color: #f8f9fa;
-        padding: 60px 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 100px 0 120px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: -1.5rem;
+    }
+    
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: #fff;
+        border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+        box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.03);
+    }
+    
+    .stats-section::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 0 0 50% 50% / 0 0 100% 100%;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
     }
 
     .stat-card {
         text-align: center;
-        padding: 20px;
+        padding: 35px 20px;
+        border-radius: 18px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(0,173,181,0.15) 0%, rgba(255,255,255,0) 100%);
+        z-index: -1;
+        transition: opacity 0.4s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        background: rgba(255, 255, 255, 0.95);
+    }
+    
+    .stat-card:hover::before {
+        opacity: 0.8;
     }
 
     .stat-number {
-        font-size: 2.5rem;
+        font-size: 3.8rem;
         font-weight: bold;
-        color: #00ADB5;
+        background: linear-gradient(90deg, #00ADB5, #3F72AF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.8rem;
+        display: inline-block;
+        position: relative;
+        transition: all 0.4s ease;
     }
-
-    .testimonial-card {
-        background-color: white;
-        border-radius: 10px;
-        padding: 20px;
-        margin: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    .stat-card:hover .stat-number {
+        transform: scale(1.08);
+        background: linear-gradient(90deg, #3F72AF, #00ADB5);
+        -webkit-background-clip: text;
     }
-
-    .testimonial-image {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        margin-bottom: 15px;
+    
+    .stat-card p {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #495057;
+        transition: all 0.3s ease;
     }
-
-    .cta-section {
-        background-color: #00ADB5;
-        color: white;
-        padding: 80px 0;
-        text-align: center;
+    
+    .stat-card:hover p {
+        color: #222831;
     }
 
     input::placeholder,
@@ -91,45 +218,67 @@
 <!-- Hero Section -->
 <section class="hero-section text-center">
     <div class="container">
-        <h1 class="display-4 mb-4">Welcome to Shah and Anchor College</h1>
-        <p class="lead mb-5">Empowering students through quality education and practical experience</p>
-        <div class="d-flex justify-content-center gap-3">
-            <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg">Get Started</a>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Login</a>
+        <div class="hero-content">
+            <h1 class="display-3 mb-4 fw-bold">Welcome to Shah and Anchor College</h1>
+            <p class="lead mb-5 fs-4">Empowering students through quality education and practical experience</p>
+            <div class="d-flex justify-content-center gap-4">
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill" style="transition: all 0.4s ease; box-shadow: 0 5px 15px rgba(0, 173, 181, 0.3);">
+                    <i class="fas fa-rocket me-2"></i>Get Started
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill" style="transition: all 0.4s ease; border-width: 2px;">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            </div>
+            <style>
+                .btn-primary:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 25px rgba(0, 173, 181, 0.4) !important;
+                }
+                .btn-outline-light:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2) !important;
+                }
+            </style>
         </div>
     </div>
 </section>
 
 <!-- Features Section -->
 <section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">Why Choose Our Internship Portal?</h2>
-        <div class="row g-4">
+    <div class="container py-5">
+        <h2 class="text-center mb-5 fw-bold position-relative">
+            <span class="position-relative" style="display: inline-block;">
+                <span style="position: relative; z-index: 2;">Why Choose Our Internship Portal?</span>
+                <span class="position-absolute" style="height: 5px; width: 100px; background: linear-gradient(90deg, #00ADB5, #3F72AF); bottom: -12px; left: 50%; transform: translateX(-50%); border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 173, 181, 0.3);"></span>
+                <span class="position-absolute" style="height: 15px; width: 15px; background: #00ADB5; bottom: -17px; left: 50%; transform: translateX(-50%) rotate(45deg); border-radius: 2px; box-shadow: 0 2px 5px rgba(0, 173, 181, 0.3);"></span>
+            </span>
+        </h2>
+        <div class="row g-4 mt-4">
             <div class="col-md-4">
                 <div class="card feature-card themed-bg themed-text h-100">
-                    <div class="card-body text-center">
+                    <div class="card-body text-center p-4">
                         <i class="fas fa-laptop-code feature-icon"></i>
-                        <h3 class="card-title">Track Internships</h3>
+                        <h3 class="card-title fw-bold">Track Internships</h3>
                         <p class="card-text">Easily manage and track your internship experiences with our intuitive
-                            platform.</p>
+                            platform. Keep all your professional growth in one place.</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card feature-card themed-bg themed-text h-100">
-                    <div class="card-body text-center">
+                    <div class="card-body text-center p-4">
                         <i class="fas fa-certificate feature-icon"></i>
-                        <h3 class="card-title">Activity Management</h3>
-                        <p class="card-text">Record and showcase your extracurricular activities and achievements.</p>
+                        <h3 class="card-title fw-bold">Activity Management</h3>
+                        <p class="card-text">Record and showcase your extracurricular activities and achievements. Build a comprehensive portfolio of your college journey.</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card feature-card themed-bg themed-text h-100">
-                    <div class="card-body text-center">
+                    <div class="card-body text-center p-4">
                         <i class="fas fa-file-alt feature-icon"></i>
-                        <h3 class="card-title">Digital Marksheet</h3>
-                        <p class="card-text">Generate and download your comprehensive digital marksheet anytime.</p>
+                        <h3 class="card-title fw-bold">Digital Marksheet</h3>
+                        <p class="card-text">Generate and download your comprehensive digital marksheet anytime. Share your achievements with potential employers.</p>
                     </div>
                 </div>
             </div>
@@ -140,28 +289,35 @@
 <!-- Stats Section -->
 <section class="stats-section">
     <div class="container">
-        <div class="row">
+        <h2 class="text-center mb-5 fw-bold position-relative">
+            <span class="position-relative" style="display: inline-block;">
+                <span style="position: relative; z-index: 2;">Our Impact</span>
+                <span class="position-absolute" style="height: 5px; width: 80px; background: linear-gradient(90deg, #00ADB5, #3F72AF); bottom: -12px; left: 50%; transform: translateX(-50%); border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 173, 181, 0.3);"></span>
+                <span class="position-absolute" style="height: 15px; width: 15px; background: #00ADB5; bottom: -17px; left: 50%; transform: translateX(-50%) rotate(45deg); border-radius: 2px; box-shadow: 0 2px 5px rgba(0, 173, 181, 0.3);"></span>
+            </span>
+        </h2>
+        <div class="row g-4 mt-4">
             <div class="col-md-3">
                 <div class="card stat-card themed-bg themed-text">
-                    <div class="stat-number">1000+</div>
+                    <div class="stat-number">{{ student_count }}</div>
                     <p>Active Students</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card themed-bg themed-text">
-                    <div class="stat-number">500+</div>
+                    <div class="stat-number">{{ internship_count }}</div>
                     <p>Internships</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card themed-bg themed-text">
-                    <div class="stat-number">200+</div>
-                    <p>Companies</p>
+                    <div class="stat-number">{{ activity_count }}</div>
+                    <p>Activities</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card themed-bg themed-text">
-                    <div class="stat-number">50+</div>
+                    <div class="stat-number">{{ mentor_count }}</div>
                     <p>Mentors</p>
                 </div>
             </div>
@@ -169,52 +325,6 @@
     </div>
 </section>
 
-<!-- Testimonials Section -->
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">What Our Students Say</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card testimonial-card themed-bg themed-text">
-                    <img src="{{ url_for('static', filename='images/student1.png') }}" alt="Student"
-                        class="testimonial-image">
-                    <h4>Sudarshan Date</h4>
-                    <p class="text-muted">Computer Engineering</p>
-                    <p>"The internship portal made it easy to track my progress and showcase my achievements to
-                        potential employers."</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card testimonial-card themed-bg themed-text">
-                    <img src="{{ url_for('static', filename='images/student1.png') }}" alt="Student"
-                        class="testimonial-image">
-                    <h4>Krish Shah</h4>
-                    <p class="text-muted">Information Technology</p>
-                    <p>"I love how organized everything is. The digital marksheet feature is a game-changer!"</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card testimonial-card themed-bg themed-text">
-                    <img src="{{ url_for('static', filename='images/student1.png') }}" alt="Student"
-                        class="testimonial-image">
-                    <h4>Aryaan Gala</h4>
-                    <p class="text-muted">Computer Engineering</p>
-                    <p>"The mentor support system is excellent. They provide valuable guidance throughout the internship
-                        process."</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <h2 class="mb-4">Ready to Start Your Journey?</h2>
-        <p class="lead mb-4">Join our community of students and take the first step towards your successful career.</p>
-        <a href="{{ url_for('auth.signup') }}" class="btn btn-light btn-lg">Sign Up Now</a>
-    </div>
-</section>
 {% endblock %}
 
 {% block extra_js %}
@@ -229,15 +339,40 @@
         });
     });
 
-    // Add animation on scroll
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+    // Add animation on scroll with staggered effect
+    const featureObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('animate__animated', 'animate__fadeIn');
+                // Add staggered delay based on index
+                setTimeout(() => {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                    entry.target.style.opacity = 1;
+                }, index * 150); // 150ms delay between each card
             }
         });
+    }, { threshold: 0.2 });
+
+    const statObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Add staggered delay based on index
+                setTimeout(() => {
+                    entry.target.classList.add('animate__animated', 'animate__zoomIn');
+                    entry.target.style.opacity = 1;
+                }, index * 150); // 150ms delay between each card
+            }
+        });
+    }, { threshold: 0.2 });
+
+    // Set initial opacity to 0
+    document.querySelectorAll('.feature-card').forEach((el) => {
+        el.style.opacity = 0;
+        featureObserver.observe(el);
     });
 
-    document.querySelectorAll('.feature-card, .stat-card, .testimonial-card').forEach((el) => observer.observe(el));
+    document.querySelectorAll('.stat-card').forEach((el) => {
+        el.style.opacity = 0;
+        statObserver.observe(el);
+    });
 </script>
 {% endblock %}
