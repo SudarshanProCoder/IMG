@@ -94,7 +94,7 @@ def login():
                     next_page = url_for('student.dashboard')
             return redirect(next_page)
         flash('Invalid email or password', 'danger')
-    return render_template('auth/login.html', form=form)
+    return render_template('auth/login.html', form=form, minimal=True)
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -121,7 +121,7 @@ def signup():
                 except Exception as e:
                     current_app.logger.error(f"Error uploading profile photo: {str(e)}")
                     flash('Error uploading profile photo. Please try again.', 'danger')
-                    return render_template('auth/signup.html', form=form)
+                    return render_template('auth/signup.html', form=form, minimal=True)
             
             # Generate verification token
             verification_token = secrets.token_urlsafe(32)
@@ -148,17 +148,17 @@ def signup():
             # Send verification email
             if send_verification_email(user.email, verification_token):
                 flash('Account created successfully! Please check your email to verify your account.', 'success')
+                return redirect(url_for('auth.login'))
             else:
                 flash('Account created, but there was an error sending the verification email. Please contact support.', 'warning')
+                return render_template('auth/signup.html', form=form, minimal=True)
             
             return redirect(url_for('auth.login'))
-            
         except Exception as e:
             current_app.logger.error(f"Error creating user: {str(e)}")
             flash('Error creating account. Please try again.', 'danger')
-            return render_template('auth/signup.html', form=form)
-            
-    return render_template('auth/signup.html', form=form)
+    
+    return render_template('auth/signup.html', form=form, minimal=True)
 
 @auth_bp.route('/verify-email/<token>')
 def verify_email(token):
@@ -282,4 +282,4 @@ def change_password():
     current_user.save()
 
     flash('Password updated successfully', 'success')
-    return redirect(url_for('auth.profile')) 
+    return redirect(url_for('auth.profile'))

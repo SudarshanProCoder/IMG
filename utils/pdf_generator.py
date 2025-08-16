@@ -680,59 +680,57 @@ def generate_custom_marksheet(student, internships, activities, marksheet_url):
     elements.append(Paragraph(f"Total months: {total_activity_months}", getSampleStyleSheet()['Normal']))
     elements.append(Spacer(1, 12))
     
-    # No summary section in PDF as per requirement
-
     # --- FOOTER ---
-    class QRImage(Flowable):
-        def __init__(self, qr_img, width=60, height=60):
-            Flowable.__init__(self)
-            self.width = width
-            self.height = height
-            self.qr_img = qr_img
-        def draw(self):
-            self.canv.drawInlineImage(self.qr_img, 0, 0, width=self.width, height=self.height)
-    qr = qrcode.QRCode(box_size=2, border=1)
-    qr.add_data(marksheet_url)
-    qr.make(fit=True)
-    qr_img = qr.make_image(fill_color="black", back_color="white")
-    qr_byte_arr = io.BytesIO()
-    qr_img.save(qr_byte_arr, format='PNG')
-    qr_byte_arr.seek(0)
-    qr_img_for_pdf = PILImage.open(qr_byte_arr)
-    qr_flowable = QRImage(qr_img_for_pdf, width=50, height=50)
-    # Footer: left = date/place, middle = signatures, right = QR code
-    left_col = [
-        Paragraph("<b>Date:</b>", getSampleStyleSheet()['Normal']), 
-        Spacer(1, 15),  # Added more space for date entry
-        Paragraph("<b>Place:</b>", getSampleStyleSheet()['Normal']),
-        Spacer(1, 15)  # Added more space for place entry
-    ]
-    middle_col = [
-        Paragraph("<b>HOD sign:</b>", getSampleStyleSheet()['Normal']),
-        Spacer(1, 15),  # Added more space for signature
-        Paragraph("<b>Mentor sign:</b>", getSampleStyleSheet()['Normal']),
-        Spacer(1, 15),  # Added more space for signature
-        Paragraph("<b>Internship Incharge sign:</b>", getSampleStyleSheet()['Normal']),
-        Spacer(1, 15)  # Added more space for signature
-    ]
-    right_col = [qr_flowable]
-    footer_data = [
-        [left_col, middle_col, right_col]
-    ]
-    footer_table = Table(footer_data, colWidths=[2.0*inch, 3.7*inch, 2.0*inch])
-    footer_table.setStyle(TableStyle([
-        ('VALIGN', (0,0), (0,0), 'TOP'),
-        ('VALIGN', (1,0), (1,0), 'TOP'),
-        ('VALIGN', (2,0), (2,0), 'TOP'),
-        ('ALIGN', (0,0), (0,0), 'LEFT'),
-        ('ALIGN', (1,0), (1,0), 'LEFT'),
-        ('ALIGN', (2,0), (2,0), 'RIGHT'),
-        ('TOPPADDING', (0,0), (-1,-1), 8),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
-    ]))
-    elements.append(footer_table)
+    # class QRImage(Flowable):
+    #     def __init__(self, qr_img, width=60, height=60):
+    #         Flowable.__init__(self)
+    #         self.width = width
+    #         self.height = height
+    #         self.qr_img = qr_img
+    #     def draw(self):
+    #         self.canv.drawInlineImage(self.qr_img, 0, 0, width=self.width, height=self.height)
+    # qr = qrcode.QRCode(box_size=2, border=1)
+    # qr.add_data(marksheet_url)
+    # qr.make(fit=True)
+    # qr_img = qr.make_image(fill_color="black", back_color="white")
+    # qr_byte_arr = io.BytesIO()
+    # qr_img.save(qr_byte_arr, format='PNG')
+    # qr_byte_arr.seek(0)
+    # qr_img_for_pdf = PILImage.open(qr_byte_arr)
+    # qr_flowable = QRImage(qr_img_for_pdf, width=50, height=50)
+    # # Footer: left = date/place, middle = signatures, right = QR code
+    # left_col = [
+    #     Paragraph("<b>Date:</b>", getSampleStyleSheet()['Normal']), 
+    #     Spacer(1, 15),  # Added more space for date entry
+    #     Paragraph("<b>Place:</b>", getSampleStyleSheet()['Normal']),
+    #     Spacer(1, 15)  # Added more space for place entry
+    # ]
+    # middle_col = [
+    #     Paragraph("<b>HOD sign:</b>", getSampleStyleSheet()['Normal']),
+    #     Spacer(1, 15),  # Added more space for signature
+    #     Paragraph("<b>Mentor sign:</b>", getSampleStyleSheet()['Normal']),
+    #     Spacer(1, 15),  # Added more space for signature
+    #     Paragraph("<b>Internship Incharge sign:</b>", getSampleStyleSheet()['Normal']),
+    #     Spacer(1, 15)  # Added more space for signature
+    # ]
+    # right_col = [qr_flowable]
+    # footer_data = [
+    #     [left_col, middle_col, right_col]
+    # ]
+    # footer_table = Table(footer_data, colWidths=[2.0*inch, 3.7*inch, 2.0*inch])
+    # footer_table.setStyle(TableStyle([
+    #     ('VALIGN', (0,0), (0,0), 'TOP'),
+    #     ('VALIGN', (1,0), (1,0), 'TOP'),
+    #     ('VALIGN', (2,0), (2,0), 'TOP'),
+    #     ('ALIGN', (0,0), (0,0), 'LEFT'),
+    #     ('ALIGN', (1,0), (1,0), 'LEFT'),
+    #     ('ALIGN', (2,0), (2,0), 'RIGHT'),
+    #     ('TOPPADDING', (0,0), (-1,-1), 8),
+    #     ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+    #     ('LEFTPADDING', (0,0), (-1,-1), 8),
+    #     ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    # ]))
+    # elements.append(footer_table)
 
     doc.build(elements, onFirstPage=lambda canvas, doc: (draw_background(canvas, doc)), onLaterPages=lambda canvas, doc: (draw_background(canvas, doc)))
     buffer.seek(0)

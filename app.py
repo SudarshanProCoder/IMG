@@ -37,7 +37,17 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Get real counts from database
+    student_count = db.users.count_documents({'role': 'student'})
+    internship_count = db.internships.count_documents({})
+    mentor_count = db.users.count_documents({'role': 'mentor'})
+    activity_count = db.activities.count_documents({})
+    
+    return render_template('index.html', 
+                           student_count=student_count,
+                           internship_count=internship_count,
+                           mentor_count=mentor_count,
+                           activity_count=activity_count)
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)
