@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 
 {% block title %}Certificate Management{% endblock %}
 
@@ -521,10 +521,9 @@
         {% if students %}
         {% for student in students %}
         <div class="student-item" data-student-id="{{ student._id }}">
-            <img src="{{ student.profile_image or url_for('static', filename='images/default_avatar.png') }}" 
-                 alt="{{ student.full_name }}"
-                 class="student-avatar" 
-                 onerror="this.src='{{ url_for('static', filename='images/default_avatar.png') }}'">
+            <img src="{{ student.profile_image or url_for('static', filename='images/default_avatar.png') }}"
+                alt="{{ student.full_name }}" class="student-avatar"
+                onerror="this.src='{{ url_for('static', filename='images/default_avatar.png') }}'">
 
             <div class="student-info">
                 <div class="student-name">{{ student.full_name }}</div>
@@ -583,7 +582,7 @@
             if (infoBox) {
                 infoBox.innerHTML = '<small><i class="fas fa-spinner fa-spin me-1"></i> Preparing ZIP file. Please wait...</small>';
             }
-            
+
             // Reset button state after a delay (since download doesn't reload page)
             setTimeout(() => {
                 downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Certificates (ZIP)';
@@ -593,7 +592,7 @@
                     infoBox.innerHTML = '<small><i class="fas fa-info-circle me-1"></i> Only students with approved internships will receive certificates. Certificates will be generated based on the selected filters.</small>';
                 }
             }, 3000); // Reset after 3 seconds
-            
+
             // Alternative: Reset when user clicks anywhere (indicating download started)
             const resetOnClick = () => {
                 downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Certificates (ZIP)';

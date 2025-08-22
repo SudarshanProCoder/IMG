@@ -1,98 +1,359 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 
 {% block title %}Mentors - Admin Panel{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Mentors</h2>
-        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-    </div>
-
-    <!-- Filters and Search -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-4">
-                    <label for="department" class="form-label">Department</label>
-                    <select name="department" id="department" class="form-select">
-                        <option value="">All Departments</option>
-                        {% for dept in departments %}
-                        <option value="{{ dept }}" {% if dept==selected_department %}selected{% endif %}>{{ dept }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="search" class="form-label">Search</label>
-                    <input type="text" class="form-control" id="search" name="search"
-                        placeholder="Search by name or email" value="{{ search_query }}">
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
-                </div>
-            </form>
+<div class="container-fluid">
+    <!-- Mentors Header -->
+    <div class="mentors-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-users me-3"></i>Mentors Management</h2>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
         </div>
     </div>
 
+    <!-- Filters and Search -->
+    <div class="filters-card">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="department" class="form-label">Department</label>
+                <select name="department" id="department" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {% if dept==selected_department %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Search by name or email"
+                    value="{{ search_query }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>Search
+                </button>
+            </div>
+        </form>
+    </div>
+
     {% if mentors %}
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Department</th>
-                    <th>Phone</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for mentor in mentors %}
-                <tr>
-                    <td>{{ mentor.full_name }}</td>
-                    <td>{{ mentor.email }}</td>
-                    <td>{{ mentor.department }}</td>
-                    <td>{{ mentor.phone or 'N/A' }}</td>
-                    <td>
-                        <form method="POST" action="{{ url_for('admin.delete_mentor', mentor_id=mentor.id) }}"
-                            style="display:inline;"
-                            onsubmit="return confirm('Are you sure you want to delete this mentor?');">
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i>
-                                Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Mentors Table -->
+    <div class="mentors-table-card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mentor in mentors %}
+                    <tr>
+                        <td>
+                            <div class="mentor-name">
+                                <i class="fas fa-user-circle me-2"></i>
+                                {{ mentor.full_name }}
+                            </div>
+                        </td>
+                        <td>{{ mentor.email }}</td>
+                        <td>
+                            <span class="badge department-badge">{{ mentor.department }}</span>
+                        </td>
+                        <td>{{ mentor.phone or 'N/A' }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin.delete_mentor', mentor_id=mentor.id) }}"
+                                style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to delete this mentor?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% else %}
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i> No mentors found.
+    <!-- Empty State -->
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <h3>No Mentors Found</h3>
+        <p>There are currently no mentors in the system.</p>
     </div>
     {% endif %}
 </div>
 
 <style>
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--input-text);
-        opacity: 0.7;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .mentors-header {
+        background: linear-gradient(135deg, var(--gradient-primary), var(--gradient-secondary));
+        padding: 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    
-    input,
-    textarea,
-    select {
+
+    .mentors-header h2 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .mentors-header .btn-outline-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .mentors-header .btn-outline-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .filters-card {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--card-border);
+    }
+
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-select,
+    .form-control {
         background: var(--input-bg) !important;
-        color: var(--input-text) !important;
-        border-color: var(--input-border) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        color: var(--text-primary) !important;
+        border: 1px solid var(--input-border) !important;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+        border-color: var(--accent-color) !important;
+        box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.25);
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--gradient-primary), var(--gradient-secondary));
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+    }
+
+    .mentors-table-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--card-border);
+    }
+
+    .table {
+        margin: 0;
+        color: var(--text-primary);
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(75, 0, 130, 0.1));
+        border: none;
+        padding: 1.5rem 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(138, 43, 226, 0.05);
+        transform: translateX(5px);
+    }
+
+    .table tbody td {
+        padding: 1.5rem 1rem;
+        vertical-align: middle;
+        border: none;
+    }
+
+    .mentor-name {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+    }
+
+    .mentor-name i {
+        color: var(--accent-color);
+        font-size: 1.2rem;
+    }
+
+    .department-badge {
+        background: linear-gradient(135deg, var(--gradient-primary), var(--gradient-secondary));
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--card-border);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+
+    .empty-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    /* Animation classes */
+    .mentors-header,
+    .filters-card,
+    .mentors-table-card,
+    .empty-state {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .mentors-header {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mentors-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .filters-card {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 1rem 0.5rem;
+        }
+
+        .mentor-name {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .mentor-name i {
+            margin-bottom: 0.5rem;
+        }
     }
 </style>
+
+<script>
+    // Add intersection observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all cards
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.mentors-header, .filters-card, .mentors-table-card, .empty-state');
+        cards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            observer.observe(card);
+        });
+    });
+</script>
 {% endblock %}

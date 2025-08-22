@@ -1,17 +1,17 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 
 {% block title %}Profile - Shah and Anchor College{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container-fluid py-4">
     <div class="row">
         <div class="col-md-4">
             <!-- Profile Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header themed-bg themed-text">
-                    <h4 class="mb-0">Profile Information</h4>
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h4><i class="fas fa-user-circle me-2"></i>Profile Information</h4>
                 </div>
-                <div class="card-body">
+                <div class="profile-body">
                     <div class="text-center mb-4">
                         <div class="profile-image-container mb-3">
                             {% if current_user.profile_image %}
@@ -26,29 +26,75 @@
                                 </label>
                             </div>
                         </div>
-                        <h5 class="mb-1">{{ current_user.full_name }}</h5>
-                        <p class="text-muted mb-0">{{ current_user.role|title }}</p>
+                        <h5 class="profile-name mb-1">{{ current_user.full_name }}</h5>
+                        <p class="profile-role mb-0">{{ current_user.role|title }}</p>
                     </div>
-                    <hr>
+                    <hr class="profile-divider">
                     <div class="profile-info">
-                        <p><strong><i class="fas fa-id-card me-2"></i>Student ID:</strong><br>
-                            {{ current_user.student_id }}</p>
-                        <p><strong><i class="fas fa-envelope me-2"></i>Email:</strong><br>
-                            {{ current_user.email }}</p>
-                        <p><strong><i class="fas fa-phone me-2"></i>Phone:</strong><br>
-                            {{ current_user.phone }}</p>
-                        <p><strong><i class="fas fa-graduation-cap me-2"></i>Department:</strong><br>
-                            {{ current_user.department }}</p>
-                        <p><strong><i class="fas fa-calendar me-2"></i>Batch:</strong><br>
-                            {{ current_user.batch }}</p>
-                        <p><strong><i class="fas fa-book me-2"></i>Semester:</strong><br>
-                            {{ current_user.semester }}</p>
-                        <p><strong><i class="fas fa-venus-mars me-2"></i>Gender:</strong><br>
-                            {{ current_user.gender|title }}</p>
-                        <p><strong><i class="fas fa-birthday-cake me-2"></i>Date of Birth:</strong><br>
-                            {{ current_user.date_of_birth.strftime('%d %b %Y') if current_user.date_of_birth }}</p>
-                        <p><strong><i class="fas fa-map-marker-alt me-2"></i>Address:</strong><br>
-                            {{ current_user.address }}</p>
+                        <div class="info-item">
+                            <i class="fas fa-id-card"></i>
+                            <div>
+                                <strong>Student ID:</strong>
+                                <span>{{ current_user.student_id }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <strong>Email:</strong>
+                                <span>{{ current_user.email }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong>Phone:</strong>
+                                <span>{{ current_user.phone }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <div>
+                                <strong>Department:</strong>
+                                <span>{{ current_user.department }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <div>
+                                <strong>Batch:</strong>
+                                <span>{{ current_user.batch }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-book"></i>
+                            <div>
+                                <strong>Semester:</strong>
+                                <span>{{ current_user.semester }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-venus-mars"></i>
+                            <div>
+                                <strong>Gender:</strong>
+                                <span>{{ current_user.gender|title }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-birthday-cake"></i>
+                            <div>
+                                <strong>Date of Birth:</strong>
+                                <span>{{ current_user.date_of_birth.strftime('%d %b %Y') if current_user.date_of_birth
+                                    }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Address:</strong>
+                                <span>{{ current_user.address }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,23 +102,23 @@
 
         <div class="col-md-8">
             <!-- Edit Profile Form -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header themed-bg themed-text">
-                    <h4 class="mb-0">Edit Profile</h4>
+            <div class="form-card">
+                <div class="form-header">
+                    <h4><i class="fas fa-edit me-2"></i>Edit Profile</h4>
                 </div>
-                <div class="card-body">
+                <div class="form-body">
                     <form method="POST" action="{{ url_for('auth.profile') }}" enctype="multipart/form-data">
                         <input type="file" id="profile_image" name="profile_image" accept="image/*" class="d-none"
                             onchange="previewImage(this)">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="full_name" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="full_name" name="full_name"
+                                <input type="text" class="form-control glassy-input" id="full_name" name="full_name"
                                     value="{{ current_user.full_name }}" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email"
+                                <input type="email" class="form-control glassy-input" id="email" name="email"
                                     value="{{ current_user.email }}" required>
                             </div>
                         </div>
@@ -80,12 +126,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="phone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="phone" name="phone"
+                                <input type="tel" class="form-control glassy-input" id="phone" name="phone"
                                     value="{{ current_user.phone }}" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="department" class="form-label">Department</label>
-                                <input type="text" class="form-control" id="department" name="department"
+                                <input type="text" class="form-control glassy-input" id="department" name="department"
                                     value="{{ current_user.department }}" required>
                             </div>
                         </div>
@@ -93,12 +139,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="batch" class="form-label">Batch</label>
-                                <input type="text" class="form-control" id="batch" name="batch"
+                                <input type="text" class="form-control glassy-input" id="batch" name="batch"
                                     value="{{ current_user.batch }}" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="semester" class="form-label">Semester</label>
-                                <input type="number" class="form-control" id="semester" name="semester"
+                                <input type="number" class="form-control glassy-input" id="semester" name="semester"
                                     value="{{ current_user.semester }}" required>
                             </div>
                         </div>
@@ -106,7 +152,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="gender" class="form-label">Gender</label>
-                                <select class="form-select" id="gender" name="gender" required>
+                                <select class="form-select glassy-input" id="gender" name="gender" required>
                                     <option value="male" {% if current_user.gender=='male' %}selected{% endif %}>Male
                                     </option>
                                     <option value="female" {% if current_user.gender=='female' %}selected{% endif %}>
@@ -117,7 +163,8 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
+                                <input type="date" class="form-control glassy-input" id="date_of_birth"
+                                    name="date_of_birth"
                                     value="{{ current_user.date_of_birth.strftime('%Y-%m-%d') if current_user.date_of_birth }}"
                                     required>
                             </div>
@@ -125,11 +172,11 @@
 
                         <div class="mb-3">
                             <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="3"
+                            <textarea class="form-control glassy-input" id="address" name="address" rows="3"
                                 required>{{ current_user.address }}</textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary glassy-btn">
                             <i class="fas fa-save me-2"></i>Update Profile
                         </button>
                     </form>
@@ -137,27 +184,28 @@
             </div>
 
             <!-- Change Password Form -->
-            <div class="card shadow-sm">
-                <div class="card-header themed-bg themed-text">
-                    <h4 class="mb-0">Change Password</h4>
+            <div class="form-card">
+                <div class="form-header">
+                    <h4><i class="fas fa-key me-2"></i>Change Password</h4>
                 </div>
-                <div class="card-body">
+                <div class="form-body">
                     <form method="POST" action="{{ url_for('auth.change_password') }}">
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="current_password" name="current_password"
-                                required>
+                            <input type="password" class="form-control glassy-input" id="current_password"
+                                name="current_password" required>
                         </div>
                         <div class="mb-3">
                             <label for="new_password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="new_password" name="new_password" required>
+                            <input type="password" class="form-control glassy-input" id="new_password"
+                                name="new_password" required>
                         </div>
                         <div class="mb-3">
                             <label for="confirm_password" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
-                                required>
+                            <input type="password" class="form-control glassy-input" id="confirm_password"
+                                name="confirm_password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary glassy-btn">
                             <i class="fas fa-key me-2"></i>Change Password
                         </button>
                     </form>
@@ -166,10 +214,72 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_css %}
 <style>
+    /* CSS Variables for glassy theme */
+    :root {
+        --gradient-primary: #8a2be2;
+        --gradient-secondary: #4b0082;
+        --card-bg: rgba(255, 255, 255, 0.1);
+        --card-border: rgba(255, 255, 255, 0.2);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.8);
+        --accent-color: #8a2be2;
+        --input-bg: rgba(255, 255, 255, 0.1);
+        --input-border: rgba(255, 255, 255, 0.3);
+        --input-text: #ffffff;
+    }
+
+    /* Background gradient */
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: var(--text-primary);
+    }
+
+    /* Glassy Cards */
+    .profile-card,
+    .form-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .profile-card:hover,
+    .form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Card Headers */
+    .profile-header,
+    .form-header {
+        background: linear-gradient(135deg, var(--gradient-primary), var(--gradient-secondary));
+        padding: 1.5rem;
+        color: white;
+        text-align: center;
+    }
+
+    .profile-header h4,
+    .form-header h4 {
+        margin: 0;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Card Bodies */
+    .profile-body,
+    .form-body {
+        padding: 2rem;
+        color: var(--text-primary);
+    }
+
+    /* Profile Image */
     .profile-image-container {
         position: relative;
         width: 150px;
@@ -182,61 +292,248 @@
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
-    }
-
-    .avatar-placeholder {
-        width: 100%;
-        height: 100%;
-        background-color: #e9ecef;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #6c757d;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
 
     .profile-image-overlay {
         position: absolute;
         bottom: 0;
         right: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7);
         border-radius: 50%;
         padding: 8px;
         cursor: pointer;
         transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
     }
 
     .profile-image-overlay:hover {
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.9);
+        transform: scale(1.1);
     }
 
-    .profile-info p {
-        margin-bottom: 1rem;
+    .profile-image-overlay .btn {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        color: #333;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .profile-info strong {
-        color: #495057;
+    /* Profile Info */
+    .profile-name {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
     }
 
-    .profile-info i {
-        width: 20px;
-        color: var(--primary-color);
+    .profile-role {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        background: linear-gradient(135deg, var(--gradient-primary), var(--gradient-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 500;
     }
 
-    .themed-bg {
-        background: var(--card-bg) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .profile-divider {
+        border-color: rgba(255, 255, 255, 0.2);
+        margin: 1.5rem 0;
     }
 
-    .themed-text {
-        color: var(--text-color) !important;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+    }
+
+    .info-item i {
+        color: var(--accent-color);
+        font-size: 1.1rem;
+        margin-top: 0.2rem;
+        min-width: 20px;
+    }
+
+    .info-item div {
+        flex: 1;
+    }
+
+    .info-item strong {
+        color: var(--text-primary);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-item span {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    /* Form Elements */
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .glassy-input {
+        background: var(--input-bg) !important;
+        color: var(--input-text) !important;
+        border: 1px solid var(--input-border) !important;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .glassy-input:focus {
+        border-color: var(--accent-color) !important;
+        box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.25);
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    .glassy-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Buttons */
+    .glassy-btn {
+        background: linear-gradient(135deg, var(--gradient-primary), var(--gradient-secondary));
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        color: white;
+    }
+
+    .glassy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+        color: white;
+    }
+
+    /* Animations */
+    .profile-card,
+    .form-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem;
+        }
+
+        .profile-body,
+        .form-body {
+            padding: 1.5rem;
+        }
+
+        .profile-header,
+        .form-header {
+            padding: 1rem;
+        }
+
+        .profile-image-container {
+            width: 120px;
+            height: 120px;
+        }
+
+        .info-item {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-item i {
+            align-self: center;
+        }
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, var(--gradient-primary), var(--gradient-secondary));
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, var(--gradient-secondary), var(--gradient-primary));
     }
 </style>
-{% endblock %}
 
-{% block extra_js %}
 <script>
+    // Add intersection observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all cards
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.profile-card, .form-card');
+        cards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            observer.observe(card);
+        });
+    });
+
     function previewImage(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();

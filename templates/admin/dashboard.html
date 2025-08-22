@@ -1,239 +1,339 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block extra_css %}
 <style>
-    .dashboard-header {
-        background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
-        url("{{ url_for('static', filename='images/dashboard-bg.jpg') }}");
-        background-size: cover;
-        background-position: center;
-        color: white;
-        padding: 2rem 1rem;
-        margin: -1.5rem -1.5rem 2rem -1.5rem;
-        border-radius: 0;
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
     }
 
-    @media (min-width: 768px) {
-        .dashboard-header {
-            padding: 3rem 2rem;
-            margin: -1.5rem -1.5rem 2rem -1.5rem;
-            border-radius: 0 0 1rem 1rem;
-        }
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
     }
 
-    .stats-card {
-        background: white;
-        border-radius: 0.5rem;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        height: 100%;
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--accent-gradient);
     }
 
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .stat-card:nth-child(1)::before {
+        background: var(--primary-gradient);
     }
 
-    .stats-icon {
-        font-size: 1.75rem;
-        margin-bottom: 0.75rem;
-        color: #0d6efd;
+    .stat-card:nth-child(2)::before {
+        background: var(--secondary-gradient);
     }
 
-    .stats-number {
-        font-size: 1.75rem;
-        font-weight: bold;
-        margin-bottom: 0.25rem;
+    .stat-card:nth-child(3)::before {
+        background: var(--success-gradient);
     }
 
-    @media (min-width: 768px) {
-        .stats-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .stats-number {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
+    .stat-card:nth-child(4)::before {
+        background: var(--warning-gradient);
     }
 
-    .pending-card {
-        background: white;
-        border-radius: 0.5rem;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(31, 38, 135, 0.5);
     }
 
-    .pending-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .student-info {
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
         display: flex;
         align-items: center;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .student-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #0d6efd;
-        background-color: #f8f9fa;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .student-details {
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .student-name {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-        font-size: 1rem;
-    }
-
-    .student-meta {
-        color: #6c757d;
-        font-size: 0.875rem;
-    }
-
-    .btn-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
-
-    .btn-group .btn {
-        flex: 1;
-        min-width: 120px;
-        white-space: nowrap;
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        margin-bottom: 1rem;
-    }
-
-    .card:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-        padding: 1rem;
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-
-    @media (min-width: 768px) {
-        .card-header {
-            padding: 1rem 1.25rem;
-        }
-
-        .card-body {
-            padding: 1.25rem;
-        }
-    }
-
-    .quick-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-
-    .quick-action-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
-        flex: 1;
-        min-width: 200px;
         justify-content: center;
+        font-size: 1.5rem;
+        color: var(--text-light);
+        margin: 0 auto 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
 
-    .quick-action-btn:hover {
-        transform: translateY(-2px);
+    .stat-card:nth-child(1) .stat-icon {
+        background: var(--primary-gradient);
     }
 
-    .quick-action-btn i {
+    .stat-card:nth-child(2) .stat-icon {
+        background: var(--secondary-gradient);
+    }
+
+    .stat-card:nth-child(3) .stat-icon {
+        background: var(--success-gradient);
+    }
+
+    .stat-card:nth-child(4) .stat-icon {
+        background: var(--warning-gradient);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .chart-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .chart-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: var(--transition);
+    }
+
+    .chart-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(31, 38, 135, 0.4);
+    }
+
+    .chart-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+
+    .status-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .status-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(31, 38, 135, 0.4);
+    }
+
+    .status-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-label {
         font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 1.5rem;
+        font-weight: 500;
     }
 
-    .quick-action-btn span {
-        white-space: nowrap;
+    .status-btn {
+        background: var(--accent-gradient);
+        border: none;
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: var(--transition);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
-    @media (max-width: 767px) {
-        .container {
-            padding-left: 1rem;
-            padding-right: 1rem;
+    .status-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        color: var(--text-light);
+        text-decoration: none;
+    }
+
+    .recent-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .recent-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: var(--transition);
+    }
+
+    .recent-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(31, 38, 135, 0.4);
+    }
+
+    .recent-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .recent-item {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: var(--transition);
+    }
+
+    .recent-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(5px);
+    }
+
+    .recent-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .recent-item h6 {
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .recent-item p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .recent-item small {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .status-badge.approved {
+        background: var(--success-gradient);
+        color: var(--text-light);
+    }
+
+    .status-badge.pending {
+        background: var(--warning-gradient);
+        color: var(--text-light);
+    }
+
+    .status-badge.rejected {
+        background: var(--danger-gradient);
+        color: var(--text-light);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .chart-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
-        .row {
-            margin-left: -0.5rem;
-            margin-right: -0.5rem;
+        .status-section {
+            grid-template-columns: 1fr;
         }
 
-        .col-md-3,
-        .col-md-6 {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+        .recent-section {
+            grid-template-columns: 1fr;
         }
 
-        .stats-card {
-            padding: 1rem;
+        .stat-number {
+            font-size: 2rem;
         }
 
-        .pending-card {
-            padding: 1rem;
-        }
-
-        .btn-group .btn {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-        }
-
-        .quick-action-btn {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
+        .status-number {
+            font-size: 2.5rem;
         }
     }
 
     /* Animation classes */
     .animate-fade-in {
-        animation: fadeIn 0.5s ease-in;
+        animation: fadeIn 0.6s ease-in;
     }
 
     .animate-slide-up {
-        animation: slideUp 0.5s ease-out;
+        animation: slideUp 0.6s ease-out;
     }
 
     @keyframes fadeIn {
         from {
             opacity: 0;
         }
-
         to {
             opacity: 1;
         }
@@ -241,240 +341,164 @@
 
     @keyframes slideUp {
         from {
-            transform: translateY(20px);
+            transform: translateY(30px);
             opacity: 0;
         }
-
         to {
             transform: translateY(0);
             opacity: 1;
         }
     }
-
-    /* Chart styles */
-    .chart-container {
-        position: relative;
-        height: 300px;
-        margin-bottom: 1rem;
-    }
-
-    .chart-card {
-        background: white;
-        border-radius: 0.5rem;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
-
-    .chart-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .chart-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: #2c3e50;
-    }
-
-    .themed-text {
-        color: var(--text-color) !important;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .themed-bg {
-        background: var(--card-bg) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    input,
-    textarea,
-    select {
-        background: var(--input-bg) !important;
-        color: var(--input-text) !important;
-        border-color: var(--input-border) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--input-text);
-        opacity: 0.7;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .stats-card,
-    .chart-card,
-    .pending-card {
-        margin-bottom: 1.5rem;
-    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <h2 class="mb-4">Admin Dashboard</h2>
+<div class="container-fluid">
+    <!-- Welcome Header -->
+    <div class="glass-card animate-fade-in">
+        <h1 class="text-center mb-3">
+            <i class="fas fa-tachometer-alt me-3" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+            Admin Dashboard
+        </h1>
+        <p class="text-center mb-0" style="font-size: 1.1rem; color: rgba(255, 255, 255, 0.8);">
+            Welcome back! Here's an overview of your system
+        </p>
+    </div>
 
     <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card themed-bg themed-text">
-                <div class="card-body">
-                    <h5 class="card-title">Total Students</h5>
-                    <h2 class="card-text">{{ total_students }}</h2>
-                </div>
+    <div class="stats-grid animate-slide-up">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-user-graduate"></i>
             </div>
+            <div class="stat-number">{{ total_students }}</div>
+            <div class="stat-label">Total Students</div>
         </div>
-        <div class="col-md-3">
-            <div class="card themed-bg themed-text">
-                <div class="card-body">
-                    <h5 class="card-title">Total Mentors</h5>
-                    <h2 class="card-text">{{ total_mentors }}</h2>
-                </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
             </div>
+            <div class="stat-number">{{ total_mentors }}</div>
+            <div class="stat-label">Total Mentors</div>
         </div>
-        <div class="col-md-3">
-            <div class="card themed-bg themed-text">
-                <div class="card-body">
-                    <h5 class="card-title">Total Internships</h5>
-                    <h2 class="card-text">{{ total_internships }}</h2>
-                </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-briefcase"></i>
             </div>
+            <div class="stat-number">{{ total_internships }}</div>
+            <div class="stat-label">Total Internships</div>
         </div>
-        <div class="col-md-3">
-            <div class="card themed-bg themed-text">
-                <div class="card-body">
-                    <h5 class="card-title">Total Activities</h5>
-                    <h2 class="card-text">{{ total_activities }}</h2>
-                </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-tasks"></i>
             </div>
+            <div class="stat-number">{{ total_activities }}</div>
+            <div class="stat-label">Total Activities</div>
         </div>
     </div>
 
     <!-- Charts Section -->
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <div class="chart-card themed-bg themed-text">
-                <h5 class="chart-title">Internship & Activity Trends</h5>
-                <div class="chart-container">
-                    <canvas id="trendsChart"></canvas>
-                </div>
+    <div class="chart-section animate-slide-up">
+        <div class="chart-card">
+            <h5 class="chart-title">Internship & Activity Trends</h5>
+            <div class="chart-container">
+                <canvas id="trendsChart"></canvas>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="chart-card themed-bg themed-text">
-                <h5 class="chart-title">Activity Types Distribution</h5>
-                <div class="chart-container">
-                    <canvas id="activityTypesChart"></canvas>
-                </div>
+        
+        <div class="chart-card">
+            <h5 class="chart-title">Activity Types Distribution</h5>
+            <div class="chart-container">
+                <canvas id="activityTypesChart"></canvas>
             </div>
         </div>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="chart-card themed-bg themed-text">
-                <h5 class="chart-title">Internship Status Distribution</h5>
-                <div class="chart-container">
-                    <canvas id="internshipStatusChart"></canvas>
-                </div>
+    <!-- Additional Charts -->
+    <div class="chart-section animate-slide-up">
+        <div class="chart-card">
+            <h5 class="chart-title">Internship Status Distribution</h5>
+            <div class="chart-container">
+                <canvas id="internshipStatusChart"></canvas>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="chart-card themed-bg themed-text">
-                <h5 class="chart-title">Activity Status Distribution</h5>
-                <div class="chart-container">
-                    <canvas id="activityStatusChart"></canvas>
-                </div>
+        
+        <div class="chart-card">
+            <h5 class="chart-title">Activity Status Distribution</h5>
+            <div class="chart-container">
+                <canvas id="activityStatusChart"></canvas>
             </div>
         </div>
     </div>
 
     <!-- Pending Approvals -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card themed-bg themed-text">
-                <div class="card-header themed-bg themed-text">
-                    <h5 class="mb-0">Pending Internships</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="card-text">{{ pending_internships }}</h2>
-                    <a href="{{ url_for('admin.students') }}" class="btn btn-warning">View Details</a>
-                </div>
-            </div>
+    <div class="status-section animate-slide-up">
+        <div class="status-card">
+            <div class="status-number">{{ pending_internships }}</div>
+            <div class="status-label">Pending Internships</div>
+            <a href="{{ url_for('admin.students') }}" class="status-btn">
+                <i class="fas fa-eye me-2"></i>View Details
+            </a>
         </div>
-        <div class="col-md-6">
-            <div class="card themed-bg themed-text">
-                <div class="card-header themed-bg themed-text">
-                    <h5 class="mb-0">Pending Activities</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="card-text">{{ pending_activities }}</h2>
-                    <a href="{{ url_for('admin.students') }}" class="btn btn-warning">View Details</a>
-                </div>
-            </div>
+        
+        <div class="status-card">
+            <div class="status-number">{{ pending_activities }}</div>
+            <div class="status-label">Pending Activities</div>
+            <a href="{{ url_for('admin.students') }}" class="status-btn">
+                <i class="fas fa-eye me-2"></i>View Details
+            </a>
         </div>
     </div>
 
     <!-- Recent Activities -->
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card themed-bg themed-text">
-                <div class="card-header themed-bg themed-text">
-                    <h5 class="mb-0">Recent Internships</h5>
+    <div class="recent-section animate-slide-up">
+        <div class="recent-card">
+            <h5 class="recent-title">
+                <i class="fas fa-briefcase me-2"></i>Recent Internships
+            </h5>
+            {% if recent_internships %}
+                {% for internship in recent_internships %}
+                <div class="recent-item">
+                    <h6>{{ internship.company_name }}</h6>
+                    <p>Project: {{ internship.project_name }}</p>
+                    <span class="status-badge {{ internship.status }}">
+                        {{ internship.status|title }}
+                    </span>
+                    <small class="d-block">Date: {{ internship.created_at }}</small>
                 </div>
-                <div class="card-body">
-                    {% if recent_internships %}
-                    <div class="list-group">
-                        {% for internship in recent_internships %}
-                        <div class="list-group-item">
-                            <h6 class="mb-1">{{ internship.company_name }}</h6>
-                            <p class="mb-1">Project: {{ internship.project_name }}</p>
-                            <small>Status:
-                                <span
-                                    class="badge {% if internship.status == 'approved' %}bg-success{% elif internship.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
-                                    {{ internship.status|title }}
-                                </span>
-                            </small>
-                            <small class="d-block text-muted">Date: {{ internship.created_at }}</small>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p class="text-muted">No recent internships</p>
-                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-briefcase"></i>
+                    <p>No recent internships</p>
                 </div>
-            </div>
+            {% endif %}
         </div>
-        <div class="col-md-6">
-            <div class="card themed-bg themed-text">
-                <div class="card-header themed-bg themed-text">
-                    <h5 class="mb-0">Recent Activities</h5>
+        
+        <div class="recent-card">
+            <h5 class="recent-title">
+                <i class="fas fa-tasks me-2"></i>Recent Activities
+            </h5>
+            {% if recent_activities %}
+                {% for activity in recent_activities %}
+                <div class="recent-item">
+                    <h6>{{ activity.title }}</h6>
+                    <p>Type: {{ activity.activity_type|title }}</p>
+                    <span class="status-badge {{ activity.status }}">
+                        {{ activity.status|title }}
+                    </span>
+                    <small class="d-block">Date: {{ activity.created_at }}</small>
                 </div>
-                <div class="card-body">
-                    {% if recent_activities %}
-                    <div class="list-group">
-                        {% for activity in recent_activities %}
-                        <div class="list-group-item">
-                            <h6 class="mb-1">{{ activity.title }}</h6>
-                            <p class="mb-1">Type: {{ activity.activity_type|title }}</p>
-                            <small>Status:
-                                <span
-                                    class="badge {% if activity.status == 'approved' %}bg-success{% elif activity.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
-                                    {{ activity.status|title }}
-                                </span>
-                            </small>
-                            <small class="d-block text-muted">Date: {{ activity.created_at }}</small>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p class="text-muted">No recent activities</p>
-                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-tasks"></i>
+                    <p>No recent activities</p>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -483,40 +507,16 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Add animation to cards
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
-            }
-        });
-    });
-
-    document.querySelectorAll('.stats-card, .pending-card, .chart-card').forEach((el) => observer.observe(el));
-
-    // Chart colors based on theme
-    function getChartColors() {
-        const isDark = document.body.getAttribute('data-theme') === 'dark';
-        return {
-            primary: '#0d6efd',
-            success: '#198754',
-            warning: '#ffc107',
-            danger: '#dc3545',
-            info: '#0dcaf0',
-            secondary: '#6c757d',
-            light: isDark ? '#23272b' : '#f8f9fa',
-            dark: isDark ? '#f8f9fa' : '#212529',
-            gridColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color')
-        };
-    }
-    
-    let colors = getChartColors();
-    
-    // Update colors when theme changes
-    document.addEventListener('themeChanged', function() {
-        colors = getChartColors();
-        // If charts are stored in variables, they could be updated here
-    });
+    // Chart colors based on glass theme
+    const chartColors = {
+        primary: '#667eea',
+        secondary: '#f093fb',
+        accent: '#4facfe',
+        success: '#43e97b',
+        warning: '#fa709a',
+        danger: '#ff9a9e',
+        info: '#00f2fe'
+    };
 
     // Trends Chart (Line)
     fetch('/admin/dashboard/data/trends')
@@ -531,28 +531,53 @@
                         {
                             label: 'Internships',
                             data: data.internships,
-                            borderColor: colors.primary,
-                            backgroundColor: colors.primary + '20',
+                            borderColor: chartColors.primary,
+                            backgroundColor: chartColors.primary + '20',
                             tension: 0.4,
-                            fill: true
+                            fill: true,
+                            borderWidth: 3
                         },
                         {
                             label: 'Activities',
                             data: data.activities,
-                            borderColor: colors.success,
-                            backgroundColor: colors.success + '20',
+                            borderColor: chartColors.success,
+                            backgroundColor: chartColors.success + '20',
                             tension: 0.4,
-                            fill: true
+                            fill: true,
+                            borderWidth: 3
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top' } },
+                    plugins: { 
+                        legend: { 
+                            position: 'top',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        } 
+                    },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color') } },
-                        x: { grid: { display: false } }
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { 
+                                color: 'rgba(255, 255, 255, 0.1)' 
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }
                     }
                 }
             });
@@ -569,13 +594,32 @@
                     labels: data.labels,
                     datasets: [{
                         data: data.data,
-                        backgroundColor: [colors.primary, colors.success, colors.warning, colors.danger, colors.info, colors.secondary, colors.dark]
+                        backgroundColor: [
+                            chartColors.primary,
+                            chartColors.secondary,
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.info,
+                            chartColors.accent
+                        ],
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        } 
+                    }
                 }
             });
         });
@@ -591,7 +635,13 @@
                     labels: data.labels,
                     datasets: [{
                         data: data.data,
-                        backgroundColor: [colors.success, colors.warning, colors.danger]
+                        backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger
+                        ],
+                        borderRadius: 8,
+                        borderSkipped: false
                     }]
                 },
                 options: {
@@ -599,8 +649,21 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color') } },
-                        x: { grid: { display: false } }
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { 
+                                color: 'rgba(255, 255, 255, 0.1)' 
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }
                     }
                 }
             });
@@ -617,7 +680,13 @@
                     labels: data.labels,
                     datasets: [{
                         data: data.data,
-                        backgroundColor: [colors.success, colors.warning, colors.danger]
+                        backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger
+                        ],
+                        borderRadius: 8,
+                        borderSkipped: false
                     }]
                 },
                 options: {
@@ -625,11 +694,35 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color') } },
-                        x: { grid: { display: false } }
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { 
+                                color: 'rgba(255, 255, 255, 0.1)' 
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }
                     }
                 }
             });
         });
+
+    // Add animation to cards
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            }
+        });
+    });
+
+    document.querySelectorAll('.stat-card, .chart-card, .status-card, .recent-card').forEach((el) => observer.observe(el));
 </script>
 {% endblock %}
