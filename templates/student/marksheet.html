@@ -1,18 +1,20 @@
-{% extends "base.html" %}
+{% extends "student/base.html" %}
 
 {% block title %}Marksheet - Shah and Anchor College{% endblock %}
 
 {% block extra_css %}
 <style>
     .marksheet-header {
-        background: #f8f6e3;
-        border: 1px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 1.5rem 1rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
         margin-bottom: 2rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        box-shadow: var(--glass-shadow);
     }
 
     .marksheet-logo {
@@ -29,29 +31,31 @@
     .marksheet-title h2 {
         font-size: 1.6rem;
         font-weight: 700;
-        color: #1d3557;
+        color: var(--text-light);
         margin-bottom: 0.2rem;
     }
 
     .marksheet-title small {
-        color: #457b9d;
+        color: rgba(255, 255, 255, 0.8);
         font-size: 1rem;
     }
 
     .marksheet-course {
         text-align: right;
         font-size: 1rem;
-        color: #222;
+        color: var(--text-light);
         min-width: 180px;
     }
 
     .student-info-row {
         display: flex;
         align-items: center;
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        padding: 1.5rem 1rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        box-shadow: var(--glass-shadow);
+        padding: 2rem;
         margin-bottom: 2rem;
     }
 
@@ -60,32 +64,48 @@
         height: 135px;
         object-fit: cover;
         margin-right: 2rem;
-        background: #f8f9fa;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        border: 2px solid var(--glass-border);
     }
 
     .student-details {
         flex: 1;
         font-size: 1.05rem;
+        color: var(--text-light);
     }
 
     .student-details p {
         margin-bottom: 0.3rem;
     }
 
+    .marksheet-table {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: var(--glass-shadow);
+    }
+
     .marksheet-table th,
     .marksheet-table td {
         vertical-align: middle;
         text-align: center;
+        border-color: var(--glass-border);
     }
 
     .marksheet-table th {
-        background: #f8f6e3;
-        color: #1d3557;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-light);
         font-weight: 600;
+        border-color: var(--glass-border);
     }
 
     .marksheet-table td {
-        background: #fff;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-light);
+        border-color: var(--glass-border);
     }
 
     .summary-row {
@@ -93,29 +113,69 @@
         font-weight: 500;
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
+        color: var(--text-light);
     }
 
     .download-btn {
         margin-top: 2rem;
         font-size: 1.1rem;
+        background: var(--accent-gradient);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
         font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        color: white;
+    }
+
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--glass-shadow);
+        text-align: center;
+    }
+
+    .page-header h2 {
+        color: var(--text-light);
+        margin: 0;
+    }
+
+    .page-header p {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0.5rem 0 0 0;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <!-- Header -->
+    <div class="page-header">
+        <h2>Academic Marksheet</h2>
+        <p>Your complete academic performance record</p>
+    </div>
+
+    <!-- Marksheet Header -->
     <div class="marksheet-header">
-        <img src="{{ url_for('static', filename='images/college_logo.png') }}" class="marksheet-logo"
-            alt="College Logo">
+        <img src="{{ url_for('static', filename='images/college_logo.png') }}" alt="College Logo"
+            class="marksheet-logo">
         <div class="marksheet-title">
-            <h2>Shah & Anchor Kutchhi Engineering College</h2>
-            <small>(An Autonomous Institute Affiliated to University of Mumbai)</small>
+            <h2>Shah and Anchor Kutchhi Engineering College</h2>
+            <small>Affiliated to Mumbai University</small>
         </div>
         <div class="marksheet-course">
-            <div><b>Course:</b> {{ current_user.department }}</div>
-            <div><b>Permanent Roll No:</b> {{ current_user.registration_number or current_user.student_id }}</div>
+            <strong>B.E. Computer Engineering</strong><br>
+            <small>4 Years Full Time</small>
         </div>
     </div>
     <!-- Student Info Row -->

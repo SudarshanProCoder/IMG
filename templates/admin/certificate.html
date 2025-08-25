@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Completion Certificate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background: white;
+            width: 297mm;
+            height: 210mm;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .certificate {
+            background: white;
+            width: 297mm;
+            height: 210mm;
+            padding: 25mm;
+            border: 8px solid #1a237e;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .college-logo {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #1a237e;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3f51b5, #1a237e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            margin-right: 30px;
+        }
+
+        .institution-info {
+            text-align: left;
+        }
+
+        .institution-name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a237e;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .sub-heading {
+            font-size: 16px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .certificate-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #d32f2f;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .certificate-text {
+            font-size: 24px;
+            line-height: 1.6;
+            color: #1a237e;
+            margin-bottom: 30px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .student-name {
+            font-size: 38px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 30px 0;
+            text-decoration: underline;
+            text-decoration-color: #4caf50;
+            text-underline-offset: 10px;
+            text-decoration-thickness: 4px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .completion-text {
+            font-size: 24px;
+            color: #1a237e;
+            margin-bottom: 30px;
+            font-weight: 500;
+            line-height: 1.6;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .credit-box {
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);
+            border: 4px solid #ff9800;
+            border-radius: 20px;
+            padding: 25px 40px;
+            margin: 30px 0;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.3);
+        }
+
+        .credit-label {
+            font-size: 18px;
+            color: #e65100;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .credit-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #e65100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .recognition-text {
+            font-size: 22px;
+            color: #1a237e;
+            margin-top: 30px;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            max-width: 95%;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px;
+        }
+
+        .signatures {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            flex: 1;
+        }
+
+        .signature-block {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 150px;
+            height: 40px;
+            border-bottom: 3px solid #1a237e;
+            margin: 0 auto 10px;
+        }
+
+        .signature-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a237e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .official-seal {
+            width: 120px;
+            height: 120px;
+            border: 4px solid #2e7d32;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #e8f5e8, #c8e6c8);
+            font-size: 14px;
+            font-weight: bold;
+            color: #2e7d32;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3);
+            flex-shrink: 0;
+        }
+
+        .star-decoration {
+            color: #ff9800;
+            font-size: 28px;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+                width: 297mm;
+                height: 210mm;
+            }
+
+            .certificate {
+                box-shadow: none;
+                border-radius: 0;
+                width: 297mm;
+                height: 210mm;
+                margin: 0;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="certificate">
+        <div class="header">
+            <div class="logo-section">
+                <div class="college-logo">
+                    <div>SAKEC<br>College</div>
+                </div>
+                <div class="institution-info">
+                    <div class="institution-name">SAKEC Institute of Technology</div>
+                    <div class="sub-heading">Excellence in Education & Innovation</div>
+                </div>
+            </div>
+            <div class="certificate-title">Certificate of Completion</div>
+        </div>
+
+        <div class="content">
+            <div class="certificate-text">
+                This is to certify that
+            </div>
+
+            <div class="student-name">{{ student_name }}</div>
+
+            <div class="completion-text">
+                has successfully completed the <strong>Summer Internship Program</strong> and demonstrated exceptional
+                performance throughout the program duration.
+            </div>
+
+            <div class="credit-box">
+                <div class="credit-label">Credit Points Awarded</div>
+                <div class="credit-value">
+                    <span class="star-decoration">★</span>
+                    <span>{{ credit_points }}</span>
+                    <span class="star-decoration">★</span>
+                </div>
+            </div>
+
+            <div class="recognition-text">
+                In recognition of dedication, professionalism, and outstanding contribution to the internship objectives
+                and organizational goals.
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <div class="signatures">
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Head of Department</div>
+                </div>
+
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Principal</div>
+                </div>
+
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Placement Cell</div>
+                </div>
+
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Mentor</div>
+                </div>
+
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Placement Incharge</div>
+                </div>
+
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Date: {{ current_date }}</div>
+                </div>
+            </div>
+
+            <div class="official-seal">
+                OFFICIAL<br>SEAL<br>{{ academic_year }}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

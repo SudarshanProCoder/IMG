@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 120px;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --text-light: #ffffff;
+            --text-dark: #2c3e50;
+            --transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+        }
+
+        .sidebar-header.collapsed {
+            padding: 1rem 0.5rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .logo-container.collapsed {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--text-light);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text.collapsed {
+            display: none;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 1rem;
+            right: -20px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1001;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .sidebar-toggle.collapsed {
+            right: -20px;
+        }
+
+        /* Ensure toggle button is always visible with clear icons */
+        .sidebar-toggle::before {
+            content: "◀";
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .sidebar-toggle.collapsed::before {
+            content: "▶";
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+            transition: padding 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), text-align 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), font-size 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .nav-section-title.collapsed {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-size: 0.7rem;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: padding 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), margin 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-radius 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), flex-direction 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease, transform 0.3s ease;
+            border-radius: 0 25px 25px 0;
+            margin-right: 1rem;
+            position: relative;
+        }
+
+        .nav-link.collapsed {
+            padding: 0.75rem 0.5rem;
+            justify-content: center;
+            margin-right: 0;
+            border-radius: 15px;
+            width: 100px;
+            height: 50px;
+            margin: 0.25rem auto;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .nav-link:hover {
+            background: var(--glass-bg);
+            color: var(--text-light);
+            transform: translateX(5px);
+        }
+
+        .nav-link.collapsed:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-link.active {
+            background: var(--accent-gradient);
+            color: var(--text-light);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link.collapsed.active {
+            transform: scale(1.05);
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-text {
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .nav-text.collapsed {
+            display: none;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            background: var(--danger-gradient);
+            color: var(--text-light);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-badge.collapsed {
+            top: 0.25rem;
+            right: 0.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            min-height: 100vh;
+            padding: 2rem;
+            width: calc(100vw - var(--sidebar-width));
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+            width: calc(100vw - var(--sidebar-collapsed-width));
+        }
+
+        /* Ensure content is properly spaced */
+        .main-content>* {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Additional styling for collapsed state */
+        .sidebar.collapsed .nav-section {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar.collapsed .nav-link {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Improve visibility of collapsed nav items */
+        .nav-link.collapsed .nav-icon {
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.45);
+        }
+
+        .glass-card h1,
+        .glass-card h2,
+        .glass-card h3,
+        .glass-card h4,
+        .glass-card h5,
+        .glass-card h6 {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .glass-card p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                width: 100vw;
+            }
+
+            .sidebar-toggle {
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                right: auto;
+                z-index: 1002;
+                background: var(--accent-gradient);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            }
+
+            .sidebar-toggle::before {
+                content: "☰";
+                font-size: 1.5rem;
+            }
+
+            .sidebar-toggle.collapsed::before {
+                content: "☰";
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0.75rem;
+            }
+
+            .glass-card {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        /* Toast Messages */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .toast {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header" id="sidebarHeader">
+            <div class="logo-container" id="logoContainer">
+                <div class="logo-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="logo-text" id="logoText">Student Panel</div>
+            </div>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <!-- Icon will be handled by CSS ::before pseudo-element -->
+        </button>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" id="navSectionTitle">Main</div>
+                <div class="nav-item">
+                    <a href="{{ url_for('student.dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'student.dashboard' %}active{% endif %}"
+                        id="dashboardLink">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span class="nav-text" id="dashboardText">Dashboard</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title" id="navSectionTitle2">Activities</div>
+                <div class="nav-item">
+                    <a href="{{ url_for('student.internships') }}"
+                        class="nav-link {% if request.endpoint == 'student.internships' %}active{% endif %}"
+                        id="internshipsLink">
+                        <i class="fas fa-briefcase nav-icon"></i>
+                        <span class="nav-text" id="internshipsText">Internships</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ url_for('student.activities') }}"
+                        class="nav-link {% if request.endpoint == 'student.activities' %}active{% endif %}"
+                        id="activitiesLink">
+                        <i class="fas fa-tasks nav-icon"></i>
+                        <span class="nav-text" id="activitiesText">Activities</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title" id="navSectionTitle3">Documents</div>
+                <div class="nav-item">
+                    <a href="{{ url_for('student.marksheet') }}" class="nav-link" id="marksheetLink">
+                        <i class="fas fa-file-alt nav-icon"></i>
+                        <span class="nav-text" id="marksheetText">Marksheet</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title" id="navSectionTitle4">Account</div>
+                <div class="nav-item">
+                    <a href="{{ url_for('auth.profile') }}" class="nav-link" id="profileLink">
+                        <i class="fas fa-user nav-icon"></i>
+                        <span class="nav-text" id="profileText">Profile</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ url_for('auth.logout') }}" class="nav-link" id="logoutLink">
+                        <i class="fas fa-sign-out-alt nav-icon"></i>
+                        <span class="nav-text" id="logoutText">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Toast Messages -->
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <i
+                    class="fas fa-{{ 'check-circle text-success' if category == 'success' else 'exclamation-circle text-danger' if category == 'error' else 'exclamation-triangle text-warning' if category == 'warning' else 'info-circle text-info' }} me-2"></i>
+                <strong class="me-auto">{{ category|title }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sidebar Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarHeader = document.getElementById('sidebarHeader');
+            const logoContainer = document.getElementById('logoContainer');
+            const logoText = document.getElementById('logoText');
+            const navSectionTitles = document.querySelectorAll('[id^="navSectionTitle"]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const navTexts = document.querySelectorAll('.nav-text');
+
+            let isCollapsed = false;
+
+            function toggleSidebar() {
+                isCollapsed = !isCollapsed;
+
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                    sidebarHeader.classList.add('collapsed');
+                    logoContainer.classList.add('collapsed');
+                    logoText.classList.add('collapsed');
+                    sidebarToggle.classList.add('collapsed');
+
+                    navSectionTitles.forEach(title => title.classList.add('collapsed'));
+                    navLinks.forEach(link => link.classList.add('collapsed'));
+                    navTexts.forEach(text => text.classList.add('collapsed'));
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('expanded');
+                    sidebarHeader.classList.remove('collapsed');
+                    logoContainer.classList.remove('collapsed');
+                    logoText.classList.remove('collapsed');
+                    sidebarToggle.classList.remove('collapsed');
+
+                    navSectionTitles.forEach(title => title.classList.remove('collapsed'));
+                    navLinks.forEach(link => link.classList.remove('collapsed'));
+                    navTexts.forEach(text => text.classList.remove('collapsed'));
+                }
+            }
+
+            sidebarToggle.addEventListener('click', toggleSidebar);
+
+            // Mobile sidebar toggle
+            if (window.innerWidth <= 768) {
+                sidebarToggle.addEventListener('click', function () {
+                    sidebar.classList.toggle('show');
+                });
+
+                // Close sidebar when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                        sidebar.classList.remove('show');
+                    }
+                });
+            }
+
+            // Initialize toasts
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function (toastEl) {
+                return new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 5000
+                });
+            });
+
+            // Show all toasts
+            toastList.forEach(toast => toast.show());
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

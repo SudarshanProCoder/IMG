@@ -15,7 +15,6 @@ from forms.auth import LoginForm, SignupForm
 
 auth_bp = Blueprint('auth', __name__)
 
-# Configure Cloudinary
 configure_cloudinary()
 
 def send_verification_email(email, token):
@@ -33,16 +32,13 @@ def send_verification_email(email, token):
     
     verification_url = url_for('auth.verify_email', token=token, _external=True)
     
-    # Attach the logo
     with open(os.path.join(current_app.static_folder, 'images/demo.png'), 'rb') as f:
         logo = MIMEImage(f.read())
         logo.add_header('Content-ID', '<logo>')
         msg.attach(logo)
     
-    # Get the HTML template
     html_content = render_template('email/verification.html', verification_url=verification_url)
     
-    # Attach both plain text and HTML versions
     text_content = f"""
     Hello,
     
@@ -104,7 +100,6 @@ def signup():
     form = SignupForm()
     if form.validate_on_submit():
         try:
-            # Handle profile photo upload
             profile_image_url = None
             if form.profile_photo.data and form.profile_photo.data.filename:
                 try:
@@ -123,10 +118,8 @@ def signup():
                     flash('Error uploading profile photo. Please try again.', 'danger')
                     return render_template('auth/signup.html', form=form, minimal=True)
             
-            # Generate verification token
             verification_token = secrets.token_urlsafe(32)
             
-            # Create user object
             user = User(
                 full_name=form.full_name.data,
                 email=form.email.data,
@@ -140,12 +133,10 @@ def signup():
                 mentor_email=form.mentor_email.data if form.role.data == 'student' else None
             )
             
-            # Set verification token and save user
             user.verification_token = verification_token
             user.is_verified = False
             user.save()
             
-            # Send verification email
             if send_verification_email(user.email, verification_token):
                 flash('Account created successfully! Please check your email to verify your account.', 'success')
                 return redirect(url_for('auth.login'))
@@ -203,7 +194,6 @@ def logout():
 @login_required
 def profile():
     if request.method == 'POST':
-        # Handle profile update
         full_name = request.form.get('full_name')
         email = request.form.get('email')
         phone = request.form.get('phone')
@@ -214,12 +204,10 @@ def profile():
         date_of_birth = request.form.get('date_of_birth')
         address = request.form.get('address')
         
-        # Handle profile image upload
         if 'profile_image' in request.files:
             file = request.files['profile_image']
             if file and file.filename:
                 try:
-                    # Upload to Cloudinary
                     result = cloudinary.uploader.upload(file, 
                         folder="profile_images",
                         transformation=[
@@ -232,19 +220,16 @@ def profile():
                     flash('Error uploading profile image', 'error')
                     return redirect(url_for('auth.profile'))
         
-        # Update basic info
         if full_name and full_name != current_user.full_name:
             current_user.full_name = full_name
         
         if email and email != current_user.email:
-            # Check if email is already taken
             existing_user = User.get_by_email(email)
             if existing_user and existing_user.id != current_user.id:
                 flash('Email is already taken.', 'error')
                 return redirect(url_for('auth.profile'))
             current_user.email = email
         
-        # Update other fields
         current_user.phone = phone
         current_user.department = department
         current_user.batch = batch
@@ -253,7 +238,6 @@ def profile():
         current_user.date_of_birth = datetime.strptime(date_of_birth, '%Y-%m-%d') if date_of_birth else None
         current_user.address = address
         
-        # Save changes
         current_user.save()
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('auth.profile'))
@@ -267,17 +251,14 @@ def change_password():
     new_password = request.form.get('new_password')
     confirm_password = request.form.get('confirm_password')
 
-    # Validate current password
     if not current_user.check_password(current_password):
         flash('Current password is incorrect', 'error')
         return redirect(url_for('auth.profile'))
 
-    # Validate new password
     if new_password != confirm_password:
         flash('New passwords do not match', 'error')
         return redirect(url_for('auth.profile'))
 
-    # Update password
     current_user.set_password(new_password)
     current_user.save()
 

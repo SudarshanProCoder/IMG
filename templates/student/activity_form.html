@@ -1,231 +1,348 @@
-{% extends "base.html" %}
+{% extends "student/base.html" %}
 
 {% block title %}{{ 'Edit' if activity else 'New' }} Activity - Shah and Anchor College{% endblock %}
 
 {% block extra_css %}
 <style>
-    .form-header {
-        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
-        color: white;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+    .form-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: var(--glass-shadow);
+        color: var(--text-light);
     }
 
-    .form-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
+    .form-section {
         margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .form-section-title {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
     }
 
     .form-label {
         font-weight: 500;
-        color: var(--secondary-color);
+        margin-bottom: 0.5rem;
+        color: var(--text-light);
     }
 
     .form-control {
-        border-radius: 10px;
-        border: 2px solid #e9ecef;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        backdrop-filter: blur(10px);
     }
 
     .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+        color: var(--text-light);
     }
 
-    .form-select {
-        border-radius: 10px;
-        border: 2px solid #e9ecef;
-        padding: 0.75rem 1rem;
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .skill-tag {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--text-light);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin: 0.25rem;
+        cursor: pointer;
         transition: all 0.3s ease;
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(10px);
     }
 
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+    .skill-tag:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
     }
 
-    .form-text {
-        color: #6c757d;
+    .skill-tag.selected {
+        background: var(--accent-gradient);
+        color: white;
+        border-color: transparent;
+    }
+
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-upload-label {
+        display: block;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px dashed var(--glass-border);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-light);
+        backdrop-filter: blur(10px);
+    }
+
+    .file-upload-label:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .file-upload-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-name {
+        margin-top: 0.5rem;
         font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .preview-image {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 10px;
+        margin-top: 1rem;
+        border: 2px solid var(--glass-border);
     }
 
     .btn-submit {
-        background: var(--gradient-primary);
+        background: var(--success-gradient);
         border: none;
+        color: white;
         padding: 0.75rem 2rem;
-        font-weight: 500;
+        border-radius: 10px;
+        font-weight: 600;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
-    }
-
-    .skills-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-    }
-
-    .skill-checkbox {
-        display: none;
-    }
-
-    .skill-label {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: #f8f9fa;
-        border: 2px solid #e9ecef;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .skill-checkbox:checked+.skill-label {
-        background: var(--primary-color);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         color: white;
-        border-color: var(--primary-color);
     }
 
-    .themed-bg {
-        background: var(--card-bg) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
     }
 
-    .themed-text {
-        color: var(--text-color) !important;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: var(--text-light);
+        transform: translateY(-2px);
     }
 
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--input-text);
-        opacity: 0.7;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--glass-shadow);
+        text-align: center;
     }
-    
-    input,
-    textarea,
-    select {
-        background: var(--input-bg) !important;
-        color: var(--input-text) !important;
-        border-color: var(--input-border) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    .page-header h2 {
+        color: var(--text-light);
+        margin: 0;
+    }
+
+    .page-header p {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0.5rem 0 0 0;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
-        <div class="col-12 col-lg-10">
-            <div class="card shadow-lg overflow-hidden" style="border-radius: 20px; min-height: 500px;">
-                <!-- Top Bar -->
-                <div class="card-header themed-bg themed-text d-flex align-items-center" style="min-height: 70px;">
-                    <i class="fas fa-tasks fa-2x me-3"></i>
-                    <h2 class="mb-0">{% if activity %}Edit Activity{% else %}Add New Activity{% endif %}</h2>
+<div class="container py-4">
+    <div class="page-header">
+        <h2>Add New Activity</h2>
+        <p>Fill in the details below to add a new activity experience</p>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <!-- Activity Information -->
+            <div class="form-section">
+                <h4 class="form-section-title">Activity Information</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control", placeholder="Enter activity title") }}
+                        {% if form.title.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.title.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.activity_type.label(class="form-label") }}
+                        {{ form.activity_type(class="form-control") }}
+                        {% if form.activity_type.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.activity_type.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                <!-- Form Content -->
-                <div class="card-body p-4 p-md-5">
-                    <form method="POST" enctype="multipart/form-data" class="w-100">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <label for="activity_type" class="form-label">Activity Type</label>
-                                <select class="form-select" id="activity_type" name="activity_type" required>
-                                    <option value="">Select Activity Type</option>
-                                    <option value="workshop" {% if activity and activity.activity_type=='workshop'
-                                        %}selected{% endif %}>Workshop</option>
-                                    <option value="seminar" {% if activity and activity.activity_type=='seminar'
-                                        %}selected{% endif %}>Seminar</option>
-                                    <option value="competition" {% if activity and activity.activity_type=='competition'
-                                        %}selected{% endif %}>Competition</option>
-                                    <option value="project" {% if activity and activity.activity_type=='project'
-                                        %}selected{% endif %}>Project</option>
-                                    <option value="other" {% if activity and activity.activity_type=='other'
-                                        %}selected{% endif %}>Other</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="title" class="form-label">Title</label>
-                                <input type="text" class="form-control" id="title" name="title"
-                                    value="{{ activity.title if activity else '' }}" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="skills" class="form-label">Skills</label>
-                                <input type="text" class="form-control" id="skills" name="skills"
-                                    value="{{ activity.skills|join(', ') if activity and activity.skills else '' }}"
-                                    placeholder="Enter skills separated by commas" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description" rows="2"
-                                    required>{{ activity.description if activity else '' }}</textarea>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="start_date" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="start_date" name="start_date"
-                                    value="{{ activity.start_date.strftime('%Y-%m-%d') if activity else '' }}" required
-                                    placeholder="DD-MM-YYYY">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="end_date" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="end_date" name="end_date"
-                                    value="{{ activity.end_date.strftime('%Y-%m-%d') if activity else '' }}" required
-                                    placeholder="DD-MM-YYYY">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="academic_year" class="form-label">Academic Year</label>
-                                <input type="text" class="form-control" id="academic_year" name="academic_year" readonly
-                                    required
-                                    value="{{ activity.academic_year if activity and activity.academic_year else '' }}">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="semester" class="form-label">Semester</label>
-                                <select class="form-select" id="semester" name="semester" required>
-                                    <option value="">Select Semester</option>
-                                    {% for i in range(1, 9) %}
-                                    <option value="{{ i }}" {% if activity and activity.semester==i|string %}selected{%
-                                        endif %}>Semester {{ i }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="hours_per_week" class="form-label">Hours per Week</label>
-                                <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
-                                    min="1" max="40" value="{{ activity.hours_per_week if activity else '' }}" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="certificate" class="form-label">Certificate (Image)</label>
-                                <input type="file" class="form-control" id="certificate" name="certificate"
-                                    accept="image/*" {% if not activity %}required{% endif %}>
-                                <div class="form-text">Upload certificate as image file (JPG, PNG, GIF)</div>
-                                {% if activity and activity.certificate_url %}
-                                <div class="mt-2">
-                                    <img src="{{ activity.certificate_url }}" alt="Current Certificate"
-                                        class="img-thumbnail" style="max-height: 120px;">
-                                    <div class="form-text">Current certificate</div>
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ url_for('student.activities') }}" class="btn btn-secondary"><i
-                                    class="fas fa-arrow-left me-2"></i>Cancel</a>
-                            <button type="submit" class="btn btn-primary">
-                                {% if activity %}<i class="fas fa-save me-2"></i>Update Activity{% else %}<i
-                                    class="fas fa-paper-plane me-2"></i>Submit Activity{% endif %}
-                            </button>
-                        </div>
-                    </form>
+                <div class="mb-3">
+                    {{ form.description.label(class="form-label") }}
+                    {{ form.description(class="form-control", rows="4", placeholder="Describe the activity and your
+                    role") }}
+                    {% if form.description.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.description.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
+
+            <!-- Duration Information -->
+            <div class="form-section">
+                <h4 class="form-section-title">Duration Information</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.start_date.label(class="form-label") }}
+                        {{ form.start_date(class="form-control", type="date") }}
+                        {% if form.start_date.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.start_date.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.end_date.label(class="form-label") }}
+                        {{ form.end_date(class="form-control", type="date") }}
+                        {% if form.end_date.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.end_date.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.hours_per_week.label(class="form-label") }}
+                        {{ form.hours_per_week(class="form-control", placeholder="e.g., 10") }}
+                        {% if form.hours_per_week.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.hours_per_week.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.semester.label(class="form-label") }}
+                        {{ form.semester(class="form-control") }}
+                        {% if form.semester.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.semester.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="form-section">
+                <h4 class="form-section-title">Skills & Technologies</h4>
+                <div class="mb-3">
+                    <label class="form-label">Select Skills (Click to select/deselect)</label>
+                    <div class="skills-container">
+                        {% for skill in available_skills %}
+                        <span class="skill-tag" data-skill="{{ skill }}">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="skills" id="selectedSkills" value="">
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="form-section">
+                <h4 class="form-section-title">Documents</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Certificate</label>
+                        <div class="file-upload">
+                            <label class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                <div>Click to upload certificate</div>
+                                <div class="text-muted">PDF, DOC, or image files</div>
+                                <input type="file" name="certificate" class="file-upload-input"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            </label>
+                        </div>
+                        <div class="file-name" id="certificateName"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Report</label>
+                        <div class="file-upload">
+                            <label class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                <div>Click to upload report</div>
+                                <div class="text-muted">PDF, DOC, or image files</div>
+                                <input type="file" name="report" class="file-upload-input"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            </label>
+                        </div>
+                        <div class="file-name" id="reportName"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="d-flex justify-content-end gap-3">
+                <a href="{{ url_for('student.activities') }}" class="btn btn-cancel">Cancel</a>
+                <button type="submit" class="btn btn-submit">Add Activity</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
