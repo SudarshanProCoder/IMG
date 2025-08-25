@@ -48,12 +48,13 @@ class SignupForm(FlaskForm):
     ])
     branch = SelectField('Branch', choices=[
         ('', 'Select Branch'),
-        ('computer_science', 'Computer Engineering'),
-        ('information_technology', 'Information Technology'),
-        ('electronics', 'Electronics'),
-        ('electrical', 'Electrical'),
-        ('mechanical', 'Mechanical'),
-        ('civil', 'Civil')
+        ('Computer Engineering', 'Computer Engineering'),
+        ('Information Technology', 'Information Technology'),
+        ('Electronics & Computer Science', 'Electronics & Computer Science'),
+        ('Electronics & Telecommunication Engineering', 'Electronics & Telecommunication Engineering'),
+        ('Artificial Intelligence & Data Science', 'Artificial Intelligence & Data Science'),
+        ('Cyber Security', 'Cyber Security'),
+        ('Electronics Engineering', 'Electronics Engineering')
     ])
     year = SelectField('Year', choices=[
         ('', 'Select Year'),
@@ -94,7 +95,6 @@ class SignupForm(FlaskForm):
     def validate_mentor_email(self, mentor_email):
         if self.role.data == 'student':
             from wtforms.validators import Email
-            # Apply Email validator only for students
             email_validator = Email()
             email_validator(self, mentor_email)
             if not mentor_email.data:

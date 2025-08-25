@@ -1,75 +1,167 @@
-{% extends "base.html" %}
+{% extends "student/base.html" %}
 
 {% block title %}{% if internship %}Edit Internship{% else %}Add New Internship{% endif %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
-    .form-header {
-        background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
-        color: white;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+    .form-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: var(--glass-shadow);
+        color: var(--text-light);
     }
 
-    .form-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
+    .form-section {
         margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .form-section-title {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
     }
 
     .form-label {
         font-weight: 500;
-        color: var(--secondary-color);
+        margin-bottom: 0.5rem;
+        color: var(--text-light);
     }
 
     .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        backdrop-filter: blur(10px);
         border-radius: 10px;
-        border: 2px solid #e9ecef;
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
     }
 
     .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+        color: var(--text-light);
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
     }
 
     .form-select {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        backdrop-filter: blur(10px);
         border-radius: 10px;
-        border: 2px solid #e9ecef;
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
     }
 
     .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.25);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+        color: var(--text-light);
     }
 
     .form-text {
-        color: #6c757d;
+        color: rgba(255, 255, 255, 0.8);
         font-size: 0.875rem;
     }
 
-    .btn-submit {
-        background: var(--gradient-primary);
-        border: none;
-        padding: 0.75rem 2rem;
-        font-weight: 500;
+    .skill-tag {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--text-light);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin: 0.25rem;
+        cursor: pointer;
         transition: all 0.3s ease;
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(10px);
+    }
+
+    .skill-tag:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .skill-tag.selected {
+        background: var(--accent-gradient);
+        color: white;
+        border-color: transparent;
+    }
+
+    .btn-submit {
+        background: var(--success-gradient);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: var(--text-light);
+        transform: translateY(-2px);
     }
 
     .file-upload {
         position: relative;
-        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-upload-label {
+        display: block;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px dashed var(--glass-border);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-light);
+        backdrop-filter: blur(10px);
+    }
+
+    .file-upload-label:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.15);
     }
 
     .file-upload input[type="file"] {
@@ -87,159 +179,220 @@
         display: block;
     }
 
-    .file-upload-label {
-        display: block;
-        padding: 0.75rem 1rem;
-        background: #f8f9fa;
-        border: 2px dashed #dee2e6;
-        border-radius: 10px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .file-upload-label:hover {
-        border-color: var(--primary-color);
-        background: #fff;
-    }
-
-    .skills-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+    .file-name {
         margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.8);
     }
 
-    .skill-checkbox {
-        display: none;
+    .preview-image {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 10px;
+        margin-top: 1rem;
+        border: 2px solid var(--glass-border);
     }
 
-    .skill-label {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: #f8f9fa;
-        border: 2px solid #e9ecef;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--glass-shadow);
+        text-align: center;
     }
 
-    .skill-checkbox:checked+.skill-label {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
+    .page-header h2 {
+        color: var(--text-light);
+        margin: 0;
     }
 
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--input-text);
-        opacity: 0.7;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    input,
-    textarea,
-    select {
-        background: var(--input-bg) !important;
-        color: var(--input-text) !important;
-        border-color: var(--input-border) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .page-header p {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0.5rem 0 0 0;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
-        <div class="col-12 col-lg-10">
-            <div class="card shadow-lg overflow-hidden" style="border-radius: 20px; min-height: 500px;">
-                <!-- Top Bar -->
-                <div class="card-header themed-bg themed-text d-flex align-items-center" style="min-height: 70px;">
-                    <i class="fas fa-briefcase fa-2x me-3"></i>
-                    <h2 class="mb-0">Add New Internship</h2>
-                </div>
-                <!-- Form Content -->
-                <div class="card-body p-4 p-md-5">
-                    <form method="POST" enctype="multipart/form-data" class="w-100">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <label for="company_name" class="form-label">Company Name</label>
-                                <input type="text" class="form-control" id="company_name" name="company_name" required
-                                    value="{{ internship.company_name if internship else '' }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="project_name" class="form-label">Project Name</label>
-                                <input type="text" class="form-control" id="project_name" name="project_name" required
-                                    value="{{ internship.project_name if internship else '' }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="skills" class="form-label">Skills (comma-separated)</label>
-                                <input type="text" class="form-control" id="skills" name="skills" required
-                                    value="{{ internship.skills|join(', ') if internship and internship.skills else '' }}"
-                                    placeholder="e.g., Python, Flask, Java, C++">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="start_date" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="start_date" name="start_date"
-                                    value="{{ internship.start_date.strftime('%Y-%m-%d') if internship and internship.start_date else '' }}"
-                                    required placeholder="DD-MM-YYYY">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="end_date" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="end_date" name="end_date"
-                                    value="{{ internship.end_date.strftime('%Y-%m-%d') if internship and internship.end_date else '' }}"
-                                    required placeholder="DD-MM-YYYY">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="academic_year" class="form-label">Academic Year</label>
-                                <input type="text" class="form-control" id="academic_year" name="academic_year" readonly
-                                    required
-                                    value="{{ internship.academic_year if internship and internship.academic_year else '' }}">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="semester" class="form-label">Semester</label>
-                                <select class="form-select" id="semester" name="semester" required>
-                                    <option value="">Select Semester</option>
-                                    {% for i in range(1, 9) %}
-                                    <option value="Semester {{ i }}" {% if internship and
-                                        internship.semester=='Semester ' + i|string %}selected{% endif %}>Semester {{ i
-                                        }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="hours_per_week" class="form-label">Hours per Week</label>
-                                <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
-                                    min="1" max="40" required
-                                    value="{{ internship.hours_per_week if internship else '' }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="offer_letter" class="form-label">Offer Letter (Image)</label>
-                                <input type="file" class="form-control" id="offer_letter" name="offer_letter"
-                                    accept="image/*">
-                                <div class="form-text">Upload an image of your offer letter (JPG, PNG, or GIF format)
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="completion_letter" class="form-label">Completion Letter (Image)</label>
-                                <input type="file" class="form-control" id="completion_letter" name="completion_letter"
-                                    accept="image/*">
-                                <div class="form-text">Upload an image of your completion letter (JPG, PNG, or GIF
-                                    format)</div>
-                            </div>
+<div class="container py-4">
+    <div class="page-header">
+        <h2>{% if internship %}Edit Internship{% else %}Add New Internship{% endif %}</h2>
+        <p>{% if internship %}Update the internship details below{% else %}Fill in the details below to add a new
+            internship experience{% endif %}</p>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <!-- Company Information -->
+            <div class="form-section">
+                <h4 class="form-section-title">Company Information</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.company_name.label(class="form-label") }}
+                        {{ form.company_name(class="form-control", placeholder="Enter company name") }}
+                        {% if form.company_name.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.company_name.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
                         </div>
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ url_for('student.internships') }}" class="btn btn-secondary"><i
-                                    class="fas fa-arrow-left me-2"></i>Cancel</a>
-                            <button type="submit" class="btn btn-primary">
-                                {% if internship %}<i class="fas fa-save me-2"></i>Update Internship{% else %}<i
-                                    class="fas fa-paper-plane me-2"></i>Submit Internship Details{% endif %}
-                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.project_name.label(class="form-label") }}
+                        {{ form.project_name(class="form-control", placeholder="Enter project name") }}
+                        {% if form.project_name.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.project_name.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
                         </div>
-                    </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Duration Information -->
+            <div class="form-section">
+                <h4 class="form-section-title">Duration Information</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.start_date.label(class="form-label") }}
+                        {{ form.start_date(class="form-control", type="date") }}
+                        {% if form.start_date.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.start_date.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.end_date.label(class="form-label") }}
+                        {{ form.end_date(class="form-control", type="date") }}
+                        {% if form.end_date.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.end_date.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.hours_per_week.label(class="form-label") }}
+                        {{ form.hours_per_week(class="form-control", placeholder="e.g., 20") }}
+                        {% if form.hours_per_week.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.hours_per_week.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.total_hours.label(class="form-label") }}
+                        {{ form.total_hours(class="form-control", placeholder="e.g., 200") }}
+                        {% if form.total_hours.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.total_hours.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Information -->
+            <div class="form-section">
+                <h4 class="form-section-title">Academic Information</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.semester.label(class="form-label") }}
+                        {{ form.semester(class="form-control") }}
+                        {% if form.semester.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.semester.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.academic_year.label(class="form-label") }}
+                        {{ form.academic_year(class="form-control", placeholder="e.g., 2023-24") }}
+                        {% if form.academic_year.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.academic_year.errors %}
+                            <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="form-section">
+                <h4 class="form-section-title">Skills & Technologies</h4>
+                <div class="mb-3">
+                    <label class="form-label">Select Skills (Click to select/deselect)</label>
+                    <div class="skills-container">
+                        {% for skill in available_skills %}
+                        <span class="skill-tag" data-skill="{{ skill }}">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="skills" id="selectedSkills" value="">
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="form-section">
+                <h4 class="form-section-title">Documents</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Offer Letter</label>
+                        <div class="file-upload">
+                            <label class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                <div>Click to upload offer letter</div>
+                                <div class="text-muted">PDF, DOC, or image files</div>
+                                <input type="file" name="offer_letter" class="file-upload-input"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            </label>
+                        </div>
+                        <div class="file-name" id="offerLetterName"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Completion Letter</label>
+                        <div class="file-upload">
+                            <label class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                <div>Click to upload completion letter</div>
+                                <div class="text-muted">PDF, DOC, or image files</div>
+                                <input type="file" name="completion_letter" class="file-upload-input"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            </label>
+                        </div>
+                        <div class="file-name" id="completionLetterName"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="d-flex justify-content-end gap-3">
+                <a href="{{ url_for('student.internships') }}" class="btn btn-cancel">Cancel</a>
+                <button type="submit" class="btn btn-submit">{% if internship %}Update Internship{% else %}Add
+                    Internship{% endif %}</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

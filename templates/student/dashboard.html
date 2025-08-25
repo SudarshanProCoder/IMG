@@ -1,150 +1,98 @@
-{% extends "base.html" %}
+{% extends "student/base.html" %}
 
 {% block title %}Student Dashboard - Shah and Anchor College{% endblock %}
 
 {% block extra_css %}
 <style>
-    .dashboard-header {
-        background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
-        url("{{ url_for('static', filename='images/dashboard-bg.jpg') }}");
-        background-size: cover;
-        background-position: center;
-        color: white;
-        padding: 2rem 1rem;
-        margin: -1.5rem -1.5rem 2rem -1.5rem;
-        border-radius: 0;
-    }
-
-    @media (min-width: 768px) {
-        .dashboard-header {
-            padding: 3rem 2rem;
-            margin: -1.5rem -1.5rem 2rem -1.5rem;
-            border-radius: 0 0 1rem 1rem;
-        }
-    }
-
-    .container {
-        max-width: 100%;
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
-    .row {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
-    .stats-card {
-        background: linear-gradient(145deg, #ffffff, #f5f5f5);
+    .glass-card {
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
         border-radius: 15px;
         padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-        height: 100%;
-        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: var(--glass-shadow);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
     }
 
-    .stats-card::before {
+    .glass-card::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
+        right: 0;
         height: 4px;
-        background: linear-gradient(90deg, #00ADB5, #0d6efd);
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 15px 15px 0 0;
     }
 
-    .stats-card:hover {
+    .glass-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
 
-    .stats-icon {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-        background: linear-gradient(45deg, #00ADB5, #0d6efd);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
+    .glass-card .skills {
+        margin-top: auto;
     }
 
-    .stats-number {
-        font-size: 2rem;
-        font-weight: bold;
+    .skill-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--text-light);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
         margin-bottom: 0.5rem;
-        background: linear-gradient(45deg, #2c3e50, #3498db);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .internship-card,
-    .activity-card {
-        background: var(--card-bg) !important;
-        color: var(--text-color) !important;
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        display: inline-block;
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
         transition: all 0.3s ease;
-        height: 100%;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        position: relative;
-        overflow: hidden;
     }
 
-    .internship-card h5,
-    .activity-card h5,
-    .internship-card .text-muted,
-    .activity-card .text-muted,
-    .internship-card small,
-    .activity-card small {
-        color: var(--text-color) !important;
+    .skill-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .internship-card::before,
-    .activity-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, #00ADB5, #0d6efd);
+    .skill-badge.skill-more {
+        background: rgba(255, 255, 255, 0.3);
+        font-weight: 600;
+        cursor: pointer;
     }
 
-    .internship-card:hover,
-    .activity-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    .skill-badge.skill-more:hover {
+        background: rgba(255, 255, 255, 0.4);
     }
 
     .status-badge {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
         font-weight: 500;
+        margin-bottom: 1rem;
+        display: inline-block;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
     }
 
-    .status-pending {
-        background: linear-gradient(45deg, #ffc107, #ff9800);
-        color: #000;
-    }
-
-    .status-approved {
-        background: linear-gradient(45deg, #198754, #28a745);
+    .status-badge.status-approved {
+        background: var(--success-gradient);
         color: white;
     }
 
-    .status-rejected {
-        background: linear-gradient(45deg, #dc3545, #c82333);
+    .status-badge.status-pending {
+        background: var(--warning-gradient);
+        color: white;
+    }
+
+    .status-badge.status-rejected {
+        background: var(--danger-gradient);
         color: white;
     }
 
@@ -156,77 +104,259 @@
         position: fixed;
         bottom: 2rem;
         right: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
         z-index: 1000;
     }
 
     .quick-actions .btn {
-        width: 55px;
-        height: 55px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
-        margin-bottom: 1rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         transition: all 0.3s ease;
     }
 
     .quick-actions .btn:hover {
-        transform: translateY(-3px) scale(1.1);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .skill-badge {
-        background: var(--skill-badge-bg);
-        color: var(--skill-badge-color);
-        padding: 0.4rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
         display: inline-block;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
-        border: 1px solid var(--skill-badge-border);
     }
 
-    .skill-badge:hover {
+    .stats-icon.briefcase {
+        background: linear-gradient(45deg, #00ADB5, #0d6efd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats-icon.certificate {
+        background: linear-gradient(45deg, #ff6b6b, #ffa726);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats-icon.check-circle {
+        background: linear-gradient(45deg, #4caf50, #8bc34a);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats-icon.trophy {
+        background: linear-gradient(45deg, #ff9800, #ffc107);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(45deg, #2c3e50, #3498db);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--glass-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 15px 15px 0 0;
+    }
+
+    .dashboard-header:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .dashboard-header h1 {
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .dashboard-header .lead {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0;
+        font-size: 1.1rem;
+    }
+
+    .stats-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: var(--glass-shadow);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 15px 15px 0 0;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .stats-card:hover .stats-icon {
+        transform: scale(1.1);
+    }
+
+    .internship-card,
+    .activity-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: var(--glass-shadow);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .internship-card::before,
+    .activity-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 15px 15px 0 0;
+    }
+
+    .internship-card:hover,
+    .activity-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        font-size: 1.5rem;
+        position: relative;
+        padding-left: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 2rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        border-radius: 2px;
+    }
+
+    .card-logo {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        z-index: 3;
+        transition: all 0.3s ease;
+    }
+
+    .card-logo i {
+        font-size: 1.2rem;
+        color: var(--text-light);
+        transition: all 0.3s ease;
+    }
+
+    .card-logo:hover {
+        transform: scale(1.1);
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .card-content {
+        margin-top: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .card-title {
+        color: var(--text-light);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .card-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .card-info {
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .card-info i {
+        margin-right: 0.5rem;
+        color: var(--accent-color);
+        width: 16px;
     }
 
     @media (max-width: 767px) {
-        .container {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .row {
-            margin-left: 0;
-            margin-right: 0;
-        }
-
-        .col-md-3,
-        .col-md-6 {
-            padding-left: 5px;
-            padding-right: 5px;
-        }
-
-        .stats-card,
-        .internship-card,
-        .activity-card {
-            padding: 1.25rem;
-        }
-
-        .stats-icon {
-            font-size: 1.75rem;
-        }
-
-        .stats-number {
-            font-size: 1.75rem;
-        }
-
         .quick-actions {
             bottom: 1rem;
             right: 1rem;
@@ -237,15 +367,23 @@
             height: 50px;
             font-size: 1.1rem;
         }
+
+        .stats-number {
+            font-size: 2rem;
+        }
+
+        .stats-icon {
+            font-size: 2rem;
+        }
     }
 
     /* Animation classes */
     .animate-fade-in {
-        animation: fadeIn 0.5s ease-in;
+        animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .animate-slide-up {
-        animation: slideUp 0.5s ease-out;
+        animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     @keyframes fadeIn {
@@ -269,153 +407,165 @@
             opacity: 1;
         }
     }
-
-    input,
-    textarea,
-    select {
-        background: var(--input-bg) !important;
-        color: var(--input-text) !important;
-        border-color: var(--input-border) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--input-text);
-        opacity: 0.7;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Dashboard Header -->
 <div class="dashboard-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="animate-fade-in">Welcome, {{ current_user.full_name }}</h1>
-                <p class="lead mb-0 animate-fade-in">{{ current_user.branch }} - Year {{ current_user.year }}</p>
-            </div>
-            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <a href="{{ url_for('student.marksheet') }}" class="btn btn-light animate-fade-in">
-                    <i class="fas fa-file-alt me-2"></i>View Marksheet
-                </a>
-            </div>
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="animate-fade-in">Welcome, {{ current_user.full_name }}</h1>
+            <p class="lead mb-0 animate-fade-in">{{ current_user.branch }} - Year {{ current_user.year }}</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="{{ url_for('student.marksheet') }}" class="btn btn-light animate-fade-in">
+                <i class="fas fa-file-alt me-2"></i>View Marksheet
+            </a>
         </div>
     </div>
 </div>
 
 <!-- Stats Section -->
-<div class="container">
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up mb-4">
-                <i class="fas fa-briefcase stats-icon"></i>
-                <div class="stats-number">{{ internships|length }}</div>
-                <p class="text-muted mb-0">Total Internships</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up"
-                style="animation-delay: 0.1s mb-4">
-                <i class="fas fa-certificate stats-icon"></i>
-                <div class="stats-number">{{ activities|length }}</div>
-                <p class="text-muted mb-0">Total Activities</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up"
-                style="animation-delay: 0.2s mb-4">
-                <i class="fas fa-check-circle stats-icon"></i>
-                <div class="stats-number">
-                    {{ internships|selectattr('status', 'equalto', 'approved')|list|length }}
-                </div>
-                <p class="text-muted mb-0">Approved Internships</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up"
-                style="animation-delay: 0.3s mb-4">
-                <i class="fas fa-trophy stats-icon"></i>
-                <div class="stats-number">
-                    {{ activities|selectattr('status', 'equalto', 'approved')|list|length }}
-                </div>
-                <p class="text-muted mb-0">Approved Activities</p>
-            </div>
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="stats-card animate-slide-up">
+            <i class="fas fa-briefcase stats-icon briefcase"></i>
+            <div class="stats-number">{{ internships|length }}</div>
+            <p class="mb-0">Total Internships</p>
         </div>
     </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card animate-slide-up" style="animation-delay: 0.1s">
+            <i class="fas fa-certificate stats-icon certificate"></i>
+            <div class="stats-number">{{ activities|length }}</div>
+            <p class="mb-0">Total Activities</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card animate-slide-up" style="animation-delay: 0.2s">
+            <i class="fas fa-check-circle stats-icon check-circle"></i>
+            <div class="stats-number">
+                {{ internships|selectattr('status', 'equalto', 'approved')|list|length }}
+            </div>
+            <p class="mb-0">Approved Internships</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card animate-slide-up" style="animation-delay: 0.3s">
+            <i class="fas fa-trophy stats-icon trophy"></i>
+            <div class="stats-number">
+                {{ activities|selectattr('status', 'equalto', 'approved')|list|length }}
+            </div>
+            <p class="mb-0">Approved Activities</p>
+        </div>
+    </div>
+</div>
 
-    <!-- Internships Section -->
-    <h2 class="mt-4 mb-4">Your Internships</h2>
-    <div class="row">
-        {% for internship in internships %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
-            <div class="internship-card themed-bg themed-text animate-slide-up">
-                <span class="status-badge status-{{ internship.status }}">
-                    {{ internship.status|title }}
-                </span>
-                <h5 class="mb-1">{{ internship.company_name }}</h5>
-                <div class="text-muted mb-1" style="font-size:0.95rem;">{{ internship.project_name }}</div>
-                <div class="mb-2">
-                    <small><i class="far fa-calendar-alt me-1"></i>
-                        {{ internship.start_date.strftime('%d %b %Y') }} - {{ internship.end_date.strftime('%d %b %Y')
-                        }}
-                    </small>
+<!-- Internships Section -->
+<h2 class="section-title">Your Internships</h2>
+<div class="row">
+    {% for internship in internships %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+        <div class="internship-card animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <!-- Card Logo -->
+            <div class="card-logo">
+                <i class="fas fa-briefcase"></i>
+            </div>
+
+            <!-- Status Badge -->
+            <span class="status-badge status-{{ internship.status }}">
+                {{ internship.status|title }}
+            </span>
+
+            <!-- Card Content -->
+            <div class="card-content">
+                <h5 class="card-title">{{ internship.company_name }}</h5>
+                <div class="card-subtitle">{{ internship.project_name }}</div>
+
+                <div class="card-info">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ internship.start_date.strftime('%d %b %Y') }} - {{ internship.end_date.strftime('%d %b %Y') }}
                 </div>
-                <div class="mb-2">
-                    <small><i class="fas fa-calendar me-1"></i> Academic Year: {{ internship.academic_year }}</small>
+                <div class="card-info">
+                    <i class="fas fa-calendar"></i>
+                    Academic Year: {{ internship.academic_year }}
                 </div>
-                <div class="mb-2">
-                    <small><i class="far fa-clock me-1"></i> {{ internship.hours_per_week }} hrs/week</small>
+                <div class="card-info">
+                    <i class="far fa-clock"></i>
+                    {{ internship.hours_per_week }} hrs/week
                 </div>
-                <div class="mb-2">
-                    <small><i class="fas fa-graduation-cap me-1"></i> Semester: {{ internship.semester }}</small>
+                <div class="card-info">
+                    <i class="fas fa-graduation-cap"></i>
+                    Semester: {{ internship.semester }}
                 </div>
-                <div class="mb-2">
-                    <small><i class="fas fa-hourglass-half me-1"></i> Total: {{ internship.total_hours }} hrs</small>
+                <div class="card-info">
+                    <i class="fas fa-hourglass-half"></i>
+                    Total: {{ internship.total_hours }} hrs
                 </div>
+
+                <!-- Skills Section -->
                 <div class="skills mt-2">
-                    {% for skill in internship.skills %}
+                    {% for skill in internship.skills[:3] %}
                     <span class="skill-badge">{{ skill }}</span>
                     {% endfor %}
+                    {% if internship.skills|length > 3 %}
+                    <span class="skill-badge skill-more">+{{ internship.skills|length - 3 }} more</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+</div>
 
-    <!-- Activities Section -->
-    <h2 class="mt-4 mb-4">Your Activities</h2>
-    <div class="row">
-        {% for activity in activities %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
-            <div class="activity-card themed-bg themed-text animate-slide-up">
-                <span class="status-badge status-{{ activity.status }}">
-                    {{ activity.status|title }}
-                </span>
-                <h5 class="mb-1">{{ activity.title }}</h5>
-                <div class="text-muted mb-1" style="font-size:0.95rem;">{{ activity.activity_type|title }}</div>
-                <div class="mb-2">
-                    <small><i class="far fa-calendar-alt me-1"></i>
-                        {{ activity.start_date.strftime('%d %b %Y') }} - {{ activity.end_date.strftime('%d %b %Y') }}
-                    </small>
+<!-- Activities Section -->
+<h2 class="section-title">Your Activities</h2>
+<div class="row">
+    {% for activity in activities %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+        <div class="activity-card animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <!-- Card Logo -->
+            <div class="card-logo">
+                <i class="fas fa-certificate"></i>
+            </div>
+
+            <!-- Status Badge -->
+            <span class="status-badge status-{{ activity.status }}">
+                {{ activity.status|title }}
+            </span>
+
+            <!-- Card Content -->
+            <div class="card-content">
+                <h5 class="card-title">{{ activity.title }}</h5>
+                <div class="card-subtitle">{{ activity.activity_type|title }}</div>
+
+                <div class="card-info">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ activity.start_date.strftime('%d %b %Y') }} - {{ activity.end_date.strftime('%d %b %Y') }}
                 </div>
-                <div class="mb-2">
-                    <small><i class="far fa-clock me-1"></i> {{ activity.hours_per_week }} hrs/week</small>
+                <div class="card-info">
+                    <i class="far fa-clock"></i>
+                    {{ activity.hours_per_week }} hrs/week
                 </div>
-                <div class="mb-2">
-                    <small><i class="fas fa-graduation-cap me-1"></i> Semester: {{ activity.semester }}</small>
+                <div class="card-info">
+                    <i class="fas fa-graduation-cap"></i>
+                    Semester: {{ activity.semester }}
                 </div>
+
+                <!-- Skills Section -->
                 <div class="skills mt-2">
-                    {% for skill in activity.skills %}
+                    {% for skill in activity.skills[:3] %}
                     <span class="skill-badge">{{ skill }}</span>
                     {% endfor %}
+                    {% if activity.skills|length > 3 %}
+                    <span class="skill-badge skill-more">+{{ activity.skills|length - 3 }} more</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 
 <!-- Quick Actions -->
