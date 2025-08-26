@@ -56,6 +56,10 @@
         color: rgba(255, 255, 255, 0.6);
     }
 
+    .form-select option {
+        color: #000;
+    }
+
     .skill-tag {
         display: inline-block;
         background: rgba(255, 255, 255, 0.2);
@@ -194,46 +198,30 @@
 
     <div class="form-container">
         <form method="POST" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
 
             <!-- Activity Information -->
             <div class="form-section">
                 <h4 class="form-section-title">Activity Information</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        {{ form.title.label(class="form-label") }}
-                        {{ form.title(class="form-control", placeholder="Enter activity title") }}
-                        {% if form.title.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.title.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="title">Title</label>
+                        <input type="text" class="form-control" id="title" name="title"
+                            placeholder="Enter activity title" value="{{ activity.title if activity else '' }}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        {{ form.activity_type.label(class="form-label") }}
-                        {{ form.activity_type(class="form-control") }}
-                        {% if form.activity_type.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.activity_type.errors %}
-                            <small>{{ error }}</small>
+                        <label class="form-label" for="activity_type">Activity Type</label>
+                        <select class="form-select" id="activity_type" name="activity_type">
+                            {% for typ in ['Workshop','Seminar','Competition','Hackathon','Course','Volunteering'] %}
+                            <option value="{{ typ }}" {% if activity and activity.activity_type==typ %}selected{% endif
+                                %}>{{ typ }}</option>
                             {% endfor %}
-                        </div>
-                        {% endif %}
+                        </select>
                     </div>
                 </div>
                 <div class="mb-3">
-                    {{ form.description.label(class="form-label") }}
-                    {{ form.description(class="form-control", rows="4", placeholder="Describe the activity and your
-                    role") }}
-                    {% if form.description.errors %}
-                    <div class="text-danger mt-1">
-                        {% for error in form.description.errors %}
-                        <small>{{ error }}</small>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+                    <label class="form-label" for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4"
+                        placeholder="Describe the activity and your role">{{ activity.description if activity else '' }}</textarea>
                 </div>
             </div>
 
@@ -242,50 +230,38 @@
                 <h4 class="form-section-title">Duration Information</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        {{ form.start_date.label(class="form-label") }}
-                        {{ form.start_date(class="form-control", type="date") }}
-                        {% if form.start_date.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.start_date.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="start_date">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date"
+                            value="{{ activity.start_date.strftime('%Y-%m-%d') if activity and activity.start_date else '' }}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        {{ form.end_date.label(class="form-label") }}
-                        {{ form.end_date(class="form-control", type="date") }}
-                        {% if form.end_date.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.end_date.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="end_date">End Date</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date"
+                            value="{{ activity.end_date.strftime('%Y-%m-%d') if activity and activity.end_date else '' }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        {{ form.hours_per_week.label(class="form-label") }}
-                        {{ form.hours_per_week(class="form-control", placeholder="e.g., 10") }}
-                        {% if form.hours_per_week.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.hours_per_week.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="hours_per_week">Hours per week</label>
+                        <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
+                            placeholder="e.g., 10" value="{{ activity.hours_per_week if activity else '' }}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        {{ form.semester.label(class="form-label") }}
-                        {{ form.semester(class="form-control") }}
-                        {% if form.semester.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.semester.errors %}
-                            <small>{{ error }}</small>
+                        <label class="form-label" for="semester">Semester</label>
+                        <select class="form-select" id="semester" name="semester">
+                            {% for sem in ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'] %}
+                            <option value="{{ sem }}" {% if activity and activity.semester==sem %}selected{% endif %}>{{
+                                sem }}</option>
                             {% endfor %}
-                        </div>
-                        {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="academic_year">Academic Year</label>
+                        <input type="text" class="form-control" id="academic_year" name="academic_year"
+                            placeholder="e.g., 2023-24" value="{{ activity.academic_year if activity else '' }}"
+                            readonly>
                     </div>
                 </div>
             </div>
@@ -297,10 +273,13 @@
                     <label class="form-label">Select Skills (Click to select/deselect)</label>
                     <div class="skills-container">
                         {% for skill in available_skills %}
-                        <span class="skill-tag" data-skill="{{ skill }}">{{ skill }}</span>
+                        <span
+                            class="skill-tag{% if activity and activity.skills and (skill in activity.skills) %} selected{% endif %}"
+                            data-skill="{{ skill }}">{{ skill }}</span>
                         {% endfor %}
                     </div>
-                    <input type="hidden" name="skills" id="selectedSkills" value="">
+                    <input type="hidden" name="skills" id="selectedSkills"
+                        value="{% if activity and activity.skills %}{{ ','.join(activity.skills) }}{% endif %}">
                 </div>
             </div>
 
@@ -309,30 +288,32 @@
                 <h4 class="form-section-title">Documents</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Certificate</label>
+                        <label class="form-label">Certificate (JPG, JPEG, PNG)</label>
                         <div class="file-upload">
                             <label class="file-upload-label">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                                 <div>Click to upload certificate</div>
-                                <div class="text-muted">PDF, DOC, or image files</div>
-                                <input type="file" name="certificate" class="file-upload-input"
-                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                <div class="text-muted">Image files only</div>
+                                <input type="file" id="certificate" name="certificate" class="file-upload-input"
+                                    accept="image/jpeg,image/png">
                             </label>
                         </div>
                         <div class="file-name" id="certificateName"></div>
+                        <div class="preview-image" id="certificatePreviewContainer"></div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Report</label>
+                        <label class="form-label">Report (JPG, JPEG, PNG)</label>
                         <div class="file-upload">
                             <label class="file-upload-label">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                                 <div>Click to upload report</div>
-                                <div class="text-muted">PDF, DOC, or image files</div>
+                                <div class="text-muted">Image files only</div>
                                 <input type="file" name="report" class="file-upload-input"
-                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                    accept="image/jpeg,image/png">
                             </label>
                         </div>
                         <div class="file-name" id="reportName"></div>
+                        <div class="preview-image" id="reportPreviewContainer"></div>
                     </div>
                 </div>
             </div>
@@ -340,7 +321,8 @@
             <!-- Submit Buttons -->
             <div class="d-flex justify-content-end gap-3">
                 <a href="{{ url_for('student.activities') }}" class="btn btn-cancel">Cancel</a>
-                <button type="submit" class="btn btn-submit">Add Activity</button>
+                <button type="submit" class="btn btn-submit">{{ 'Update Activity' if activity else 'Add Activity'
+                    }}</button>
             </div>
         </form>
     </div>
@@ -389,32 +371,75 @@
     document.getElementById('end_date').addEventListener('change', calculateAcademicYear);
     calculateAcademicYear();
 
-    // Preview image before upload
-    document.getElementById('certificate').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        if (file) {
-            if (!file.type.match('image.*')) {
-                alert('Please select an image file (JPG, PNG, GIF)');
-                this.value = '';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const preview = document.createElement('img');
-                preview.src = e.target.result;
-                preview.className = 'img-thumbnail mt-2';
-                preview.style.maxHeight = '200px';
-
-                const container = document.getElementById('certificate').parentElement;
-                const existingPreview = container.querySelector('img');
-                if (existingPreview) {
-                    container.removeChild(existingPreview);
+    // Skill selection handling + filename display
+    (function () {
+        const tags = document.querySelectorAll('.skill-tag');
+        const hidden = document.getElementById('selectedSkills');
+        let selected = new Set((hidden.value || '').split(',').map(s => s.trim()).filter(Boolean));
+        tags.forEach(tag => {
+            const val = tag.dataset.skill;
+            if (selected.has(val)) tag.classList.add('selected');
+            tag.addEventListener('click', () => {
+                if (selected.has(val)) {
+                    selected.delete(val);
+                    tag.classList.remove('selected');
+                } else {
+                    selected.add(val);
+                    tag.classList.add('selected');
                 }
-                container.appendChild(preview);
-            }
-            reader.readAsDataURL(file);
+                hidden.value = Array.from(selected).join(',');
+            });
+        });
+
+        // filenames
+        const certInput = document.getElementById('certificate');
+        const certName = document.getElementById('certificateName');
+        const certPrev = document.getElementById('certificatePreviewContainer');
+        const reportInput = document.querySelector('input[name="report"]');
+        const reportName = document.getElementById('reportName');
+        const reportPrev = document.getElementById('reportPreviewContainer');
+        if (certInput) {
+            certInput.addEventListener('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                certName.textContent = file ? file.name : '';
+                if (file) {
+                    if (!file.type.match('image.*')) { certInput.value = ''; certPrev.innerHTML = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        certPrev.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.className = 'img-thumbnail mt-2';
+                        img.style.maxHeight = '200px';
+                        certPrev.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    certPrev.innerHTML = '';
+                }
+            });
         }
-    });
+        if (reportInput) {
+            reportInput.addEventListener('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                reportName.textContent = file ? file.name : '';
+                if (file) {
+                    if (!file.type.match('image.*')) { reportInput.value = ''; reportPrev.innerHTML = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        reportPrev.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.className = 'img-thumbnail mt-2';
+                        img.style.maxHeight = '200px';
+                        reportPrev.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    reportPrev.innerHTML = '';
+                }
+            });
+        }
+    })();
 </script>
 {% endblock %}

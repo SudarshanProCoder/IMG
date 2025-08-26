@@ -77,6 +77,10 @@
         color: var(--text-light);
     }
 
+    .form-select option {
+        color: #000;
+    }
+
     .form-text {
         color: rgba(255, 255, 255, 0.8);
         font-size: 0.875rem;
@@ -193,6 +197,15 @@
         border: 2px solid var(--glass-border);
     }
 
+    .preview-holder img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 10px;
+        margin-top: 1rem;
+        border: 2px solid var(--glass-border);
+        display: block;
+    }
+
     .page-header {
         background: var(--glass-bg);
         backdrop-filter: blur(10px);
@@ -226,33 +239,22 @@
 
     <div class="form-container">
         <form method="POST" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
 
             <!-- Company Information -->
             <div class="form-section">
                 <h4 class="form-section-title">Company Information</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        {{ form.company_name.label(class="form-label") }}
-                        {{ form.company_name(class="form-control", placeholder="Enter company name") }}
-                        {% if form.company_name.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.company_name.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="company_name">Company Name</label>
+                        <input type="text" class="form-control" id="company_name" name="company_name"
+                            placeholder="Enter company name"
+                            value="{{ internship.company_name if internship else '' }}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        {{ form.project_name.label(class="form-label") }}
-                        {{ form.project_name(class="form-control", placeholder="Enter project name") }}
-                        {% if form.project_name.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.project_name.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="project_name">Project Name</label>
+                        <input type="text" class="form-control" id="project_name" name="project_name"
+                            placeholder="Enter project name"
+                            value="{{ internship.project_name if internship else '' }}">
                     </div>
                 </div>
             </div>
@@ -262,50 +264,26 @@
                 <h4 class="form-section-title">Duration Information</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        {{ form.start_date.label(class="form-label") }}
-                        {{ form.start_date(class="form-control", type="date") }}
-                        {% if form.start_date.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.start_date.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="start_date">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date"
+                            value="{{ internship.start_date.strftime('%Y-%m-%d') if internship and internship.start_date else '' }}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        {{ form.end_date.label(class="form-label") }}
-                        {{ form.end_date(class="form-control", type="date") }}
-                        {% if form.end_date.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.end_date.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="end_date">End Date</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date"
+                            value="{{ internship.end_date.strftime('%Y-%m-%d') if internship and internship.end_date else '' }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        {{ form.hours_per_week.label(class="form-label") }}
-                        {{ form.hours_per_week(class="form-control", placeholder="e.g., 20") }}
-                        {% if form.hours_per_week.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.hours_per_week.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="hours_per_week">Hours per week</label>
+                        <input type="number" class="form-control" id="hours_per_week" name="hours_per_week"
+                            placeholder="e.g., 20" value="{{ internship.hours_per_week if internship else '' }}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        {{ form.total_hours.label(class="form-label") }}
-                        {{ form.total_hours(class="form-control", placeholder="e.g., 200") }}
-                        {% if form.total_hours.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.total_hours.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="total_hours">Total hours (optional)</label>
+                        <input type="number" class="form-control" id="total_hours" name="total_hours"
+                            placeholder="e.g., 200" value="{{ internship.total_hours if internship else '' }}">
                     </div>
                 </div>
             </div>
@@ -315,26 +293,19 @@
                 <h4 class="form-section-title">Academic Information</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        {{ form.semester.label(class="form-label") }}
-                        {{ form.semester(class="form-control") }}
-                        {% if form.semester.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.semester.errors %}
-                            <small>{{ error }}</small>
+                        <label class="form-label" for="semester">Semester</label>
+                        <select class="form-select" id="semester" name="semester">
+                            {% for sem in ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'] %}
+                            <option value="{{ sem }}" {% if internship and internship.semester==sem %}selected{% endif
+                                %}>{{ sem }}</option>
                             {% endfor %}
-                        </div>
-                        {% endif %}
+                        </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        {{ form.academic_year.label(class="form-label") }}
-                        {{ form.academic_year(class="form-control", placeholder="e.g., 2023-24") }}
-                        {% if form.academic_year.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in form.academic_year.errors %}
-                            <small>{{ error }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <label class="form-label" for="academic_year">Academic Year</label>
+                        <input type="text" class="form-control" id="academic_year" name="academic_year"
+                            placeholder="e.g., 2023-24" value="{{ internship.academic_year if internship else '' }}"
+                            readonly>
                     </div>
                 </div>
             </div>
@@ -346,10 +317,13 @@
                     <label class="form-label">Select Skills (Click to select/deselect)</label>
                     <div class="skills-container">
                         {% for skill in available_skills %}
-                        <span class="skill-tag" data-skill="{{ skill }}">{{ skill }}</span>
+                        <span
+                            class="skill-tag{% if internship and internship.skills and (skill in internship.skills) %} selected{% endif %}"
+                            data-skill="{{ skill }}">{{ skill }}</span>
                         {% endfor %}
                     </div>
-                    <input type="hidden" name="skills" id="selectedSkills" value="">
+                    <input type="hidden" name="skills" id="selectedSkills"
+                        value="{% if internship and internship.skills %}{{ ','.join(internship.skills) }}{% endif %}">
                 </div>
             </div>
 
@@ -358,30 +332,35 @@
                 <h4 class="form-section-title">Documents</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Offer Letter</label>
+                        <label class="form-label">Offer Letter (JPG, JPEG, PNG)</label>
                         <div class="file-upload">
                             <label class="file-upload-label">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                                 <div>Click to upload offer letter</div>
-                                <div class="text-muted">PDF, DOC, or image files</div>
-                                <input type="file" name="offer_letter" class="file-upload-input"
-                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                <div class="text-muted">Image files only</div>
+                                <input type="file" id="offer_letter" name="offer_letter" class="file-upload-input"
+                                    accept="image/jpeg,image/png" data-name-target="offerLetterName"
+                                    data-preview-target="offerLetterPreviewContainer">
                             </label>
                         </div>
                         <div class="file-name" id="offerLetterName"></div>
+                        <div class="preview-holder" id="offerLetterPreviewContainer"></div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Completion Letter</label>
+                        <label class="form-label">Completion Letter (JPG, JPEG, PNG)</label>
                         <div class="file-upload">
                             <label class="file-upload-label">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                                 <div>Click to upload completion letter</div>
-                                <div class="text-muted">PDF, DOC, or image files</div>
-                                <input type="file" name="completion_letter" class="file-upload-input"
-                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                <div class="text-muted">Image files only</div>
+                                <input type="file" id="completion_letter" name="completion_letter"
+                                    class="file-upload-input" accept="image/jpeg,image/png"
+                                    data-name-target="completionLetterName"
+                                    data-preview-target="completionLetterPreviewContainer">
                             </label>
                         </div>
                         <div class="file-name" id="completionLetterName"></div>
+                        <div class="preview-holder" id="completionLetterPreviewContainer"></div>
                     </div>
                 </div>
             </div>
@@ -397,7 +376,7 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
     // Validate dates
     document.getElementById('start_date').addEventListener('change', validateDates);
@@ -437,5 +416,57 @@
     document.getElementById('start_date').addEventListener('change', calculateAcademicYear);
     document.getElementById('end_date').addEventListener('change', calculateAcademicYear);
     calculateAcademicYear();
+
+    // Skill selection handling
+    (function () {
+        const tags = document.querySelectorAll('.skill-tag');
+        const hidden = document.getElementById('selectedSkills');
+        let selected = new Set((hidden.value || '').split(',').map(s => s.trim()).filter(Boolean));
+        tags.forEach(tag => {
+            const val = tag.dataset.skill;
+            if (selected.has(val)) tag.classList.add('selected');
+            tag.addEventListener('click', () => {
+                if (selected.has(val)) {
+                    selected.delete(val);
+                    tag.classList.remove('selected');
+                } else {
+                    selected.add(val);
+                    tag.classList.add('selected');
+                }
+                hidden.value = Array.from(selected).join(',');
+            });
+        });
+    })();
+
+    // Explicit, robust handlers per input to avoid any mis-targeting
+    (function () {
+        function wireFileInput(inputId, nameId, previewId) {
+            const input = document.getElementById(inputId);
+            const nameEl = document.getElementById(nameId);
+            const prevEl = document.getElementById(previewId);
+            if (!input) return;
+            input.addEventListener('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (nameEl) nameEl.textContent = file ? file.name : '';
+                if (!prevEl) return;
+                if (file) {
+                    if (!file.type.match('image.*')) { input.value = ''; prevEl.innerHTML = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        prevEl.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        prevEl.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    prevEl.innerHTML = '';
+                }
+            });
+        }
+
+        wireFileInput('offer_letter', 'offerLetterName', 'offerLetterPreviewContainer');
+        wireFileInput('completion_letter', 'completionLetterName', 'completionLetterPreviewContainer');
+    })();
 </script>
 {% endblock %}
