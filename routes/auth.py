@@ -241,8 +241,14 @@ def profile():
         current_user.save()
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('auth.profile'))
-    
-    return render_template('auth/profile.html')
+    # Render role-specific profile pages
+    template_map = {
+        'student': 'student/profile.html',
+        'mentor': 'mentor/profile.html',
+        'admin': 'admin/profile.html',
+    }
+    template = template_map.get(current_user.role, 'auth/profile.html')
+    return render_template(template)
 
 @auth_bp.route('/change-password', methods=['POST'])
 @login_required
