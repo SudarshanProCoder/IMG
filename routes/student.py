@@ -124,7 +124,7 @@ def new_internship():
                 else:
                     academic_year = f"{year}-{str(year+1)[-2:]}"
             hours_per_week = int(request.form.get('hours_per_week'))
-            skills = [skill.strip() for skill in request.form.get('skills').split(',')]
+            skills = [skill.strip() for skill in request.form.get('skills', '').split(',') if skill.strip()]
 
             # Handle file uploads
             offer_letter_url = None
@@ -186,7 +186,8 @@ def new_internship():
             current_app.logger.error(f"Error in new_internship: {str(e)}")
             flash('Error submitting internship details. Please try again.', 'danger')
 
-    return render_template('student/internship_form.html')
+    available_skills = ['Python', 'JavaScript', 'Java', 'C++', 'SQL', 'HTML', 'CSS', 'React', 'Node.js', 'Django', 'Flask', 'Machine Learning']
+    return render_template('student/internship_form.html', available_skills=available_skills)
 
 @student_bp.route('/activity/new', methods=['GET', 'POST'])
 @login_required
@@ -257,7 +258,7 @@ def new_activity():
                 'hours_per_week': hours_per_week,
                 'total_hours': total_hours,
                 'certificate_url': certificate_url,
-                'skills': request.form.getlist('skills'),
+                'skills': [s.strip() for s in request.form.get('skills', '').split(',') if s.strip()],
                 'academic_year': academic_year,
                 'status': 'pending',
                 'created_at': datetime.utcnow(),
@@ -276,7 +277,8 @@ def new_activity():
             current_app.logger.error(f"Error in new_activity: {str(e)}")
             flash('Error submitting activity details. Please try again.', 'danger')
     
-    return render_template('student/activity_form.html')
+    available_skills = ['Python', 'JavaScript', 'Public Speaking', 'Leadership', 'Teamwork', 'Problem Solving', 'Data Analysis', 'UI/UX', 'Cloud', 'Cybersecurity']
+    return render_template('student/activity_form.html', available_skills=available_skills)
 
 @student_bp.route('/marksheet')
 @login_required
@@ -391,7 +393,7 @@ def edit_internship(internship_id):
             'total_hours': total_hours,
             'offer_letter_url': offer_letter_url,
             'completion_letter_url': completion_letter_url,
-            'skills': request.form.getlist('skills'),
+            'skills': [s.strip() for s in request.form.get('skills', '').split(',') if s.strip()],
             'academic_year': academic_year,
             'status': 'pending'  # Reset status to pending when edited
         }
@@ -400,7 +402,8 @@ def edit_internship(internship_id):
         flash('Internship updated successfully!', 'success')
         return redirect(url_for('student.internships'))
     
-    return render_template('student/internship_form.html', internship=internship)
+    available_skills = ['Python', 'JavaScript', 'Java', 'C++', 'SQL', 'HTML', 'CSS', 'React', 'Node.js', 'Django', 'Flask', 'Machine Learning']
+    return render_template('student/internship_form.html', internship=internship, available_skills=available_skills)
 
 @student_bp.route('/internship/<internship_id>/delete', methods=['POST'])
 @login_required
@@ -473,7 +476,7 @@ def edit_activity(activity_id):
             'hours_per_week': hours_per_week,
             'total_hours': total_hours,
             'certificate_url': certificate_url,
-            'skills': request.form.getlist('skills'),
+            'skills': [s.strip() for s in request.form.get('skills', '').split(',') if s.strip()],
             'academic_year': academic_year,
             'status': 'pending'  # Reset status to pending when edited
         }
@@ -482,7 +485,8 @@ def edit_activity(activity_id):
         flash('Activity updated successfully!', 'success')
         return redirect(url_for('student.activities'))
     
-    return render_template('student/activity_form.html', activity=activity)
+    available_skills = ['Python', 'JavaScript', 'Public Speaking', 'Leadership', 'Teamwork', 'Problem Solving', 'Data Analysis', 'UI/UX', 'Cloud', 'Cybersecurity']
+    return render_template('student/activity_form.html', activity=activity, available_skills=available_skills)
 
 @student_bp.route('/activity/<activity_id>/delete', methods=['POST'])
 @login_required
