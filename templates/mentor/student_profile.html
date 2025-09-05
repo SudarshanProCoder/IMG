@@ -1,19 +1,19 @@
-{% extends "base.html" %}
+{% extends "mentor/base.html" %}
 
 {% block title %}Student Profile - Shah and Anchor College{% endblock %}
 
 {% block extra_css %}
 <style>
     .profile-header {
-        background: linear-gradient(rgba(13, 110, 253, 0.95), rgba(13, 110, 253, 0.85)),
-        url("{{ url_for('static', filename='images/dashboard-bg.jpg') }}");
-        background-size: cover;
-        background-position: center;
-        color: white;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        color: var(--text-light);
         padding: 3rem 0 2rem 0;
-        margin: -1.5rem -1.5rem 2rem -1.5rem;
-        border-radius: 0 0 1.5rem 1.5rem;
-        box-shadow: 0 4px 24px rgba(13, 110, 253, 0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: var(--glass-shadow);
     }
 
     .student-avatar {
@@ -21,27 +21,31 @@
         height: 120px;
         border-radius: 50%;
         object-fit: cover;
-        border: 4px solid #fff;
+        border: 4px solid var(--accent-gradient);
         margin-bottom: 1rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .card {
-        border: none;
-        border-radius: 1rem;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        box-shadow: var(--glass-shadow);
         margin-bottom: 1.5rem;
-        transition: box-shadow 0.3s;
+        transition: all 0.3s ease;
+        color: var(--text-light);
     }
 
     .card:hover {
-        box-shadow: 0 8px 32px rgba(13, 110, 253, 0.13);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(31, 38, 135, 0.45);
     }
 
     .section-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #0d6efd;
+        color: var(--text-light);
         margin-bottom: 1rem;
         letter-spacing: 0.5px;
         display: flex;
@@ -50,7 +54,11 @@
     }
 
     .section-title i {
-        color: #0d6efd;
+        color: var(--accent-gradient);
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         font-size: 1.3rem;
     }
 
@@ -59,122 +67,237 @@
         border-radius: 1rem;
         font-size: 0.95rem;
         font-weight: 600;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .status-pending {
-        background-color: #fff3cd;
-        color: #856404;
+        background: var(--warning-gradient);
+        color: var(--text-light);
     }
 
     .status-approved {
-        background-color: #d4edda;
-        color: #155724;
+        background: var(--success-gradient);
+        color: var(--text-light);
     }
 
     .status-rejected {
-        background-color: #f8d7da;
-        color: #721c24;
+        background: var(--danger-gradient);
+        color: var(--text-light);
     }
 
     .skills-list {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
-        margin-top: 0.5rem;
-    }
-
-    .skill-badge {
-        background-color: #e9ecef;
-        color: #495057;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.9rem;
-        display: inline-block;
-    }
-
-    .detail-label {
-        font-weight: 600;
-        color: #0d6efd;
-        margin-bottom: 0.25rem;
-        font-size: 0.95rem;
-        text-transform: uppercase;
-    }
-
-    .detail-value {
-        color: #212529;
-        font-size: 1.05rem;
-        line-height: 1.5;
-    }
-
-    .image-container img {
-        max-width: 100%;
-        height: auto;
-        max-height: 300px;
-        object-fit: contain;
-        border: 1px solid #dee2e6;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-    }
-
-    .btn-outline-primary {
-        border-radius: 2rem;
-        font-weight: 500;
-    }
-
-    .modal-content {
-        border-radius: 1rem;
-    }
-
-    .modal-header {
-        border-bottom: 1px solid #e9ecef;
-        background: #f8f9fa;
-        border-radius: 1rem 1rem 0 0;
-    }
-
-    .modal-title {
-        color: #0d6efd;
-        font-weight: 700;
-    }
-
-    .modal-body {
-        background: #fff;
-        border-radius: 0 0 1rem 1rem;
-    }
-
-    .alert-info {
-        background: #e9f7fe;
-        color: #0d6efd;
-        border: none;
-        border-radius: 0.75rem;
-        font-size: 1.1rem;
-        padding: 1.25rem 1rem;
         margin-top: 1rem;
     }
 
-    @media (max-width: 767px) {
-        .profile-header {
-            padding: 2rem 0 1rem 0;
-        }
-
-        .student-avatar {
-            width: 80px;
-            height: 80px;
-        }
-
-        .section-title {
-            font-size: 1.15rem;
-        }
+    .skill-badge {
+        background: var(--accent-gradient);
+        color: var(--text-light);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .themed-bg {
-        background: var(--card-bg) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .progress {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        height: 8px;
+        margin: 0.5rem 0;
     }
 
-    .themed-text {
-        color: var(--text-color) !important;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .progress-bar {
+        background: var(--accent-gradient);
+        border-radius: 10px;
+    }
+
+    .table {
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .table th {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 1rem;
+    }
+
+    .table td {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+    }
+
+    .table tbody tr:nth-child(even) td {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Ensure table text is always visible */
+    .table * {
+        color: #ffffff !important;
+    }
+
+    .table th,
+    .table td {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Status badges visibility */
+    .status-badge {
+        color: #ffffff !important;
+        text-shadow: none;
+    }
+
+    /* Force table visibility */
+    .table-responsive {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Ensure all text in tables is visible */
+    .table th,
+    .table td,
+    .table th *,
+    .table td * {
+        color: #ffffff !important;
+        opacity: 1 !important;
+    }
+
+    /* Button visibility */
+    .btn-primary {
+        background: var(--accent-gradient) !important;
+        color: #ffffff !important;
+        border: none !important;
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        color: #ffffff !important;
+        opacity: 0.9;
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--glass-bg);
+        color: var(--text-light);
+        transform: translateY(-2px);
+    }
+
+    .text-muted {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .text-success {
+        color: var(--success-gradient) !important;
+        background: var(--success-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .text-warning {
+        color: var(--warning-gradient) !important;
+        background: var(--warning-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .text-danger {
+        color: var(--danger-gradient) !important;
+        background: var(--danger-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Simple Student Details Styles */
+    .student-details {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        font-weight: 600;
+        min-width: 120px;
+    }
+
+    .detail-value {
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 500;
+        text-align: right;
+        word-break: break-word;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .student-details {
+            padding: 1rem;
+        }
+
+        .detail-row {
+            padding: 0.5rem 0;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            min-width: 100px;
+        }
+
+        .detail-value {
+            font-size: 0.9rem;
+        }
     }
 </style>
 {% endblock %}
@@ -183,469 +306,283 @@
 <!-- Profile Header -->
 <div class="profile-header">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8 text-center text-md-start">
+        <!-- Student Name and Avatar -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-3 text-center">
                 {% if student.profile_image %}
                 <img src="{{ student.profile_image }}" alt="{{ student.full_name }}" class="student-avatar">
                 {% else %}
-                <img src="{{ url_for('static', filename='images/avatar.png') }}" alt="{{ student.full_name }}"
+                <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="{{ student.full_name }}"
                     class="student-avatar">
                 {% endif %}
-                <h1>{{ student.full_name }}</h1>
-                <p class="lead mb-0">{{ student.branch }} - Year {{ student.year }}</p>
-                <p class="mb-0">Registration No: {{ student.registration_number }}</p>
             </div>
-            <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
-                <a href="{{ url_for('mentor.dashboard') }}" class="btn btn-light">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                </a>
+            <div class="col-md-9 text-center text-md-start">
+                <h1 class="mb-2">{{ student.full_name }}</h1>
+                <p class="lead mb-0">{{ student.registration_number }}</p>
+            </div>
+        </div>
+
+        <!-- Student Details - Simple Text Format -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="student-details">
+                    <div class="detail-row">
+                        <span class="detail-label">PRN:</span>
+                        <span class="detail-value">{{ student.prn or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">{{ student.email or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Year:</span>
+                        <span class="detail-value">{{ student.year or 'N/A' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="student-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Semester:</span>
+                        <span class="detail-value">{{ student.semester or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Department:</span>
+                        <span class="detail-value">{{ student.department or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Batch:</span>
+                        <span class="detail-value">{{ student.batch or 'N/A' }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Stats Section -->
-<div class="container py-4">
-    <!-- Student Details Card -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">
-                <i class="fas fa-user me-2"></i>Student Details
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
-                        <p class="mb-0">{{ student.email }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-phone me-2"></i>Phone:</strong>
-                        <p class="mb-0">{{ student.phone }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-graduation-cap me-2"></i>Branch:</strong>
-                        <p class="mb-0">{{ student.branch }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <strong><i class="fas fa-calendar me-2"></i>Year:</strong>
-                        <p class="mb-0">{{ student.year }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-id-card me-2"></i>Registration Number:</strong>
-                        <p class="mb-0">{{ student.registration_number }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-clock me-2"></i>Signup Date:</strong>
-                        <p class="mb-0">{{ student.created_at.strftime('%d %B %Y') if student.created_at else 'Not
-                            available' }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Cards -->
+<div class="container">
+    <!-- Statistics Overview -->
     <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Internship Hours</h5>
-                    <h2 class="card-text">{{ total_internship_hours }}</h2>
-                </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <i class="fas fa-briefcase fa-2x mb-2" style="color: var(--accent-gradient);"></i>
+                <h4>{{ internships|length }}</h4>
+                <p class="text-muted mb-0">Internships</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Activity Hours</h5>
-                    <h2 class="card-text">{{ total_activity_hours }}</h2>
-                </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <i class="fas fa-tasks fa-2x mb-2" style="color: var(--success-gradient);"></i>
+                <h4>{{ activities|length }}</h4>
+                <p class="text-muted mb-0">Activities</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Credit Points</h5>
-                    <h2 class="card-text">{{ "%.2f"|format(total_credit_points) }}</h2>
-                </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <i class="fas fa-clock fa-2x mb-2" style="color: var(--warning-gradient);"></i>
+                <h4>{{ total_internship_hours + total_activity_hours }}</h4>
+                <p class="text-muted mb-0">Total Hours</p>
             </div>
         </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-5">
-                    <label for="internship_status" class="form-label">Internship Status</label>
-                    <select name="internship_status" id="internship_status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="pending" {% if internship_status=='pending' %}selected{% endif %}>Pending
-                        </option>
-                        <option value="approved" {% if internship_status=='approved' %}selected{% endif %}>Approved
-                        </option>
-                        <option value="rejected" {% if internship_status=='rejected' %}selected{% endif %}>Rejected
-                        </option>
-                    </select>
-                </div>
-                <div class="col-md-5">
-                    <label for="activity_status" class="form-label">Activity Status</label>
-                    <select name="activity_status" id="activity_status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="pending" {% if activity_status=='pending' %}selected{% endif %}>Pending</option>
-                        <option value="approved" {% if activity_status=='approved' %}selected{% endif %}>Approved
-                        </option>
-                        <option value="rejected" {% if activity_status=='rejected' %}selected{% endif %}>Rejected
-                        </option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-filter me-2"></i>Filter
-                    </button>
-                </div>
-            </form>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <i class="fas fa-star fa-2x mb-2" style="color: var(--danger-gradient);"></i>
+                <h4>{{ "%.2f"|format(total_credit_points) }}</h4>
+                <p class="text-muted mb-0">Credit Points</p>
+            </div>
         </div>
     </div>
 
     <!-- Internships Section -->
-    <h2 class="section-title"><i class="fas fa-briefcase"></i>Internships</h2>
-    {% if internships %}
-    <div class="row">
-        {% for internship in internships %}
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title">{{ internship.title }}</h5>
-                        <span class="status-badge status-{{ internship.status }}">
-                            {{ internship.status|title }}
-                        </span>
-                    </div>
-                    <p class="card-text">{{ internship.description }}</p>
-                    <div class="mb-3">
-                        <strong>Duration:</strong> {{ internship.start_date }} to {{ internship.end_date }}
-                    </div>
-                    <div class="mb-3">
-                        <strong>Hours per Week:</strong> {{ internship.hours_per_week }}
-                    </div>
-                    <button class="btn btn-outline-primary mb-2" data-bs-toggle="modal"
-                        data-bs-target="#internshipModal{{ internship._id }}">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                    {% if internship.status == 'pending' %}
-                    <div class="d-flex gap-2">
-                        <a href="{{ url_for('mentor.approve_internship', internship_id=internship._id) }}"
-                            class="btn btn-success">
-                            <i class="fas fa-check me-2"></i>Approve
-                        </a>
-                        <a href="{{ url_for('mentor.reject_internship', internship_id=internship._id) }}"
-                            class="btn btn-danger">
-                            <i class="fas fa-times me-2"></i>Reject
-                        </a>
-                    </div>
+    <div class="card p-4 mb-4">
+        <h3 class="section-title">
+            <i class="fas fa-briefcase"></i>
+            Internships
+        </h3>
+        {% if internships %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Position</th>
+                        <th>Duration</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if internships|length == 0 %}
+                    <!-- Test row to ensure table is visible -->
+                    <tr>
+                        <td colspan="6" class="text-center" style="color: #ffffff !important; padding: 2rem;">
+                            <strong>No internships found for this student.</strong>
+                        </td>
+                    </tr>
+                    {% else %}
+                    {% for internship in internships %}
+                    <tr>
+                        <td>{{ internship.company_name or 'N/A' }}</td>
+                        <td>{{ internship.project_name or 'N/A' }}</td>
+                        <td>{{ internship.start_date.strftime('%d %b %Y') if internship.start_date else 'N/A' }} - {{
+                            internship.end_date.strftime('%d %b %Y') if internship.end_date else 'N/A' }}</td>
+                        <td>{{ internship.total_hours or 'N/A' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ internship.status or 'pending' }}">
+                                {{ (internship.status or 'pending')|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('mentor.view_internship', internship_id=internship._id) }}"
+                                class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
                     {% endif %}
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
-        {% endfor %}
-    </div>
-    {% for internship in internships %}
-    <div class="modal fade" id="internshipModal{{ internship._id }}" tabindex="-1"
-        aria-labelledby="internshipModalLabel{{ internship._id }}" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="internshipModalLabel{{ internship._id }}">Internship Details
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <div class="detail-label">Company Name</div>
-                                <div class="detail-value">{{ internship.company_name|default('N/A') }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Project Name</div>
-                                <div class="detail-value">{{ internship.project_name|default('N/A') }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Role</div>
-                                <div class="detail-value">{{ internship.role|default('N/A') }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Duration</div>
-                                <div class="detail-value">{{ internship.start_date|default('N/A') }} to {{
-                                    internship.end_date|default('N/A') }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Total Hours</div>
-                                <div class="detail-value">{{ internship.total_hours|default(0) }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Semester</div>
-                                <div class="detail-value">{{ internship.semester|default('N/A') }}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <div class="detail-label">Status</div>
-                                <div class="detail-value"><span
-                                        class="badge {% if internship.status == 'approved' %}bg-success{% elif internship.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">{{
-                                        internship.status|default('pending')|title }}</span></div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Created At</div>
-                                <div class="detail-value">{{ internship.created_at|default('N/A') }}</div>
-                            </div>
-                            {% if internship.offer_letter_url %}
-                            <div class="mb-3">
-                                <h6>Offer Letter</h6>
-                                <div class="image-container">
-                                    <img src="{{ internship.offer_letter_url }}" alt="Offer Letter"
-                                        class="img-fluid rounded mb-2">
-                                    <div class="mt-2">
-                                        <a href="{{ internship.offer_letter_url }}" target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
-                                        <a href="{{ internship.offer_letter_url }}" download="offer_letter.jpg"
-                                            class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-download"></i> Download</a>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if internship.completion_letter_url %}
-                            <div class="mb-3">
-                                <h6>Completion Letter</h6>
-                                <div class="image-container">
-                                    <img src="{{ internship.completion_letter_url }}" alt="Completion Letter"
-                                        class="img-fluid rounded mb-2">
-                                    <div class="mt-2">
-                                        <a href="{{ internship.completion_letter_url }}" target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
-                                        <a href="{{ internship.completion_letter_url }}"
-                                            download="completion_letter.jpg"
-                                            class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-download"></i> Download</a>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if internship.certificate_url %}
-                            <div class="mb-3">
-                                <h6>Certificate</h6>
-                                <div class="image-container">
-                                    <img src="{{ internship.certificate_url }}" alt="Certificate"
-                                        class="img-fluid rounded mb-2">
-                                    <div class="mt-2">
-                                        <a href="{{ internship.certificate_url }}" target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
-                                        <a href="{{ internship.certificate_url }}" download="certificate.jpg"
-                                            class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-download"></i> Download</a>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <div class="detail-item">
-                                <div class="detail-label">Skills Gained</div>
-                                <div class="detail-value">
-                                    <div class="skills-list">{% for skill in
-                                        internship.skills|default([]) %}<span
-                                            class="skill-badge">{{ skill }}</span>{% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Description</div>
-                                <div class="detail-value">{{ internship.description|default('No description
-                                    provided')
-                                    }}</div>
-                            </div>
-                            {% if internship.feedback %}<div class="detail-item">
-                                <div class="detail-label">Feedback</div>
-                                <div class="detail-value">{{ internship.feedback }}</div>
-                            </div>{% endif %}
-                            {% if internship.mentor_comments %}<div class="detail-item">
-                                <div class="detail-label">Mentor Comments</div>
-                                <div class="detail-value">{{ internship.mentor_comments }}</div>
-                            </div>{% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        {% else %}
+        <div class="alert alert-warning"
+            style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffffff; padding: 1rem; border-radius: 10px;">
+            <strong>No internships found for this student.</strong>
         </div>
+        {% endif %}
     </div>
-    {% endfor %}
-    {% else %}
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle me-2"></i>No internships found.
-    </div>
-    {% endif %}
 
     <!-- Activities Section -->
-    <h2 class="section-title mt-5"><i class="fas fa-tasks"></i>Activities</h2>
-    {% if activities %}
-    <div class="row">
-        {% for activity in activities %}
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title">{{ activity.title }}</h5>
-                        <span class="status-badge status-{{ activity.status }}">
-                            {{ activity.status|title }}
-                        </span>
-                    </div>
-                    <p class="card-text">{{ activity.description }}</p>
-                    <div class="mb-3">
-                        <strong>Duration:</strong> {{ activity.start_date }} to {{ activity.end_date }}
-                    </div>
-                    <div class="mb-3">
-                        <strong>Hours per Week:</strong> {{ activity.hours_per_week }}
-                    </div>
-                    <button class="btn btn-outline-primary mb-2" data-bs-toggle="modal"
-                        data-bs-target="#activityModal{{ activity._id }}">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                    {% if activity.status == 'pending' %}
-                    <div class="d-flex gap-2">
-                        <a href="{{ url_for('mentor.approve_activity', activity_id=activity._id) }}"
-                            class="btn btn-success">
-                            <i class="fas fa-check me-2"></i>Approve
-                        </a>
-                        <a href="{{ url_for('mentor.reject_activity', activity_id=activity._id) }}"
-                            class="btn btn-danger">
-                            <i class="fas fa-times me-2"></i>Reject
-                        </a>
-                    </div>
+    <div class="card p-4 mb-4">
+        <h3 class="section-title">
+            <i class="fas fa-tasks"></i>
+            Activities
+        </h3>
+        {% if activities %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if activities|length == 0 %}
+                    <!-- Test row to ensure table is visible -->
+                    <tr>
+                        <td colspan="6" class="text-center" style="color: #ffffff !important; padding: 2rem;">
+                            <strong>No activities found for this student.</strong>
+                        </td>
+                    </tr>
+                    {% else %}
+                    {% for activity in activities %}
+                    <tr>
+                        <td>{{ activity.title or 'N/A' }}</td>
+                        <td>{{ activity.activity_type or 'N/A' }}</td>
+                        <td>{{ activity.start_date.strftime('%d %b %Y') if activity.start_date else 'N/A' }}</td>
+                        <td>{{ activity.hours_per_week or 'N/A' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ activity.status or 'pending' }}">
+                                {{ (activity.status or 'pending')|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('mentor.view_activity', activity_id=activity._id) }}"
+                                class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
                     {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-warning"
+            style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffffff; padding: 1rem; border-radius: 10px;">
+            <strong>No activities found for this student.</strong>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Skills Section -->
+    <div class="card p-4 mb-4">
+        <h3 class="section-title">
+            <i class="fas fa-code"></i>
+            Skills & Competencies
+        </h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Technical Skills</h5>
+                <div class="skills-list">
+                    {% for skill in student.skills or [] %}
+                    <span class="skill-badge">{{ skill }}</span>
+                    {% else %}
+                    <p class="text-muted">No technical skills listed.</p>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% for activity in activities %}
-    <div class="modal fade" id="activityModal{{ activity._id }}" tabindex="-1"
-        aria-labelledby="activityModalLabel{{ activity._id }}" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="activityModalLabel{{ activity._id }}">Activity Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <div class="detail-label">Title</div>
-                                <div class="detail-value">{{ activity.title|default('N/A') }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Type</div>
-                                <div class="detail-value">{{ activity.activity_type|default('N/A')|title }}
-                                </div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Date</div>
-                                <div class="detail-value">{{ activity.date|default('N/A') }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Hours Spent</div>
-                                <div class="detail-value">{{ activity.hours_spent|default(0) }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Semester</div>
-                                <div class="detail-value">{{ activity.semester|default('N/A') }}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <div class="detail-label">Status</div>
-                                <div class="detail-value"><span
-                                        class="badge {% if activity.status == 'approved' %}bg-success{% elif activity.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">{{ 
-                                        activity.status|default('pending')|title }}</span></div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Created At</div>
-                                <div class="detail-value">{{ activity.created_at|default('N/A') }}</div>
-                            </div>
-                            {% if activity.venue %}<div class="detail-item">
-                                <div class="detail-label">Venue</div>
-                                <div class="detail-value">{{ activity.venue }}</div>
-                            </div>{% endif %}
-                            {% if activity.organizer %}<div class="detail-item">
-                                <div class="detail-label">Organizer</div>
-                                <div class="detail-value">{{ activity.organizer }}</div>
-                            </div>{% endif %}
-                            {% if activity.certificate_url %}
-                            <div class="mb-3">
-                                <h6>Certificate</h6>
-                                <div class="image-container">
-                                    <img src="{{ activity.certificate_url }}" alt="Certificate"
-                                        class="img-fluid rounded mb-2">
-                                    <div class="mt-2">
-                                        <a href="{{ activity.certificate_url }}" target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="fas fa-external-link-alt"></i> Open in New Tab</a>
-                                        <a href="{{ activity.certificate_url }}" download="certificate.jpg"
-                                            class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-download"></i> Download</a>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <div class="detail-item">
-                                <div class="detail-label">Description</div>
-                                <div class="detail-value">{{ activity.description|default('No description
-                                    provided') }}
-                                </div>
-                            </div>
-                            {% if activity.achievements %}<div class="detail-item">
-                                <div class="detail-label">Achievements</div>
-                                <div class="detail-value">{{ activity.achievements }}</div>
-                            </div>{% endif %}
-                            {% if activity.feedback %}<div class="detail-item">
-                                <div class="detail-label">Feedback</div>
-                                <div class="detail-value">{{ activity.feedback }}</div>
-                            </div>{% endif %}
-                            {% if activity.mentor_comments %}<div class="detail-item">
-                                <div class="detail-label">Mentor Comments</div>
-                                <div class="detail-value">{{ activity.mentor_comments }}</div>
-                            </div>{% endif %}
-                        </div>
-                    </div>
+            <div class="col-md-6">
+                <h5>Soft Skills</h5>
+                <div class="skills-list">
+                    {% for skill in student.soft_skills or [] %}
+                    <span class="skill-badge">{{ skill }}</span>
+                    {% else %}
+                    <p class="text-muted">No soft skills listed.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-    {% endfor %}
-    {% else %}
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle me-2"></i>No activities found.
+
+    <!-- Progress Section -->
+    <div class="card p-4 mb-4">
+        <h3 class="section-title">
+            <i class="fas fa-chart-line"></i>
+            Progress Overview
+        </h3>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h6>Internship Hours Progress</h6>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar"
+                        style="width: {{ ((total_internship_hours / 100) * 100)|round }}%"
+                        aria-valuenow="{{ total_internship_hours }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ total_internship_hours }}%
+                    </div>
+                </div>
+                <small class="text-muted">Target: 100 hours</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h6>Activity Hours Progress</h6>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar"
+                        style="width: {{ ((total_activity_hours / 50) * 100)|round }}%"
+                        aria-valuenow="{{ total_activity_hours }}" aria-valuemin="0" aria-valuemax="50">
+                        {{ total_activity_hours }}%
+                    </div>
+                </div>
+                <small class="text-muted">Target: 50 hours</small>
+            </div>
+        </div>
     </div>
-    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="text-center mb-4">
+        <a href="{{ url_for('mentor.dashboard') }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-download me-2"></i>Download Report
+        </a>
+    </div>
 </div>
 {% endblock %}
 

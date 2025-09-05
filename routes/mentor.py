@@ -39,8 +39,6 @@ def dashboard():
         total_activity_hours = 0
         total_credit_points = 0
         
-        # Debug: Print the actual query being used
-        current_app.logger.debug(f"Student query: {query}")
         
         for student_data in db.users.find(query):
             student = User(student_data)
@@ -96,13 +94,6 @@ def dashboard():
         activity_academic_years = list(db.activities.distinct('academic_year', {'student_id': {'$in': mentor_student_ids}, 'academic_year': {'$exists': True, '$ne': None, '$ne': 'None'}}))
         academic_years = sorted(list(set(internship_academic_years + activity_academic_years)))
         
-        # Debug logging
-        current_app.logger.debug(f"Filter params: dept={department}, year={year}, semester={semester}, academic_year={academic_year}")
-        current_app.logger.debug(f"Query: {query}")
-        current_app.logger.debug(f"Found {len(students)} students")
-        current_app.logger.debug(f"Available years: {years}")
-        current_app.logger.debug(f"Available semesters: {semesters}")
-        current_app.logger.debug(f"Available academic years: {academic_years}")
         
         # Ensure we're passing the correct filter values (not None if they're empty strings)
         selected_department = department if department else None
@@ -136,9 +127,13 @@ def view_student(student_id):
         flash('Access denied.', 'error')
         return redirect(url_for('auth.login'))
     
-    student = User.get_by_id(current_app.db, student_id)
-    if not student or student.mentor_email != current_user.email:
+    student = User.get_by_id(db, student_id)
+    if not student:
         flash('Student not found.', 'error')
+        return redirect(url_for('mentor.dashboard'))
+    
+    if student.mentor_email != current_user.email:
+        flash('Access denied.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
     # Get filter parameters
@@ -165,6 +160,7 @@ def view_student(student_id):
     activity_credit_points = round(total_activity_hours / 10, 2) if total_activity_hours else 0
     total_credit_points = round(internship_credit_points + activity_credit_points, 2)
     
+    
     return render_template('mentor/student_profile.html',
                          student=student,
                          internships=internships,
@@ -182,18 +178,18 @@ def approve_internship(internship_id):
         flash('Access denied.', 'error')
         return redirect(url_for('auth.login'))
     
-    internship = Internship.get_by_id(current_app.db, internship_id)
+    internship = Internship.get_by_id(db, internship_id)
     if not internship:
         flash('Internship not found.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
-    student = User.get_by_id(current_app.db, internship.student_id)
+    student = User.get_by_id(db, internship.student_id)
     if not student or student.mentor_email != current_user.email:
         flash('Access denied.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
     internship.status = 'approved'
-    internship.save(current_app.db)
+    internship.save(db)
     flash('Internship approved successfully!', 'success')
     return redirect(url_for('mentor.view_student', student_id=internship.student_id))
 
@@ -204,18 +200,18 @@ def reject_internship(internship_id):
         flash('Access denied.', 'error')
         return redirect(url_for('auth.login'))
     
-    internship = Internship.get_by_id(current_app.db, internship_id)
+    internship = Internship.get_by_id(db, internship_id)
     if not internship:
         flash('Internship not found.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
-    student = User.get_by_id(current_app.db, internship.student_id)
+    student = User.get_by_id(db, internship.student_id)
     if not student or student.mentor_email != current_user.email:
         flash('Access denied.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
     internship.status = 'rejected'
-    internship.save(current_app.db)
+    internship.save(db)
     flash('Internship rejected.', 'success')
     return redirect(url_for('mentor.view_student', student_id=internship.student_id))
 
@@ -226,18 +222,18 @@ def approve_activity(activity_id):
         flash('Access denied.', 'error')
         return redirect(url_for('auth.login'))
     
-    activity = Activity.get_by_id(current_app.db, activity_id)
+    activity = Activity.get_by_id(db, activity_id)
     if not activity:
         flash('Activity not found.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
-    student = User.get_by_id(current_app.db, activity.student_id)
+    student = User.get_by_id(db, activity.student_id)
     if not student or student.mentor_email != current_user.email:
         flash('Access denied.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
     activity.status = 'approved'
-    activity.save(current_app.db)
+    activity.save(db)
     flash('Activity approved successfully!', 'success')
     return redirect(url_for('mentor.view_student', student_id=activity.student_id))
 
@@ -248,17 +244,59 @@ def reject_activity(activity_id):
         flash('Access denied.', 'error')
         return redirect(url_for('auth.login'))
     
-    activity = Activity.get_by_id(current_app.db, activity_id)
+    activity = Activity.get_by_id(db, activity_id)
     if not activity:
         flash('Activity not found.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
-    student = User.get_by_id(current_app.db, activity.student_id)
+    student = User.get_by_id(db, activity.student_id)
     if not student or student.mentor_email != current_user.email:
         flash('Access denied.', 'error')
         return redirect(url_for('mentor.dashboard'))
     
     activity.status = 'rejected'
-    activity.save(current_app.db)
+    activity.save(db)
     flash('Activity rejected.', 'success')
     return redirect(url_for('mentor.view_student', student_id=activity.student_id))
+
+@mentor_bp.route('/internship/<internship_id>')
+@login_required
+def view_internship(internship_id):
+    if current_user.role != 'mentor':
+        flash('Access denied.', 'error')
+        return redirect(url_for('auth.login'))
+    
+    internship = Internship.get_by_id(db, internship_id)
+    if not internship:
+        flash('Internship not found.', 'error')
+        return redirect(url_for('mentor.dashboard'))
+    
+    student = User.get_by_id(db, internship.student_id)
+    if not student or student.mentor_email != current_user.email:
+        flash('Access denied.', 'error')
+        return redirect(url_for('mentor.dashboard'))
+    
+    return render_template('mentor/internship_detail.html', 
+                         internship=internship, 
+                         student=student)
+
+@mentor_bp.route('/activity/<activity_id>')
+@login_required
+def view_activity(activity_id):
+    if current_user.role != 'mentor':
+        flash('Access denied.', 'error')
+        return redirect(url_for('auth.login'))
+    
+    activity = Activity.get_by_id(db, activity_id)
+    if not activity:
+        flash('Activity not found.', 'error')
+        return redirect(url_for('mentor.dashboard'))
+    
+    student = User.get_by_id(db, activity.student_id)
+    if not student or student.mentor_email != current_user.email:
+        flash('Access denied.', 'error')
+        return redirect(url_for('mentor.dashboard'))
+    
+    return render_template('mentor/activity_detail.html', 
+                         activity=activity, 
+                         student=student)

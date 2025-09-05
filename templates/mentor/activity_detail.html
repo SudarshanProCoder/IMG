@@ -1,0 +1,210 @@
+{% extends "mentor/base.html" %}
+
+{% block title %}Activity Details - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        box-shadow: var(--glass-shadow);
+        margin-bottom: 1.5rem;
+        color: var(--text-light);
+    }
+
+    .detail-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        color: var(--text-light);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: var(--glass-shadow);
+    }
+
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .status-pending {
+        background: var(--warning-gradient);
+        color: var(--text-light);
+    }
+
+    .status-approved {
+        background: var(--success-gradient);
+        color: var(--text-light);
+    }
+
+    .status-rejected {
+        background: var(--danger-gradient);
+        color: var(--text-light);
+    }
+
+    .btn-primary {
+        background: var(--accent-gradient);
+        border: none;
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        color: var(--text-light);
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--glass-bg);
+        color: var(--text-light);
+        transform: translateY(-2px);
+    }
+
+    .text-muted {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="detail-header">
+    <h1 class="mb-2">
+        <i class="fas fa-tasks me-3"
+            style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+        Activity Details
+    </h1>
+    <p class="lead mb-0">{{ student.full_name }} - {{ activity.title }}</p>
+</div>
+
+<div class="container">
+    <!-- Activity Information -->
+    <div class="detail-card p-4 mb-4">
+        <h3 class="mb-3">
+            <i class="fas fa-info-circle me-2" style="color: var(--accent-gradient);"></i>
+            Activity Information
+        </h3>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <strong>Activity Title:</strong>
+                <p class="text-muted">{{ activity.title }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Activity Type:</strong>
+                <p class="text-muted">{{ activity.activity_type }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Start Date:</strong>
+                <p class="text-muted">{{ activity.start_date.strftime('%d %b %Y') if activity.start_date else 'N/A' }}
+                </p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>End Date:</strong>
+                <p class="text-muted">{{ activity.end_date.strftime('%d %b %Y') if activity.end_date else 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Duration (Months):</strong>
+                <p class="text-muted">{{ activity.duration_months or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Hours per Week:</strong>
+                <p class="text-muted">{{ activity.hours_per_week or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Total Hours:</strong>
+                <p class="text-muted">{{ activity.total_hours or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Academic Year:</strong>
+                <p class="text-muted">{{ activity.academic_year or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Semester:</strong>
+                <p class="text-muted">{{ activity.semester or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Status:</strong>
+                <span class="status-badge status-{{ activity.status }}">
+                    {{ activity.status|title }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    {% if activity.description %}
+    <div class="detail-card p-4 mb-4">
+        <h3 class="mb-3">
+            <i class="fas fa-align-left me-2" style="color: var(--accent-gradient);"></i>
+            Description
+        </h3>
+        <p class="text-muted">{{ activity.description }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Skills -->
+    {% if activity.skills %}
+    <div class="detail-card p-4 mb-4">
+        <h3 class="mb-3">
+            <i class="fas fa-code me-2" style="color: var(--accent-gradient);"></i>
+            Skills Developed
+        </h3>
+        <div class="skills-list">
+            {% for skill in activity.skills %}
+            <span class="skill-badge">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Certificate -->
+    {% if activity.certificate_path %}
+    <div class="detail-card p-4 mb-4">
+        <h3 class="mb-3">
+            <i class="fas fa-certificate me-2" style="color: var(--accent-gradient);"></i>
+            Certificate
+        </h3>
+        <a href="{{ activity.certificate_path }}" target="_blank" class="btn btn-primary">
+            <i class="fas fa-download me-2"></i>Download Certificate
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div class="text-center mb-4">
+        <a href="{{ url_for('mentor.view_student', student_id=student.id) }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left me-2"></i>Back to Student Profile
+        </a>
+        {% if activity.status == 'pending' %}
+        <a href="{{ url_for('mentor.approve_activity', activity_id=activity.id) }}" class="btn btn-primary me-2">
+            <i class="fas fa-check me-2"></i>Approve
+        </a>
+        <a href="{{ url_for('mentor.reject_activity', activity_id=activity.id) }}" class="btn btn-outline-secondary">
+            <i class="fas fa-times me-2"></i>Reject
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
