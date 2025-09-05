@@ -1,5 +1,5 @@
-from flask import Flask, render_template
-from flask_login import LoginManager
+from flask import Flask, render_template, redirect, url_for
+from flask_login import LoginManager, current_user
 import os
 from dotenv import load_dotenv
 from config.database import init_db, db
@@ -37,13 +37,21 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 
 @app.route('/')
 def index():
-    # Get real counts from database
+    # If logged in, redirect to role dashboard; else show landing page
+    if current_user.is_authenticated:
+        if current_user.role == 'admin':
+            return redirect(url_for('admin.dashboard'))
+        if current_user.role == 'mentor':
+            return redirect(url_for('mentor.dashboard'))
+        return redirect(url_for('student.dashboard'))
+
+    # Get real counts from database for landing page
     student_count = db.users.count_documents({'role': 'student'})
     internship_count = db.internships.count_documents({})
     mentor_count = db.users.count_documents({'role': 'mentor'})
     activity_count = db.activities.count_documents({})
-    
-    return render_template('index.html', 
+
+    return render_template('index.html',
                            student_count=student_count,
                            internship_count=internship_count,
                            mentor_count=mentor_count,

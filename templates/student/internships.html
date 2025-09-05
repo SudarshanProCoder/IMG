@@ -1,46 +1,52 @@
-{% extends "base.html" %}
+{% extends "student/base.html" %}
 
 {% block title %}My Internships - Shah and Anchor College{% endblock %}
 
 {% block extra_css %}
 <style>
     .internship-card {
-        background: linear-gradient(145deg, #ffffff, #f5f5f5);
-        border-radius: 15px;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .internship-card .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .internship-card .skills {
+        margin-top: auto;
+    }
+
+    .skill-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--text-light);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
         transition: all 0.3s ease;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
     }
 
-    .internship-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, #00ADB5, #0d6efd);
+    .skill-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .internship-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        background: transparent;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 1.25rem;
-    }
-
-    .card-header h5 {
-        font-size: 1.25rem;
+    .skill-badge.skill-more {
+        background: rgba(255, 255, 255, 0.3);
         font-weight: 600;
-        margin: 0;
-        color: #2c3e50;
+        cursor: pointer;
+    }
+
+    .skill-badge.skill-more:hover {
+        background: rgba(255, 255, 255, 0.4);
     }
 
     .status-badge {
@@ -53,61 +59,30 @@
     }
 
     .status-badge.bg-success {
-        background: linear-gradient(45deg, #198754, #28a745);
+        background: var(--success-gradient);
+        color: white;
     }
 
     .status-badge.bg-warning {
-        background: linear-gradient(45deg, #ffc107, #ff9800);
-        color: #000;
+        background: var(--warning-gradient);
+        color: white;
     }
 
     .status-badge.bg-danger {
-        background: linear-gradient(45deg, #dc3545, #c82333);
+        background: var(--danger-gradient);
+        color: white;
     }
 
     .status-badge:hover {
         transform: scale(1.05);
     }
 
-    .card-body {
-        padding: 1.5rem;
-    }
-
-    .card-body strong {
-        color: #2c3e50;
-        font-weight: 600;
-    }
-
-    .card-body p {
-        color: #6c757d;
-        margin-bottom: 0.5rem;
-    }
-
-    .skill-badge {
-        background: linear-gradient(145deg, #e9ecef, #f8f9fa);
-        color: #495057;
-        padding: 0.4rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
-        display: inline-block;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .skill-badge:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
     .document-link {
-        background: linear-gradient(145deg, #ffffff, #f8f9fa);
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid var(--glass-border);
         padding: 0.5rem 1rem;
         border-radius: 8px;
-        color: #0d6efd;
+        color: var(--text-light);
         text-decoration: none;
         transition: all 0.3s ease;
         display: inline-flex;
@@ -115,19 +90,14 @@
         gap: 0.5rem;
         margin-right: 0.5rem;
         margin-bottom: 0.5rem;
+        backdrop-filter: blur(10px);
     }
 
     .document-link:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        color: #0a58ca;
-        background: linear-gradient(145deg, #f8f9fa, #ffffff);
-    }
-
-    .card-footer {
-        background: transparent;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 1rem 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.3);
+        color: var(--text-light);
     }
 
     .btn-edit,
@@ -143,25 +113,24 @@
     .btn-edit:hover,
     .btn-delete:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .btn-edit {
-        background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        background: var(--accent-gradient);
         border: none;
         color: white;
     }
 
     .btn-delete {
-        background: linear-gradient(45deg, #dc3545, #c82333);
+        background: var(--danger-gradient);
         border: none;
         color: white;
     }
 
     .btn-add-internship {
         color: white;
-
-        background: linear-gradient(45deg, #222831, #393E46);
+        background: var(--primary-gradient);
         border: none;
         padding: 0.75rem 1.5rem;
         border-radius: 8px;
@@ -173,7 +142,23 @@
 
     .btn-add-internship:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--glass-shadow);
+    }
+
+    .page-header h2 {
+        color: var(--text-light);
+        margin: 0;
     }
 
     @media (max-width: 767px) {
@@ -199,62 +184,25 @@
             font-size: 0.875rem;
         }
     }
-
-    /* Animation classes */
-    .animate-fade-in {
-        animation: fadeIn 0.5s ease-in;
-    }
-
-    .animate-slide-up {
-        animation: slideUp 0.5s ease-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideUp {
-        from {
-            transform: translateY(20px);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-        color: rgba(var(--text-color-rgb, 34, 40, 49), 0.7);
-        opacity: 1;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="animate-fade-in">My Internships</h2>
-        <a href="{{ url_for('student.new_internship') }}" class="btn btn-add-internship animate-fade-in">
-            <i class="fas fa-plus"></i> Add New Internship
-        </a>
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="animate-fade-in">My Internships</h2>
+            <a href="{{ url_for('student.new_internship') }}" class="btn btn-add-internship animate-fade-in">
+                <i class="fas fa-plus"></i> Add New Internship
+            </a>
+        </div>
     </div>
 
     {% if internships %}
     <div class="row">
         {% for internship in internships %}
         <div class="col-md-6 mb-4">
-            <div class="internship-card themed-bg themed-text animate-slide-up"
-                style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <div class="glass-card internship-card animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>{{ internship.company_name }}</h5>
                     <span
@@ -290,9 +238,12 @@
                     <div class="mb-3">
                         <strong>Skills:</strong>
                         <div class="mt-2">
-                            {% for skill in internship.skills %}
+                            {% for skill in internship.skills[:3] %}
                             <span class="skill-badge">{{ skill }}</span>
                             {% endfor %}
+                            {% if internship.skills|length > 3 %}
+                            <span class="skill-badge skill-more">+{{ internship.skills|length - 3 }} more</span>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
@@ -330,8 +281,10 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="alert alert-info animate-fade-in">
-        <i class="fas fa-info-circle"></i> No internships found. Start by adding a new internship!
+    <div class="glass-card text-center py-5">
+        <i class="fas fa-info-circle fa-3x mb-3" style="color: var(--text-light);"></i>
+        <h4 style="color: var(--text-light);">No internships found</h4>
+        <p style="color: var(--text-light); opacity: 0.8;">Start by adding a new internship!</p>
     </div>
     {% endif %}
 </div>

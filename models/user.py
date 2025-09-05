@@ -18,7 +18,6 @@ class User(UserMixin):
             self.created_at = user_data.get('created_at')
             self.updated_at = user_data.get('updated_at')
             
-            # Additional profile fields
             self.phone = user_data.get('phone')
             self.department = user_data.get('department')
             self.batch = user_data.get('batch')
@@ -29,7 +28,6 @@ class User(UserMixin):
             self.skills = user_data.get('skills', [])
             self.soft_skills = user_data.get('soft_skills', [])
             
-            # Student specific fields
             if self.role == 'student':
                 self.prn = user_data.get('prn')
                 self.registration_number = user_data.get('registration_number')
@@ -37,7 +35,6 @@ class User(UserMixin):
                 self.year = user_data.get('year')
                 self.mentor_email = user_data.get('mentor_email')
         else:
-            # Initialize with provided kwargs
             self.email = kwargs.get('email')
             self.role = kwargs.get('role')
             self.full_name = kwargs.get('full_name')
@@ -47,7 +44,6 @@ class User(UserMixin):
             self.created_at = datetime.utcnow()
             self.updated_at = datetime.utcnow()
             
-            # Additional profile fields
             self.phone = kwargs.get('phone')
             self.department = kwargs.get('department')
             self.batch = kwargs.get('batch')
@@ -58,11 +54,9 @@ class User(UserMixin):
             self.skills = kwargs.get('skills', [])
             self.soft_skills = kwargs.get('soft_skills', [])
             
-            # Set password if provided
             if 'password' in kwargs:
                 self.set_password(kwargs['password'])
             
-            # Student specific fields
             if self.role == 'student':
                 self.prn = kwargs.get('prn')
                 self.registration_number = kwargs.get('registration_number')
@@ -93,7 +87,6 @@ class User(UserMixin):
 
     @staticmethod
     def get_by_slug(slug):
-        # Slug is full_name with spaces replaced by hyphens, lowercased
         user_data = db.users.find_one({
             'role': 'student',
             '$expr': {
@@ -116,7 +109,6 @@ class User(UserMixin):
             if user_data:
                 return User(user_data)
         except (TypeError, ValueError):
-            # Handle invalid ObjectId format
             return None
         return None
 
