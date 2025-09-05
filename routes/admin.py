@@ -433,14 +433,6 @@ def view_student(student_id):
                 current_app.logger.error(f"Error processing activity: {str(e)}")
                 continue
 
-        # Debug output for diagnosis
-        current_app.logger.info(f"Prepared data for student {student_id}")
-        current_app.logger.debug(f"Student data: {student_data}")
-        current_app.logger.debug(f"Internships: {internships}")
-        current_app.logger.debug(f"Activities: {activities}")
-        print('Student:', student_data)
-        print('Internships:', internships)
-        print('Activities:', activities)
 
         return render_template('admin/student_profile.html',
                             student=student_data,
@@ -455,9 +447,7 @@ def view_student(student_id):
         import traceback
         current_app.logger.error(f"Error loading student profile: {str(e)}")
         current_app.logger.error(f"Traceback: {traceback.format_exc()}")
-        print('Error loading student profile:', str(e))
-        print(traceback.format_exc())
-        # Fallback: render a minimal template for debugging
+        # Fallback: render a minimal template
         try:
             return render_template('admin/student_profile.html', student={}, internships=[], activities=[], internship_count=0, activity_count=0, approved_internships=0, approved_activities=0, error=str(e))
         except Exception as te:
@@ -829,11 +819,8 @@ def certificate_management():
         
         for i, student_data in enumerate(students):
             try:
-                current_app.logger.debug(f"Processing student {i+1}/{len(students)}: {student_data.get('_id', 'Unknown')}")
-                
                 # Convert ObjectId to string for consistent key handling
                 student_id = str(student_data['_id'])
-                current_app.logger.debug(f"Student ID converted to string: {student_id}")
                 
                 # Get approved internships for the student
                 internship_query = {'student_id': student_id, 'status': 'approved'}
@@ -844,7 +831,6 @@ def certificate_management():
                 
                 try:
                     internships = list(db.internships.find(internship_query))
-                    current_app.logger.debug(f"Found {len(internships)} approved internships for student {student_id}")
                 except Exception as e:
                     current_app.logger.error(f"Error getting internships for student {student_id}: {str(e)}")
                     internships = []
@@ -856,11 +842,9 @@ def certificate_management():
                     credit_points = round(total_hours / 40, 2) if total_hours > 0 else 0.0
                     total_credit_points += credit_points
                     eligible_students[student_id] = credit_points
-                    current_app.logger.debug(f"Student {student_id} eligible with {credit_points} credit points")
                 else:
                     # Student has no approved internships
                     eligible_students[student_id] = 0.0
-                    current_app.logger.debug(f"Student {student_id} not eligible")
                     
             except Exception as e:
                 current_app.logger.error(f"Error processing student {i+1}: {str(e)}")
@@ -882,16 +866,12 @@ def certificate_management():
                 # Ensure profile_image field exists
                 if 'profile_image' not in student or not student['profile_image']:
                     student['profile_image'] = None  # Will use default image in template
-                current_app.logger.debug(f"Converted student {i+1} ID to string: {student['_id']}")
             except Exception as e:
                 current_app.logger.error(f"Error converting student {i+1} ID: {str(e)}")
                 student['_id'] = f'unknown_{i}'
                 student['profile_image'] = None
         
-        # Debug logging
         current_app.logger.info(f"Certificate management loaded: {len(students)} students, {eligible_count} eligible")
-        current_app.logger.debug(f"Eligible students keys: {list(eligible_students.keys())[:5]}...")
-        current_app.logger.debug(f"Sample student IDs: {[str(s.get('_id', 'unknown'))[:10] for s in students[:3]]}")
         
         return render_template('admin/certificate_management.html',
                              departments=departments,

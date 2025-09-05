@@ -1,0 +1,214 @@
+{% extends "mentor/base.html" %}
+
+{% block title %}Internship Details - Shah and Anchor College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        box-shadow: var(--glass-shadow);
+        margin-bottom: 1.5rem;
+        color: var(--text-light);
+    }
+
+    .detail-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        color: var(--text-light);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: var(--glass-shadow);
+    }
+
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .status-pending {
+        background: var(--warning-gradient);
+        color: var(--text-light);
+    }
+
+    .status-approved {
+        background: var(--success-gradient);
+        color: var(--text-light);
+    }
+
+    .status-rejected {
+        background: var(--danger-gradient);
+        color: var(--text-light);
+    }
+
+    .btn-primary {
+        background: var(--accent-gradient);
+        border: none;
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        color: var(--text-light);
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--glass-bg);
+        color: var(--text-light);
+        transform: translateY(-2px);
+    }
+
+    .text-muted {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="detail-header">
+    <h1 class="mb-2">
+        <i class="fas fa-briefcase me-3"
+            style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+        Internship Details
+    </h1>
+    <p class="lead mb-0">{{ student.full_name }} - {{ internship.company_name }}</p>
+</div>
+
+<div class="container">
+    <!-- Internship Information -->
+    <div class="detail-card p-4 mb-4">
+        <h3 class="mb-3">
+            <i class="fas fa-info-circle me-2" style="color: var(--accent-gradient);"></i>
+            Internship Information
+        </h3>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <strong>Company Name:</strong>
+                <p class="text-muted">{{ internship.company_name }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Project Name:</strong>
+                <p class="text-muted">{{ internship.project_name }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Start Date:</strong>
+                <p class="text-muted">{{ internship.start_date.strftime('%d %b %Y') if internship.start_date else 'N/A'
+                    }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>End Date:</strong>
+                <p class="text-muted">{{ internship.end_date.strftime('%d %b %Y') if internship.end_date else 'N/A' }}
+                </p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Duration (Months):</strong>
+                <p class="text-muted">{{ internship.duration_months or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Hours per Week:</strong>
+                <p class="text-muted">{{ internship.hours_per_week or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Total Hours:</strong>
+                <p class="text-muted">{{ internship.total_hours or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Academic Year:</strong>
+                <p class="text-muted">{{ internship.academic_year or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Semester:</strong>
+                <p class="text-muted">{{ internship.semester or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong>Status:</strong>
+                <span class="status-badge status-{{ internship.status }}">
+                    {{ internship.status|title }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills -->
+    {% if internship.skills %}
+    <div class="detail-card p-4 mb-4">
+        <h3 class="mb-3">
+            <i class="fas fa-code me-2" style="color: var(--accent-gradient);"></i>
+            Skills Developed
+        </h3>
+        <div class="skills-list">
+            {% for skill in internship.skills %}
+            <span class="skill-badge">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Documents -->
+    <div class="detail-card p-4 mb-4">
+        <h3 class="mb-3">
+            <i class="fas fa-file-alt me-2" style="color: var(--accent-gradient);"></i>
+            Documents
+        </h3>
+        <div class="row">
+            {% if internship.offer_letter_url %}
+            <div class="col-md-6 mb-3">
+                <strong>Offer Letter:</strong>
+                <a href="{{ internship.offer_letter_url }}" target="_blank" class="btn btn-primary btn-sm ms-2">
+                    <i class="fas fa-download me-1"></i>Download
+                </a>
+            </div>
+            {% endif %}
+            {% if internship.completion_letter_url %}
+            <div class="col-md-6 mb-3">
+                <strong>Completion Letter:</strong>
+                <a href="{{ internship.completion_letter_url }}" target="_blank" class="btn btn-primary btn-sm ms-2">
+                    <i class="fas fa-download me-1"></i>Download
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="text-center mb-4">
+        <a href="{{ url_for('mentor.view_student', student_id=student.id) }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left me-2"></i>Back to Student Profile
+        </a>
+        {% if internship.status == 'pending' %}
+        <a href="{{ url_for('mentor.approve_internship', internship_id=internship.id) }}" class="btn btn-primary me-2">
+            <i class="fas fa-check me-2"></i>Approve
+        </a>
+        <a href="{{ url_for('mentor.reject_internship', internship_id=internship.id) }}"
+            class="btn btn-outline-secondary">
+            <i class="fas fa-times me-2"></i>Reject
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,91 +1,100 @@
-{% extends "base.html" %}
+{% extends "mentor/base.html" %}
 
 {% block title %}Mentor Dashboard - Shah and Anchor College{% endblock %}
 
 {% block extra_css %}
 <style>
     .dashboard-header {
-        background: linear-gradient(rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.9)),
-        url("{{ url_for('static', filename='images/dashboard-bg.jpg') }}");
-        background-size: cover;
-        background-position: center;
-        color: white;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        color: var(--text-light);
         padding: 2rem 1rem;
-        margin: -1.5rem -1.5rem 2rem -1.5rem;
-        border-radius: 0;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: var(--glass-shadow);
     }
 
     @media (min-width: 768px) {
         .dashboard-header {
             padding: 3rem 2rem;
-            margin: -1.5rem -1.5rem 2rem -1.5rem;
-            border-radius: 0 0 1rem 1rem;
         }
     }
 
     .filters-card,
     .student-card,
     .stats-card {
-        background: var(--card-bg) !important;
-        color: var(--text-color) !important;
-        border-radius: 0.5rem;
-        padding: 1.25rem;
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--glass-shadow);
+        transition: all 0.3s ease;
+        color: var(--text-light) !important;
     }
 
     .student-card {
-        background: white;
-        border-radius: 0.5rem;
-        padding: 1.25rem;
+        background: var(--glass-bg) !important;
+        border-radius: 20px;
+        padding: 1.5rem;
         margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--glass-shadow);
         transition: all 0.3s ease;
+        border: 1px solid var(--glass-border);
     }
 
     .student-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(31, 38, 135, 0.45);
     }
 
     .stats-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(31, 38, 135, 0.45);
     }
 
     .stats-icon {
         font-size: 2rem;
         margin-bottom: 1rem;
-        color: #00ADB5;
+        color: var(--accent-gradient);
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .stats-number {
         font-size: 2rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
+        color: var(--text-light);
     }
 
     .status-badge {
         padding: 0.25rem 0.5rem;
-        border-radius: 15px;
-        font-size: 0.875rem;
-        font-weight: 500;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .status-pending {
-        background-color: #ffc107;
-        color: #000;
+        background: var(--warning-gradient);
+        color: var(--text-light);
     }
 
     .status-approved {
-        background-color: #198754;
-        color: #fff;
+        background: var(--success-gradient);
+        color: var(--text-light);
     }
 
     .status-rejected {
-        background-color: #dc3545;
-        color: #fff;
+        background: var(--danger-gradient);
+        color: var(--text-light);
     }
 
     .student-avatar {
@@ -93,122 +102,151 @@
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #0d6efd;
-        background-color: #f8f9fa;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .student-info {
-        flex: 1;
-        min-width: 200px;
+        border: 3px solid var(--accent-gradient);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .student-name {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
         font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-light);
     }
 
     .student-meta {
-        color: #6c757d;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .student-meta div {
+        margin-bottom: 0.25rem;
     }
 
     .student-stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
         margin-top: 1rem;
         padding-top: 1rem;
-        border-top: 1px solid #e9ecef;
+        border-top: 1px solid var(--glass-border);
     }
 
     .stat-item {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 0.5rem;
-        color: #6c757d;
-        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
     }
 
-    .stat-item i {
-        color: #00ADB5;
+    .stat-label {
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.8);
     }
 
-    .form-select,
-    .form-control {
-        border-radius: 0.5rem;
-        padding: 0.5rem 1rem;
-        border: 1px solid #ced4da;
-        transition: all 0.3s ease;
-    }
-
-    .form-select:focus,
-    .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    .stat-value {
+        font-weight: 600;
+        color: var(--text-light);
     }
 
     .btn-filter {
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
+        background: var(--accent-gradient);
+        border: none;
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .btn-filter:hover {
         transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        color: var(--text-light);
     }
 
-    @media (max-width: 767px) {
-        .container {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
+    .btn-outline-secondary {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
 
-        .row {
-            margin-left: -0.5rem;
-            margin-right: -0.5rem;
-        }
+    .btn-outline-secondary:hover {
+        background: var(--glass-bg);
+        color: var(--text-light);
+        transform: translateY(-2px);
+    }
 
-        .col-md-6,
-        .col-lg-4 {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
+    .form-select,
+    .form-label {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        border-radius: 10px;
+        backdrop-filter: blur(20px);
+    }
 
-        .filters-card {
-            padding: 1rem;
-        }
+    .form-select:focus {
+        background: var(--glass-bg);
+        border-color: var(--accent-gradient);
+        color: var(--text-light);
+        box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+    }
 
-        .student-card {
-            padding: 1rem;
-        }
+    .form-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+    }
 
-        .student-avatar {
-            width: 50px;
-            height: 50px;
-        }
+    .active-filters {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(20px);
+    }
 
-        .student-name {
-            font-size: 1rem;
-        }
+    .filter-tag {
+        display: inline-block;
+        background: var(--accent-gradient);
+        color: var(--text-light);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin: 0.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
 
-        .student-stats {
-            gap: 0.5rem;
-        }
+    .remove-filter {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        margin-left: 0.5rem;
+        cursor: pointer;
+        font-weight: bold;
+    }
 
-        .stat-item {
-            font-size: 0.75rem;
-        }
+    .remove-filter:hover {
+        color: var(--danger-gradient);
+    }
+
+    .text-muted {
+        color: rgba(255, 255, 255, 0.7) !important;
     }
 
     /* Animation classes */
     .animate-fade-in {
-        animation: fadeIn 0.5s ease-in;
+        animation: fadeIn 0.6s ease-in;
     }
 
     .animate-slide-up {
-        animation: slideUp 0.5s ease-out;
+        animation: slideUp 0.6s ease-out;
     }
 
     @keyframes fadeIn {
@@ -223,7 +261,7 @@
 
     @keyframes slideUp {
         from {
-            transform: translateY(20px);
+            transform: translateY(30px);
             opacity: 0;
         }
 
@@ -232,324 +270,203 @@
             opacity: 1;
         }
     }
-
-    input,
-    textarea,
-    select {
-        background: var(--input-bg) !important;
-        color: var(--input-text) !important;
-        border-color: var(--input-border) !important;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--input-text);
-        opacity: 0.7;
-        transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header text-center">
-        <h1 class="mb-2 animate-fade-in">Welcome, {{ current_user.full_name }}</h1>
-        <p class="lead mb-0 animate-fade-in">Mentor Dashboard</p>
-    </div>
+<!-- Welcome Header -->
+<div class="dashboard-header animate-fade-in">
+    <h1 class="mb-2">
+        <i class="fas fa-tachometer-alt me-3"
+            style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+        Welcome, {{ current_user.full_name }}
+    </h1>
+    <p class="lead mb-0" style="font-size: 1.1rem; color: rgba(255, 255, 255, 0.8);">
+        Mentor Dashboard
+    </p>
+</div>
 
-    <!-- Stats Section -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4">
-                <i class="fas fa-users stats-icon"></i>
-                <div class="stats-number">{{ students|length }}</div>
-                <p class="text-muted mb-0">Total Students</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4"
-                style="animation-delay: 0.1s">
-                <i class="fas fa-clock stats-icon"></i>
-                <div class="stats-number">{{ total_internship_hours }}</div>
-                <p class="text-muted mb-0">Total Internship Hours</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4"
-                style="animation-delay: 0.2s">
-                <i class="fas fa-tasks stats-icon"></i>
-                <div class="stats-number">{{ total_activity_hours }}</div>
-                <p class="text-muted mb-0">Total Activity Hours</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card themed-bg themed-text text-center animate-slide-up w-100 mb-4"
-                style="animation-delay: 0.3s">
-                <i class="fas fa-star stats-icon"></i>
-                <div class="stats-number">{{ "%.2f"|format(total_credit_points) }}</div>
-                <p class="text-muted mb-0">Total Credit Points</p>
-            </div>
+<!-- Stats Section -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center animate-slide-up w-100 mb-4">
+            <i class="fas fa-users stats-icon"></i>
+            <div class="stats-number">{{ students|length }}</div>
+            <p class="text-muted mb-0">Total Students</p>
         </div>
     </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center animate-slide-up w-100 mb-4" style="animation-delay: 0.1s">
+            <i class="fas fa-clock stats-icon"></i>
+            <div class="stats-number">{{ total_internship_hours }}</div>
+            <p class="text-muted mb-0">Total Internship Hours</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center animate-slide-up w-100 mb-4" style="animation-delay: 0.2s">
+            <i class="fas fa-tasks stats-icon"></i>
+            <div class="stats-number">{{ total_activity_hours }}</div>
+            <p class="text-muted mb-0">Total Activity Hours</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center animate-slide-up w-100 mb-4" style="animation-delay: 0.3s">
+            <i class="fas fa-star stats-icon"></i>
+            <div class="stats-number">{{ "%.2f"|format(total_credit_points) }}</div>
+            <p class="text-muted mb-0">Total Credit Points</p>
+        </div>
+    </div>
+</div>
 
-    <!-- Filters -->
-    <div class="filters-card themed-bg themed-text animate-slide-up w-100 mb-4">
-        <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Students</h5>
+<!-- Filters -->
+<div class="filters-card animate-slide-up w-100 mb-4">
+    <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Students</h5>
 
-        <form method="GET" class="row g-3" id="filter-form">
-            <div class="col-12 col-md-2">
-                <label for="department" class="form-label">Department</label>
-                <select name="department" id="department" class="form-select">
-                    <option value="">All Departments</option>
-                    {% for dept in departments %}
-                    {% if dept and dept != 'None' %}
-                    <option value="{{ dept }}" {% if dept==selected_department %}selected{% endif %}>{{ dept }}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-12 col-md-2">
-                <label for="academic_year" class="form-label">Academic Year</label>
-                <select name="academic_year" id="academic_year" class="form-select">
-                    <option value="">All Academic Years</option>
-                    {% for ay in academic_years %}
-                    {% if ay and ay != 'None' %}
-                    <option value="{{ ay }}" {% if ay==selected_academic_year %}selected{% endif %}>{{ ay }}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-12 col-md-2">
-                <label for="year" class="form-label">Year</label>
-                <select name="year" id="year" class="form-select">
-                    <option value="">All Years</option>
-                    {% for y in years %}
-                    {% if y and y != 'None' %}
-                    <option value="{{ y }}" {% if y==selected_year %}selected{% endif %}>{{ y }}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-12 col-md-2">
-                <label for="semester" class="form-label">Semester</label>
-                <select name="semester" id="semester" class="form-select">
-                    <option value="">All Semesters</option>
-                    {% for sem in semesters %}
-                    {% if sem and sem != 'None' %}
-                    <option value="{{ sem }}" {% if sem==selected_semester %}selected{% endif %}>{{ sem }}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-        </form>
+    <form method="GET" class="row g-3" id="filter-form">
+        <div class="col-12 col-md-2">
+            <label for="department" class="form-label">Department</label>
+            <select name="department" id="department" class="form-select">
+                <option value="">All Departments</option>
+                {% for dept in departments %}
+                {% if dept and dept != 'None' %}
+                <option value="{{ dept }}" {% if dept==selected_department %}selected{% endif %}>{{ dept }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-md-2">
+            <label for="academic_year" class="form-label">Academic Year</label>
+            <select name="academic_year" id="academic_year" class="form-select">
+                <option value="">All Academic Years</option>
+                {% for ay in academic_years %}
+                {% if ay and ay != 'None' %}
+                <option value="{{ ay }}" {% if ay==selected_academic_year %}selected{% endif %}>{{ ay }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-md-2">
+            <label for="year" class="form-label">Year</label>
+            <select name="year" id="year" class="form-select">
+                <option value="">All Years</option>
+                {% for y in years %}
+                {% if y and y != 'None' %}
+                <option value="{{ y }}" {% if y==selected_year %}selected{% endif %}>{{ y }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-md-2">
+            <label for="semester" class="form-label">Semester</label>
+            <select name="semester" id="semester" class="form-select">
+                <option value="">All Semesters</option>
+                {% for sem in semesters %}
+                {% if sem and sem != 'None' %}
+                <option value="{{ sem }}" {% if sem==selected_semester %}selected{% endif %}>{{ sem }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+    </form>
 
-        <!-- Action Buttons - Full Width Below Filters -->
-        <div class="row mt-3">
-            <div class="col-12 d-flex gap-2">
-                <button type="submit" form="filter-form" class="btn btn-primary btn-filter flex-grow-1">
-                    <i class="fas fa-filter me-2"></i>Apply Filters
-                </button>
-                <a href="{{ url_for('mentor.dashboard') }}" class="btn btn-outline-secondary flex-grow-1">
-                    <i class="fas fa-undo me-2"></i>Reset Filters
+    <!-- Action Buttons - Full Width Below Filters -->
+    <div class="row mt-3">
+        <div class="col-12 d-flex gap-2">
+            <button type="submit" form="filter-form" class="btn btn-filter flex-grow-1">
+                <i class="fas fa-filter me-2"></i>Apply Filters
+            </button>
+            <a href="{{ url_for('mentor.dashboard') }}" class="btn btn-outline-secondary flex-grow-1">
+                <i class="fas fa-undo me-2"></i>Reset Filters
+            </a>
+        </div>
+    </div>
+
+    <!-- Active Filters Display -->
+    {% if selected_department or selected_year or selected_semester or selected_academic_year %}
+    <div class="active-filters mt-3">
+        <h6 class="mb-2"><i class="fas fa-tags me-2"></i>Active Filters:</h6>
+        {% if selected_department %}
+        <span class="filter-tag">
+            Department: {{ selected_department }}
+            <a href="{{ url_for('mentor.dashboard', department='', academic_year=selected_academic_year or '', year=selected_year or '', semester=selected_semester or '') }}"
+                class="remove-filter">&times;</a>
+        </span>
+        {% endif %}
+        {% if selected_academic_year %}
+        <span class="filter-tag">
+            Academic Year: {{ selected_academic_year }}
+            <a href="{{ url_for('mentor.dashboard', department=selected_department or '', academic_year='', year=selected_year or '', semester=selected_semester or '') }}"
+                class="remove-filter">&times;</a>
+        </span>
+        {% endif %}
+        {% if selected_year %}
+        <span class="filter-tag">
+            Year: {{ selected_year }}
+            <a href="{{ url_for('mentor.dashboard', department=selected_department or '', academic_year=selected_academic_year or '', year='', semester=selected_semester or '') }}"
+                class="remove-filter">&times;</a>
+        </span>
+        {% endif %}
+        {% if selected_semester %}
+        <span class="filter-tag">
+            Semester: {{ selected_semester }}
+            <a href="{{ url_for('mentor.dashboard', department=selected_department or '', academic_year=selected_academic_year or '', year=selected_year or '', semester='') }}"
+                class="remove-filter">&times;</a>
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Students List -->
+<div class="row">
+    {% for student in students %}
+    <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <div class="student-card animate-slide-up w-100 mb-4" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <div class="d-flex align-items-center mb-3">
+                {% if student.profile_image %}
+                <img src="{{ student.profile_image }}" alt="{{ student.full_name }}" class="student-avatar me-3">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="{{ student.full_name }}"
+                    class="student-avatar me-3">
+                {% endif %}
+                <div class="student-info">
+                    <h3 class="student-name">{{ student.full_name }}</h3>
+                    <div class="student-meta">
+                        <div><i class="fas fa-id-card me-2"></i>{{ student.registration_number }}</div>
+                        <div><i class="fas fa-graduation-cap me-2"></i>{{ student.branch }}</div>
+                        <div><i class="fas fa-calendar me-2"></i>Year {{ student.year }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="student-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Internship Hours:</span>
+                    <span class="stat-value">{{ student.total_internship_hours or 0 }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Activity Hours:</span>
+                    <span class="stat-value">{{ student.total_activity_hours or 0 }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Credit Points:</span>
+                    <span class="stat-value">{{ "%.2f"|format(student.total_credit_points or 0) }}</span>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a href="{{ url_for('mentor.view_student', student_id=student.id) }}" class="btn btn-filter w-100">
+                    <i class="fas fa-eye me-2"></i>View Details
                 </a>
             </div>
         </div>
-
-        <!-- Active Filters Display -->
-        {% if selected_department or selected_academic_year or selected_year or selected_semester %}
-        <div class="mt-3 pt-3 border-top">
-            <h6 class="mb-2"><i class="fas fa-tags me-2"></i>Active Filters:</h6>
-            <div class="d-flex flex-wrap gap-2">
-                {% if selected_department and selected_department != '' %}
-                <span class="badge bg-primary">
-                    Department: {{ selected_department }}
-                    <a href="{{ url_for('mentor.dashboard', academic_year=selected_academic_year, year=selected_year, semester=selected_semester) }}"
-                        class="text-white text-decoration-none ms-1">×</a>
-                </span>
-                {% endif %}
-                {% if selected_academic_year and selected_academic_year != '' %}
-                <span class="badge bg-success">
-                    Academic Year: {{ selected_academic_year }}
-                    <a href="{{ url_for('mentor.dashboard', department=selected_department, year=selected_year, semester=selected_semester) }}"
-                        class="text-white text-decoration-none ms-1">×</a>
-                </span>
-                {% endif %}
-                {% if selected_year and selected_year != '' %}
-                <span class="badge bg-warning text-dark">
-                    Year: {{ selected_year }}
-                    <a href="{{ url_for('mentor.dashboard', department=selected_department, academic_year=selected_academic_year, semester=selected_semester) }}"
-                        class="text-white text-decoration-none ms-1">×</a>
-                </span>
-                {% endif %}
-                {% if selected_semester and selected_semester != '' %}
-                <span class="badge bg-secondary">
-                    Semester: {{ selected_semester }}
-                    <a href="{{ url_for('mentor.dashboard', department=selected_department, academic_year=selected_academic_year, year=selected_year) }}"
-                        class="text-white text-decoration-none ms-1">×</a>
-                </span>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
     </div>
-
-    <!-- Students Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Your Students</h2>
-        <div class="text-muted">
-            <i class="fas fa-users me-2"></i>
-            Showing {{ students|length }} student{% if students|length != 1 %}s{% endif %}
-            {% if (selected_department and selected_department != '') or (selected_academic_year and
-            selected_academic_year != '') or (selected_year and selected_year != '') or (selected_semester and
-            selected_semester != '') %}
-            with selected filters
-            {% endif %}
+    {% else %}
+    <div class="col-12">
+        <div class="glass-card text-center">
+            <i class="fas fa-users fa-3x mb-3" style="color: rgba(255, 255, 255, 0.5);"></i>
+            <h4>No Students Found</h4>
+            <p class="text-muted">No students match the current filters or you don't have any assigned students yet.</p>
         </div>
     </div>
-    <div class="row">
-        {% for student in students %}
-        <div class="col-12 col-md-6 col-lg-4 mb-3">
-            <div class="student-card themed-bg themed-text animate-slide-up w-100 mb-4"
-                style="animation-delay: {{ loop.index0 * 0.1 }}s">
-                <div class="d-flex align-items-center mb-3">
-                    {% if student.profile_image %}
-                    <img src="{{ student.profile_image }}" alt="{{ student.full_name }}" class="student-avatar me-3">
-                    {% else %}
-                    <img src="{{ url_for('static', filename='images/default_avatar.png') }}"
-                        alt="{{ student.full_name }}" class="student-avatar me-3">
-                    {% endif %}
-                    <div class="student-info">
-                        <h3 class="student-name">{{ student.full_name }}</h3>
-                        <div class="student-meta">
-                            <div><i class="fas fa-id-card me-2"></i>{{ student.registration_number }}</div>
-                            <div><i class="fas fa-graduation-cap me-2"></i>{{ student.branch }}</div>
-                            <div><i class="fas fa-calendar me-2"></i>Year {{ student.year }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="student-stats">
-                    <div class="stat-item">
-                        <i class="fas fa-briefcase"></i>
-                        <span>Internships: {{ student.internships|length }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-tasks"></i>
-                        <span>Activities: {{ student.activities|length }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-clock"></i>
-                        <span>Hours: {{ student.total_internship_hours + student.total_activity_hours }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-star"></i>
-                        <span>Credits: {{ "%.2f"|format(student.total_credit_points) }}</span>
-                    </div>
-                </div>
-                {% if student.internships|selectattr('status', 'equalto', 'pending')|list|length > 0 %}
-                <div class="mt-2">
-                    <span class="status-badge status-pending">
-                        <i class="fas fa-clock me-1"></i>
-                        Pending Internships: {{ student.internships|selectattr('status', 'equalto',
-                        'pending')|list|length }}
-                    </span>
-                </div>
-                {% endif %}
-                {% if student.activities|selectattr('status', 'equalto', 'pending')|list|length > 0 %}
-                <div class="mt-2">
-                    <span class="status-badge status-pending">
-                        <i class="fas fa-clock me-1"></i>
-                        Pending Activities: {{ student.activities|selectattr('status', 'equalto', 'pending')|list|length
-                        }}
-                    </span>
-                </div>
-                {% endif %}
-                <div class="mt-3">
-                    <a href="{{ url_for('mentor.view_student', student_id=student.id) }}" class="btn btn-primary w-100">
-                        <i class="fas fa-user me-2"></i>View Profile
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% else %}
-        <div class="col-12">
-            <div class="alert alert-info text-center animate-fade-in">
-                <i class="fas fa-info-circle me-2"></i>
-                No students found matching the selected criteria.
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+    {% endfor %}
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Add animation to cards
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
-            }
-        });
-    });
-
-    document.querySelectorAll('.student-card').forEach((el) => observer.observe(el));
-
-    // Filter functionality
-    document.addEventListener('DOMContentLoaded', function () {
-        // Remove auto-submit - filters should only work when Apply button is clicked
-        const filterSelects = document.querySelectorAll('#department, #academic_year, #year, #semester');
-
-        filterSelects.forEach(select => {
-            select.addEventListener('change', function () {
-                // No auto-submit - user must click Apply Filters button
-                console.log('Filter changed:', this.name, this.value);
-            });
-        });
-
-        // Add loading state to filter button
-        const filterForm = document.getElementById('filter-form');
-        const filterButton = document.querySelector('.btn-filter');
-
-        if (filterForm && filterButton) {
-            filterForm.addEventListener('submit', function () {
-                filterButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Filtering...';
-                filterButton.disabled = true;
-            });
-        }
-
-        // Highlight active filters
-        const activeFilters = document.querySelectorAll('.badge');
-        activeFilters.forEach(badge => {
-            badge.addEventListener('mouseenter', function () {
-                this.style.transform = 'scale(1.05)';
-                this.style.transition = 'transform 0.2s ease';
-            });
-
-            badge.addEventListener('mouseleave', function () {
-                this.style.transform = 'scale(1)';
-            });
-        });
-    });
-
-    // Function to update filters (for future use)
-    function updateFilters() {
-        const department = document.getElementById('department').value;
-        const academicYear = document.getElementById('academic_year').value;
-        const year = document.getElementById('year').value;
-        const semester = document.getElementById('semester').value;
-
-        // Build query string
-        const params = new URLSearchParams();
-        if (department) params.append('department', department);
-        if (academicYear) params.append('academic_year', academicYear);
-        if (year) params.append('year', year);
-        if (semester) params.append('semester', semester);
-
-        // Redirect with new filters
-        window.location.href = `${window.location.pathname}?${params.toString()}`;
-    }
-</script>
 {% endblock %}

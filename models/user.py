@@ -26,6 +26,8 @@ class User(UserMixin):
             self.gender = user_data.get('gender')
             self.date_of_birth = user_data.get('date_of_birth')
             self.address = user_data.get('address')
+            self.skills = user_data.get('skills', [])
+            self.soft_skills = user_data.get('soft_skills', [])
             
             # Student specific fields
             if self.role == 'student':
@@ -53,6 +55,8 @@ class User(UserMixin):
             self.gender = kwargs.get('gender')
             self.date_of_birth = kwargs.get('date_of_birth')
             self.address = kwargs.get('address')
+            self.skills = kwargs.get('skills', [])
+            self.soft_skills = kwargs.get('soft_skills', [])
             
             # Set password if provided
             if 'password' in kwargs:
@@ -138,6 +142,8 @@ class User(UserMixin):
             'gender': self.gender,
             'date_of_birth': self.date_of_birth,
             'address': self.address,
+            'skills': self.skills,
+            'soft_skills': self.soft_skills,
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
